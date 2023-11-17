@@ -1,7 +1,10 @@
+/* eslint-disable no-mixed-operators */
 /* eslint-disable padded-blocks */
 import * as fs from 'fs';
 import * as readline from 'readline';
 import dotenv from 'dotenv';
+
+// import moment from 'moment';
 
 dotenv.config();
 
@@ -79,6 +82,8 @@ export async function getRequestPerSecond() {
       if (timestamp) {
         // eslint-disable-next-line prefer-template
         const second = timestamp[1].split(' ')[0].split(':')[0] + 'T' + timestamp[1].split(' ')[0].split(':')[1] + ':' + timestamp[1].split(':')[2] + ':' + timestamp[1].split(':')[3].split(' ')[0];
+        // const unixSecond = moment(second, 'DD/MMM/YYYYTHH:mm:ss').unix();
+
         if (second !== currentSecond) {
           if (currentSecond !== null) {
             requestCounts[currentSecond] = currentCount;
@@ -101,10 +106,3 @@ export async function getRequestPerSecond() {
 
   });
 }
-
-async function read() {
-  const data = await getRequestPerSecond();
-  console.log(data);
-}
-
-read();

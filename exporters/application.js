@@ -5,7 +5,6 @@ import express from 'express';
 import cors from 'cors';
 import * as client from 'prom-client';
 import * as calculate from '../model/application-calculate.js';
-import * as moment from 'moment';
 
 const app = express();
 app.use(express.json());
@@ -35,21 +34,33 @@ async function setMetrics() {
 
   const apiResponseTimes = await calculate.getResponseTime();
 
+  const guageResponseTime = new client.Gauge({
+    name: 'max_response_time',
+    help: 'max response time',
+    labelNames: ['api'],
+  });
+
   for (const api in apiResponseTimes) {
     const data = apiResponseTimes[api];
     if (data.name !== undefined) {
-      register.registerMetric(
-        new client.Gauge({
-          name: `${data.name}_max_response_time`,
-          help: `${data.name} max response time`,
-          collect() {
-            const maxResponse = data.max;
-            this.set(maxResponse);
-          },
-        }),
-      );
+      guageResponseTime.set({ api: data.name }, data.max);
     }
   }
+
+  const guageRequestPerSecond = new client.Gauge({
+    name: 'request_per_second',
+    help: 'Request per second',
+    labelNames: ['time'],
+  });
+
+  const requestsPerSecond = await calculate.getRequestPerSecond();
+  for (const request in requestsPerSecond) {
+    const count = requestsPerSecond[request];
+    guageRequestPerSecond.set({ time: request }, count);
+  }
+
+  register.registerMetric(guageResponseTime);
+  register.registerMetric(guageRequestPerSecond);
 }
 
 setMetrics().then(() => {
