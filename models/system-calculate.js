@@ -15,9 +15,9 @@ export function getCPUInfo() {
 
     total += user + nice + sys + idle + irq;
   }
-  const CPUsage = (1 - idleTotal / total);
+  const CPUsage = (1 - idleTotal / total) * 100;
 
-  return CPUsage;
+  return Math.round(CPUsage * 100) / 100;
 }
 
 export function getMemoryUsage() {
@@ -27,7 +27,7 @@ export function getMemoryUsage() {
 
   const memoryUsage = ((usedMem / totalMem) * 100);
 
-  return memoryUsage;
+  return Math.round(memoryUsage * 100) / 100;
 }
 
 function parseDiskData(data) {

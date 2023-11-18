@@ -4,7 +4,7 @@
 import express from 'express';
 import cors from 'cors';
 import * as client from 'prom-client';
-import * as calculate from '../model/application-calculate.js';
+import * as calculate from '../models/application-calculate.js';
 
 const app = express();
 app.use(express.json());

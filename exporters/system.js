@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import * as os from 'os';
 import * as client from 'prom-client';
-import * as calculate from '../model/system-calculate.js';
+import * as calculate from '../models/system-calculate.js';
 
 const app = express();
 app.use(express.json());
@@ -22,7 +22,7 @@ collectDefaultMetrics({
 
 register.registerMetric(
   new client.Gauge({
-    name: 'node_load_duration_1m',
+    name: 'load_duration_1m',
     help: 'Average Load duration 1m',
     collect() {
       const load = os.loadavg()[0];
@@ -33,7 +33,7 @@ register.registerMetric(
 
 register.registerMetric(
   new client.Gauge({
-    name: 'node_load_duration_5m',
+    name: 'load_duration_5m',
     help: 'Average Load duration 5m',
     collect() {
       const load = os.loadavg()[1];
@@ -44,7 +44,7 @@ register.registerMetric(
 
 register.registerMetric(
   new client.Gauge({
-    name: 'node_load_duration_15m',
+    name: 'load_duration_15m',
     help: 'Average Load duration 15m',
     collect() {
       const load = os.loadavg()[2];
@@ -55,8 +55,8 @@ register.registerMetric(
 
 register.registerMetric(
   new client.Gauge({
-    name: 'node_CPU_Average_Usage',
-    help: 'Average CPU usage',
+    name: 'cpu_average_usage',
+    help: 'CPU usage percentage',
     collect() {
       const CPUsage = calculate.getCPUInfo();
       this.set(CPUsage);
@@ -66,8 +66,8 @@ register.registerMetric(
 
 register.registerMetric(
   new client.Gauge({
-    name: 'node_Memory_Usage',
-    help: 'Memory usage',
+    name: 'memory_usage',
+    help: 'Memory usage percentage',
     collect() {
       const memoryUsage = calculate.getMemoryUsage();
 
