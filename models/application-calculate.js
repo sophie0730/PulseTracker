@@ -83,7 +83,7 @@ export async function getRequestPerSecond() {
         const second = timestamp[1].split(' ')[0].split(':')[0] + 'T' + timestamp[1].split(' ')[0].split(':')[1] + ':' + timestamp[1].split(':')[2] + ':' + timestamp[1].split(':')[3].split(' ')[0];
         const unixSecond = moment(second, 'DD/MMM/YYYYTHH:mm:ss').unix();
 
-        if (second !== currentSecond) {
+        if (unixSecond !== currentSecond) {
           if (currentSecond !== null) {
             requestCounts[currentSecond] = currentCount;
           }
