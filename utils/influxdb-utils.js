@@ -1,7 +1,7 @@
 // repl.repl.ignoreUndefined=true
 import dotenv from 'dotenv';
 import moment from 'moment';
-import { InfluxDB } from '@influxdata/influxdb-client';
+// import { InfluxDB } from '@influxdata/influxdb-client';
 
 dotenv.config();
 
@@ -16,5 +16,3 @@ export const DB_START_DATE = moment('17/NOV/2023T20:00:00', 'DD/MMM/YYYYTHH:mm:s
 
 export const SYSTEM_URL = 'http://172.21.73.153:9100/metrics';
 export const APPLICATION_URL = 'http://172.21.73.153:9101/metrics';
-
-export const client = new InfluxDB({ INFLUXDB_URL, TOKEN });
