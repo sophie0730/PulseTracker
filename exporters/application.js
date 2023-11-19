@@ -63,14 +63,15 @@ async function setMetrics() {
   register.registerMetric(guageRequestPerSecond);
 }
 
-setMetrics().then(() => {
-  console.log('Metrics has been set up');
-})
-  .catch((error) => console.error(error));
-
 app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', register.contentType);
-  res.send(await register.metrics());
+  try {
+    await setMetrics();
+    res.set('Content-Type', register.contentType);
+    res.send(await register.metrics());
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error setting up metrics');
+  }
 });
 
 app.listen(9101, () => {
