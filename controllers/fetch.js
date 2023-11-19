@@ -94,5 +94,6 @@ export async function fetchCPULoad(req, res) {
     res.json(data);
   } catch (error) {
     console.error(error);
+    res.json(error);
   }
 }
