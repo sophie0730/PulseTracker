@@ -13,92 +13,77 @@ app.use(cors());
 const register = new client.Registry();
 const collectDefaultMetrics = client.collectDefaultMetrics;
 
+collectDefaultMetrics({
+  app: 'node-exporter-2.0',
+  timeout: 10000,
+  gcDurationBuckets: [1, 2, 5, 7, 9],
+  register,
+});
+
+const guageCPULoad1m = new client.Gauge({
+  name: 'load_duration_1m',
+  help: 'Average Load duration 1m',
+});
+
+const guageCPULoad5m = new client.Gauge({
+  name: 'load_duration_5m',
+  help: 'Average Load duration 5m',
+});
+
+const guageCPULoad15m = new client.Gauge({
+  name: 'load_duration_15m',
+  help: 'Average Load duration 15m',
+});
+
+const guageCPUsage = new client.Gauge({
+  name: 'cpu_average_usage',
+  help: 'CPU usage percentage',
+});
+
+const guageMemoryUsage = new client.Gauge({
+  name: 'memory_usage',
+  help: 'Memory usage percentage',
+});
+
+const guageDiskRead = new client.Gauge({
+  name: 'disk_read_average_time',
+  help: 'Disk read average time per I/O (ms)',
+  labelNames: ['device'],
+});
+const guageDiskWrite = new client.Gauge({
+  name: 'disk_write_average_time',
+  help: 'Disk write average time per I/O (ms)',
+  labelNames: ['device'],
+});
+
+register.registerMetric(guageCPULoad1m);
+register.registerMetric(guageCPULoad5m);
+register.registerMetric(guageCPULoad15m);
+register.registerMetric(guageCPUsage);
+register.registerMetric(guageMemoryUsage);
+register.registerMetric(guageDiskRead);
+register.registerMetric(guageDiskWrite);
+
 async function setMetrics() {
-  collectDefaultMetrics({
-    app: 'node-exporter-2.0',
-    timeout: 10000,
-    gcDurationBuckets: [1, 2, 5, 7, 9],
-    register,
-  });
 
-  register.registerMetric(
-    new client.Gauge({
-      name: 'load_duration_1m',
-      help: 'Average Load duration 1m',
-      collect() {
-        const load = os.loadavg()[0];
-        this.set(load);
-      },
-    }),
-  );
+  guageCPULoad1m.set(os.loadavg()[0]);
+  guageCPULoad5m.set(os.loadavg()[1]);
+  guageCPULoad15m.set(os.loadavg()[2]);
 
-  register.registerMetric(
-    new client.Gauge({
-      name: 'load_duration_5m',
-      help: 'Average Load duration 5m',
-      collect() {
-        const load = os.loadavg()[1];
-        this.set(load);
-      },
-    }),
-  );
+  const CPUsage = calculate.getCPUInfo();
+  guageCPUsage.set(CPUsage);
 
-  register.registerMetric(
-    new client.Gauge({
-      name: 'load_duration_15m',
-      help: 'Average Load duration 15m',
-      collect() {
-        const load = os.loadavg()[2];
-        this.set(load);
-      },
-    }),
-  );
-
-  register.registerMetric(
-    new client.Gauge({
-      name: 'cpu_average_usage',
-      help: 'CPU usage percentage',
-      collect() {
-        const CPUsage = calculate.getCPUInfo();
-        this.set(CPUsage);
-      },
-    }),
-  );
-
-  register.registerMetric(
-    new client.Gauge({
-      name: 'memory_usage',
-      help: 'Memory usage percentage',
-      collect() {
-        const memoryUsage = calculate.getMemoryUsage();
-
-        this.set(memoryUsage);
-      },
-    }),
-  );
+  const memoryUsage = calculate.getMemoryUsage();
+  guageMemoryUsage.set(memoryUsage);
 
   // disk info
-  const guageDiskRead = new client.Gauge({
-    name: 'disk_read_average_time',
-    help: 'Disk read average time per I/O (ms)',
-    labelNames: ['device'],
-  });
-  const guageDiskWrite = new client.Gauge({
-    name: 'disk_write_average_time',
-    help: 'Disk write average time per I/O (ms)',
-    labelNames: ['device'],
-  });
 
   const diskInfos = await calculate.getDiskInfo();
-  console.log(diskInfos);
   for (const info of diskInfos) {
     guageDiskRead.set({ device: info.diskDevice }, info.readAwait);
     guageDiskWrite.set({ device: info.diskDevice }, info.writeAwait);
 
   }
-
-  register.registerMetric(guageDiskRead);
-  register.registerMetric(guageDiskWrite);
 }
 
 app.get('/metrics', async (req, res) => {

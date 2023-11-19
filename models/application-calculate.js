@@ -21,6 +21,7 @@ export function getTotalRequest() {
     });
 
     lineReader.on('close', () => {
+      console.log(httpTotalRequest);
       resolve(httpTotalRequest);
     });
 

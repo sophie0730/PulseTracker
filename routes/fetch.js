@@ -17,7 +17,7 @@ router.route('/response').get(fetch.fetchResponse);
 
 router.route('/request-second').get(fetch.fetchRequestSecond);
 
-router.route('/cpu-load/:time').get(
+router.route('/cpu-load/:loadTime').get(
   param('time').isIn(['1', '5', '15']),
   fetch.fetchCPULoad,
 );
