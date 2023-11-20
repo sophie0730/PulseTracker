@@ -13,6 +13,24 @@ function getRandomColor() {
   return color;
 }
 
+const options = {
+  scales: {
+    x: {
+      type: 'time',
+      time: {
+        unit: 'minute',
+        stepSize: 30,
+        displayFormats: {
+          minute: 'HH:mm',
+        },
+      },
+      ticks: {
+        maxRotation: 0,
+      },
+    },
+  },
+};
+
 export async function getCPUChart(time) {
   const response = await fetch(`/api/1.0/cpu?time=${time}`);
   const cpus = await response.json();
@@ -36,23 +54,7 @@ export async function getCPUChart(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -79,23 +81,7 @@ export async function getMemoryChart(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -132,23 +118,7 @@ export async function getDiskReadChart(time) {
       labels: rawData.map((entry) => entry._time),
       datasets,
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -185,23 +155,7 @@ export async function getDiskWriteChart(time) {
       labels: rawData.map((entry) => entry._time),
       datasets,
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -228,23 +182,7 @@ export async function getTotalRequestChart(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -320,23 +258,7 @@ export async function getRequestSecondChart(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            // unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -362,23 +284,7 @@ export async function getCPULoad1m(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -404,23 +310,7 @@ export async function getCPULoad5m(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }
 
@@ -446,22 +336,6 @@ export async function getCPULoad15m(time) {
         pointHoverRadius: 7,
       }],
     },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-      },
-    },
+    options,
   });
 }

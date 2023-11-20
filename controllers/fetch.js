@@ -1,6 +1,10 @@
 import { BUCKET } from '../utils/influxdb-utils.js';
 import { fetchData } from '../models/fetch.js';
 
+const GROUP_BY_CLAUSE = `
+|> aggregateWindow(every: 30m, fn: mean)
+`;
+
 export async function fetchCPU(req, res) {
   try {
     const { time } = req.query;
@@ -8,11 +12,9 @@ export async function fetchCPU(req, res) {
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "cpu_average_usage")`;
 
-    // if (!time.includes('s')) {
-    //   fluxQuery += `
-    //   |> aggregateWindow(every: 1h, fn: mean)
-    //   `;
-    // }
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -28,11 +30,9 @@ export async function fetchMemory(req, res) {
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "memory_usage")`;
 
-    // if (!time.includes('s')) {
-    //   fluxQuery += `
-    //   |> aggregateWindow(every: 30m, fn: mean)
-    //   `;
-    // }
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -51,11 +51,9 @@ export async function fetchDisk(req, res) {
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "disk_${type}_average_time")`;
 
-    // if (!time.includes('s')) {
-    //   fluxQuery += `
-    //   |> aggregateWindow(every: 1h, fn: mean)
-    //   `;
-    // }
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -67,9 +65,13 @@ export async function fetchDisk(req, res) {
 export async function fetchHttpRequest(req, res) {
   try {
     const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
+    let fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "http_total_requests")`;
+
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -81,11 +83,15 @@ export async function fetchHttpRequest(req, res) {
 export async function fetchResponse(req, res) {
   try {
     const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
+    let fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "max_response_time")
     |> last()
     `;
+
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -97,9 +103,13 @@ export async function fetchResponse(req, res) {
 export async function fetchRequestSecond(req, res) {
   try {
     const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
+    let fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "request_per_second")`;
+
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -116,11 +126,9 @@ export async function fetchCPULoad(req, res) {
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "load_duration_${loadTime}m")`;
 
-    // if (!time.includes('s')) {
-    //   fluxQuery += `
-    //   |> aggregateWindow(every: 1h, fn: mean)
-    //   `;
-    // }
+    if (!time.includes('s')) {
+      fluxQuery += GROUP_BY_CLAUSE;
+    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
