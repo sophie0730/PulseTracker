@@ -1,7 +1,7 @@
 import { InfluxDB } from '@influxdata/influxdb-client';
 import {
   INFLUXDB_URL, TOKEN, ORG,
-} from '../utils/influxdb-utils.js';
+} from '../utils/influxdb-util.js';
 
 export async function fetchData(fluxQuery) {
   const client = new InfluxDB({ url: INFLUXDB_URL, token: TOKEN });

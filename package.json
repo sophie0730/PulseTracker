@@ -21,7 +21,9 @@
     "express-validator": "^7.0.1",
     "moment": "^2.29.4",
     "nodemon": "^3.0.1",
-    "prom-client": "^15.0.0"
+    "prom-client": "^15.0.0",
+    "redis": "^4.6.10",
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
     "eslint": "^8.53.0",

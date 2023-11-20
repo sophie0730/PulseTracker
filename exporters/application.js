@@ -6,7 +6,7 @@ import cors from 'cors';
 import * as client from 'prom-client';
 import moment from 'moment';
 import * as calculate from '../models/application-calculate.js';
-import { BUCKET } from '../utils/influxdb-utils.js';
+import { BUCKET } from '../utils/influxdb-util.js';
 import { fetchData } from '../models/fetch.js';
 
 const app = express();

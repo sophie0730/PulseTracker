@@ -20,7 +20,7 @@ function scheduleStoreAppData() {
     })
     .catch((error) => {
       console.error(error);
-      setTimeout(storeApplicationData, TIMEOUT);
+      setTimeout(scheduleStoreAppData, TIMEOUT);
     });
 }
 
