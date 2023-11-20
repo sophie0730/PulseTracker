@@ -4,7 +4,10 @@
 import express from 'express';
 import cors from 'cors';
 import * as client from 'prom-client';
+import moment from 'moment';
 import * as calculate from '../models/application-calculate.js';
+import { BUCKET } from '../utils/influxdb-utils.js';
+import { fetchData } from '../models/fetch.js';
 
 const app = express();
 app.use(express.json());
@@ -54,10 +57,22 @@ async function setMetrics() {
     }
   }
 
+  const fluxQuery = `from(bucket: "${BUCKET}")
+  |> range(start: -1d)
+  |> filter(fn: (r) => r.item == "request_per_second")
+  |> last()
+  `;
+  const lastData = await fetchData(fluxQuery);
+  const lastTime = lastData[0]._time;
+  console.log(lastTime);
+  const unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix() * 1e9;
+  console.log(unixLastTime);
   const requestsPerSecond = await calculate.getRequestPerSecond();
-  for (const request in requestsPerSecond) {
-    const count = requestsPerSecond[request];
-    guageRequestPerSecond.set({ time: request }, count);
+  for (const second in requestsPerSecond) {
+    const count = requestsPerSecond[second];
+    // 和db最後一筆比對
+    if (second <= unixLastTime) continue;
+    guageRequestPerSecond.set({ time: second }, count);
   }
 }
 

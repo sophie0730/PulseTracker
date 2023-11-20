@@ -25,7 +25,6 @@ export async function storeSystemData() {
 
 export async function storeApplicationData() {
   const appMetrics = await getMetrics(APPLICATION_URL);
-  console.log(DB_START_DATE);
 
   const appInflux = appMetrics.map((item) => {
     let timestamp = Date.now() * 1e6;
@@ -34,7 +33,7 @@ export async function storeApplicationData() {
     if (item.label.startsWith('time=')) {
       const timeStr = item.label;
       const match = timeStr.match(/time="(\d+)"/);
-      timestamp = (match) ? match[1] * 1e6 : Date.now * 1e6;
+      timestamp = (match) ? match[1] * 1e9 : Date.now * 1e6; // 從reqpest per second 過來的時間是秒級，Date.now()是毫秒級
     }
 
     if (timestamp < DB_START_DATE) {

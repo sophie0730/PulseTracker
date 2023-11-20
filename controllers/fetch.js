@@ -4,9 +4,15 @@ import { fetchData } from '../models/fetch.js';
 export async function fetchCPU(req, res) {
   try {
     const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
+    let fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "cpu_average_usage")`;
+
+    // if (!time.includes('s')) {
+    //   fluxQuery += `
+    //   |> aggregateWindow(every: 1h, fn: mean)
+    //   `;
+    // }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -18,9 +24,15 @@ export async function fetchCPU(req, res) {
 export async function fetchMemory(req, res) {
   try {
     const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time}h)
+    let fluxQuery = `from(bucket: "${BUCKET}")
+    |> range(start: -${time})
     |> filter(fn: (r) => r.item == "memory_usage")`;
+
+    // if (!time.includes('s')) {
+    //   fluxQuery += `
+    //   |> aggregateWindow(every: 30m, fn: mean)
+    //   `;
+    // }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -35,9 +47,15 @@ export async function fetchDisk(req, res) {
     const { type } = req.params;
     const { time } = req.query;
     // const { device } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
+    let fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "disk_${type}_average_time")`;
+
+    // if (!time.includes('s')) {
+    //   fluxQuery += `
+    //   |> aggregateWindow(every: 1h, fn: mean)
+    //   `;
+    // }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -93,9 +111,15 @@ export async function fetchCPULoad(req, res) {
   try {
     const { time } = req.query;
     const { loadTime } = req.params;
-    const fluxQuery = `from(bucket: "${BUCKET}")
+    let fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "load_duration_${loadTime}m")`;
+
+    // if (!time.includes('s')) {
+    //   fluxQuery += `
+    //   |> aggregateWindow(every: 1h, fn: mean)
+    //   `;
+    // }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
