@@ -4,7 +4,10 @@
 import express from 'express';
 import cors from 'cors';
 import * as client from 'prom-client';
+import moment from 'moment';
 import * as calculate from '../models/application-calculate.js';
+import { BUCKET } from '../utils/influxdb-util.js';
+import { fetchData } from '../models/fetch.js';
 
 const app = express();
 app.use(express.json());
@@ -13,32 +16,39 @@ app.use(cors());
 const register = new client.Registry();
 const { collectDefaultMetrics } = client;
 
-async function setMetrics() {
-  collectDefaultMetrics({
-    app: 'node-exporter-2.0',
-    timeout: 10000,
-    gcDurationBuckets: [1, 2, 5, 7, 9],
-    register,
-  });
+collectDefaultMetrics({
+  app: 'node-exporter-2.0',
+  timeout: 10000,
+  gcDurationBuckets: [1, 2, 5, 7, 9],
+  register,
+});
 
-  register.registerMetric(
-    new client.Gauge({
-      name: 'http_total_requests',
-      help: 'http total request',
-      async collect() {
-        const totalRequest = await calculate.getTotalRequest();
-        this.set(totalRequest);
-      },
-    }),
-  );
+const httpTotalRequest = new client.Gauge({
+  name: 'http_total_requests',
+  help: 'http total request',
+});
+
+const guageRequestPerSecond = new client.Gauge({
+  name: 'request_per_second',
+  help: 'Request per second',
+  labelNames: ['time'],
+});
+
+const guageResponseTime = new client.Gauge({
+  name: 'max_response_time',
+  help: 'max response time',
+  labelNames: ['api'],
+});
+
+register.registerMetric(httpTotalRequest);
+register.registerMetric(guageResponseTime);
+register.registerMetric(guageRequestPerSecond);
+
+async function setMetrics() {
+  const totalRequest = await calculate.getTotalRequest();
+  httpTotalRequest.set(totalRequest);
 
   const apiResponseTimes = await calculate.getResponseTime();
-
-  const guageResponseTime = new client.Gauge({
-    name: 'max_response_time',
-    help: 'max response time',
-    labelNames: ['api'],
-  });
 
   for (const api in apiResponseTimes) {
     const data = apiResponseTimes[api];
@@ -47,30 +57,35 @@ async function setMetrics() {
     }
   }
 
-  const guageRequestPerSecond = new client.Gauge({
-    name: 'request_per_second',
-    help: 'Request per second',
-    labelNames: ['time'],
-  });
-
+  const fluxQuery = `from(bucket: "${BUCKET}")
+  |> range(start: -1d)
+  |> filter(fn: (r) => r.item == "request_per_second")
+  |> last()
+  `;
+  const lastData = await fetchData(fluxQuery);
+  const lastTime = lastData[0]._time;
+  console.log(lastTime);
+  const unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
+  console.log(unixLastTime);
   const requestsPerSecond = await calculate.getRequestPerSecond();
-  for (const request in requestsPerSecond) {
-    const count = requestsPerSecond[request];
-    guageRequestPerSecond.set({ time: request }, count);
+  for (const second in requestsPerSecond) {
+    const count = requestsPerSecond[second];
+    // 和db最後一筆比對
+    console.log(second);
+    if (second <= unixLastTime) continue;
+    guageRequestPerSecond.set({ time: second }, count);
   }
-
-  register.registerMetric(guageResponseTime);
-  register.registerMetric(guageRequestPerSecond);
 }
 
-setMetrics().then(() => {
-  console.log('Metrics has been set up');
-})
-  .catch((error) => console.error(error));
-
 app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', register.contentType);
-  res.send(await register.metrics());
+  try {
+    await setMetrics();
+    res.set('Content-Type', register.contentType);
+    res.send(await register.metrics());
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error setting up metrics');
+  }
 });
 
 app.listen(9101, () => {
