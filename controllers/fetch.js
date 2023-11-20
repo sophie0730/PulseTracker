@@ -83,7 +83,9 @@ export async function fetchResponse(req, res) {
     const { time } = req.query;
     const fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "max_response_time")`;
+    |> filter(fn: (r) => r.item == "max_response_time")
+    |> last()
+    `;
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -92,13 +94,12 @@ export async function fetchResponse(req, res) {
   }
 }
 
-// TBD
 export async function fetchRequestSecond(req, res) {
   try {
     const { time } = req.query;
     const fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "")`;
+    |> filter(fn: (r) => r.item == "request_per_second")`;
 
     const data = await fetchData(fluxQuery);
     res.json(data);

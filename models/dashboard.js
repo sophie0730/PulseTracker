@@ -9,9 +9,9 @@ async function getDashboard() {
     chart.getTotalRequestChart('3h'),
     chart.getMaxResponseChart('3h'),
     chart.getCPULoad1m('3h'),
-    chart.getCPULoad1m('3h'),
     chart.getCPULoad5m('3h'),
     chart.getCPULoad15m('3h'),
+    chart.getRequestSecondChart('3h'),
   ]);
 }
 

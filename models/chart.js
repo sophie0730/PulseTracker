@@ -2,6 +2,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-undef */
 /* eslint-disable no-new */
+import { mergeSort } from './sort.js';
+
 function getRandomColor() {
   const letters = '0123456789ABCDEF';
   let color = '#';
@@ -259,25 +261,64 @@ export async function getMaxResponseChart(time) {
   }, {});
 
   const groupKeys = Object.keys(groupData);
-  const datasets = groupKeys.map((api) => {
-    return {
-      label: `API: ${api}`,
-      data: groupData[api].map((entry) => entry._value),
-      fill: false,
-      backgroundColor: getRandomColor(),
-      borderWidth: 3,
-      pointRadius: 3,
-      pointHoverRadius: 7,
-    };
-  });
+
+  const data = groupKeys.map((api) => groupData[api].map((entry) => { return { api: entry.api, value: entry._value }; }));
+  const parsedData = data.map((item) => item[0]);
+  //  data.value 從大排到小, merging sort
+  const sortedData = mergeSort(parsedData);
+
+  const sortedValues = sortedData.map((item) => item.value);
+  const sortedKeys = sortedData.map((item) => item.api);
 
   const ctx = document.getElementById('maxResponseChart');
+  const backgroundColors = [];
+  for (let i = 0; i < groupKeys.length; i++) {
+    backgroundColors.push(getRandomColor());
+  }
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sortedKeys,
+      datasets: [{
+        label: '# of APIs',
+        data: sortedValues,
+        backgroundColor: backgroundColors,
+
+      }],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getRequestSecondChart(time) {
+  const response = await fetch(`/api/1.0/request-second?time=${time}`);
+  const data = await response.json();
+  const times = data.map((entry) => entry._time);
+  const values = data.map((entry) => entry._value);
+
+  const ctx = document.getElementById('requestSecondChart');
 
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: rawData.map((entry) => entry._time),
-      datasets,
+      labels: times,
+      datasets: [{
+        label: 'Request Per Second',
+        data: values,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 3,
+        lineTension: 0,
+        pointRadius: 3,
+        pointHoverRadius: 7,
+      }],
     },
     options: {
       scales: {

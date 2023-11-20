@@ -65,12 +65,13 @@ async function setMetrics() {
   const lastData = await fetchData(fluxQuery);
   const lastTime = lastData[0]._time;
   console.log(lastTime);
-  const unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix() * 1e9;
+  const unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
   console.log(unixLastTime);
   const requestsPerSecond = await calculate.getRequestPerSecond();
   for (const second in requestsPerSecond) {
     const count = requestsPerSecond[second];
     // 和db最後一筆比對
+    console.log(second);
     if (second <= unixLastTime) continue;
     guageRequestPerSecond.set({ time: second }, count);
   }
