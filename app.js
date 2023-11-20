@@ -1,30 +1,63 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable import/no-extraneous-dependencies */
 import express from 'express';
 import cors from 'cors';
-import axios from 'axios';
-import { parsePrometheusMetrics } from './models/parse.js';
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import fetchRouter from './routes/fetch.js';
+import dashboardRouter from './routes/dashboard.js';
+import { client, SOCKET_KEY } from './utils/redis-util.js';
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const viewPath = path.join(__dirname, 'views');
+const modelPath = path.join(__dirname, 'models');
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(viewPath));
+app.use(express.static(modelPath));
 
-const SYSTEM_URL = 'http://172.21.73.153:9100/metrics';
-const APPLICATION_URL = 'http://172.21.73.153:9101/metrics';
+app.use(dashboardRouter);
+app.use('/api/1.0', fetchRouter);
 
-app.get('/metrics', async (req, res) => {
-  try {
-    const systemResponse = await axios.get(SYSTEM_URL);
-    const parseSystem = parsePrometheusMetrics(systemResponse.data);
-    const applicationResponse = await axios.get(APPLICATION_URL);
-    const parseApplication = parsePrometheusMetrics(applicationResponse.data);
-    const parseMetrics = parseSystem.concat(parseApplication);
-
-    res.send(parseMetrics);
-  } catch (error) {
-    console.error(error);
-  }
+// socket io
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+  allowEIO3: true,
 });
 
-app.listen(4000, () => {
-  console.log('Port is opening on 4000');
+io.on('connection', () => {
+  console.log('connected');
+});
+
+async function messageQueue() {
+  while (true) {
+    try {
+      const { element } = await client.blPop(SOCKET_KEY, 0);
+      if (element !== undefined) {
+        io.emit('dataUpdate', () => {
+          console.log('data is updated');
+        });
+      }
+    } catch (error) {
+      await client.connect();
+      continue;
+    }
+  }
+}
+messageQueue();
+
+export { io };
+export default { io };
+
+server.listen(4000, () => {
+  console.log('Server is running on port 4000');
 });
