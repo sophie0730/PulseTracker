@@ -374,7 +374,11 @@ export async function getCPULoad1m(time) {
 
 export async function getCPULoad5m(time) {
   const chartId = 'CpuLoad_5m';
+<<<<<<< HEAD:client/src/script/chart.js
   const response = await fetch(`/api/1.0/cpu-load/5?time=${time}`);
+=======
+  const response = await fetch(`api/1.0/cpu-load/5?time=${time}`);
+>>>>>>> a1a43a55 (feat: add socket io to refersh dashboard automatically):models/chart.js
   const loads = await response.json();
   const times = loads.map((load) => load._time);
   const values = loads.map((load) => load._value);
@@ -406,7 +410,11 @@ export async function getCPULoad5m(time) {
 
 export async function getCPULoad15m(time) {
   const chartId = 'CpuLoad_15m';
+<<<<<<< HEAD:client/src/script/chart.js
   const response = await fetch(`/api/1.0/cpu-load/15?time=${time}`);
+=======
+  const response = await fetch(`api/1.0/cpu-load/15?time=${time}`);
+>>>>>>> a1a43a55 (feat: add socket io to refersh dashboard automatically):models/chart.js
   const loads = await response.json();
   const times = loads.map((load) => load._time);
   const values = loads.map((load) => load._value);
