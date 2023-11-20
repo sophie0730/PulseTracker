@@ -3,7 +3,8 @@ import axios from 'axios';
 import { getMetrics } from './parse.js';
 import {
   MEASUREMENT, TOKEN, WRITE_API_URL, DB_START_DATE, SYSTEM_URL, APPLICATION_URL,
-} from '../utils/influxdb-utils.js';
+} from '../utils/influxdb-util.js';
+import { client, SOCKET_KEY } from '../utils/redis-util.js';
 
 export async function storeSystemData() {
   const systemMetrics = await getMetrics(SYSTEM_URL);
@@ -18,9 +19,16 @@ export async function storeSystemData() {
   // eslint-disable-next-line quote-props
     headers: { 'Authorization': `Token ${TOKEN}` },
   })
-    .then(() => console.log('writing system db successfully!'))
-    .catch((error) => console.error(error));
-
+    .then(() => {
+      console.log('writing system db successfully!');
+      if (client.isReady) {
+        client.rPush(SOCKET_KEY, 'data update');
+        console.log('socket message sent');
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 export async function storeApplicationData() {
@@ -46,6 +54,12 @@ export async function storeApplicationData() {
   // eslint-disable-next-line quote-props
     headers: { 'Authorization': `Token ${TOKEN}` },
   })
-    .then(() => console.log('writing app db successfully!'))
+    .then(() => {
+      console.log('writing app db successfully!');
+      if (client.isReady) {
+        client.rPush(SOCKET_KEY, 'data update');
+        console.log('socket message sent');
+      }
+    })
     .catch((error) => console.error(error));
 }

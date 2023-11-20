@@ -1,9 +1,10 @@
-import { BUCKET } from '../utils/influxdb-utils.js';
+import { BUCKET } from '../utils/influxdb-util.js';
 import { fetchData } from '../models/fetch.js';
 
-const GROUP_BY_CLAUSE = `
-|> aggregateWindow(every: 30m, fn: mean)
-`;
+// const GROUP_BY_CLAUSE = `
+// |> aggregateWindow(every: 10s, fn: mean)
+// `;
+const GROUP_BY_CLAUSE = '';
 
 export async function fetchCPU(req, res) {
   try {
@@ -83,15 +84,11 @@ export async function fetchHttpRequest(req, res) {
 export async function fetchResponse(req, res) {
   try {
     const { time } = req.query;
-    let fluxQuery = `from(bucket: "${BUCKET}")
+    const fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "max_response_time")
     |> last()
     `;
-
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
@@ -103,13 +100,9 @@ export async function fetchResponse(req, res) {
 export async function fetchRequestSecond(req, res) {
   try {
     const { time } = req.query;
-    let fluxQuery = `from(bucket: "${BUCKET}")
+    const fluxQuery = `from(bucket: "${BUCKET}")
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "request_per_second")`;
-
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
 
     const data = await fetchData(fluxQuery);
     res.json(data);
