@@ -4,19 +4,19 @@ export function Header() {
       <div className="header">
         <div className="header-left">
           <div className="logo">
-            <a href="/index.html">
+            <a href="/graph">
               <img src="./images/logo.png"></img>
             </a>
           </div>
           <div className="nav-bar">
-            <a href="#" className="bar-link">
+            <a href="/alert" className="bar-link">
               Alerts
             </a>
             <a href="/graph" className="bar-link">
               Graph
             </a>
-            <a href="#" className="bar-link">
-              Status
+            <a href="/target" className="bar-link">
+              Targets
             </a>
           </div>
         </div>
