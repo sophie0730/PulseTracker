@@ -2,16 +2,16 @@ import * as chart from './chart.js';
 
 async function getDashboard() {
   await Promise.all([
-    chart.getCPUChart('1h'),
-    chart.getMemoryChart('1h'),
-    chart.getDiskReadChart('1h'),
-    chart.getDiskWriteChart('1h'),
-    chart.getTotalRequestChart('1h'),
+    chart.getCPUChart('30m'),
+    chart.getMemoryChart('30m'),
+    chart.getDiskReadChart('30m'),
+    chart.getDiskWriteChart('30m'),
+    chart.getTotalRequestChart('30m'),
     chart.getMaxResponseChart('14d'),
-    chart.getCPULoad1m('1h'),
-    chart.getCPULoad5m('1h'),
-    chart.getCPULoad15m('1h'),
-    chart.getRequestSecondChart('1h'),
+    chart.getCPULoad1m('30m'),
+    chart.getCPULoad5m('30m'),
+    chart.getCPULoad15m('30m'),
+    chart.getRequestSecondChart('30m'),
   ]);
 }
 
@@ -47,7 +47,8 @@ socket.on('connect', () => {
 });
 socket.on('dataUpdate', async () => {
   console.log('client received');
-  await updateDashboard();
+  const selectedTimeRange = document.getElementById('timeRangeSelect').value;
+  await updateDashboard(selectedTimeRange);
 });
 socket.on('error', (err) => {
   console.error('Connection Error:', err);

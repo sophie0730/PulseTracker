@@ -8,10 +8,12 @@ export function Graph() {
           <option value="2h">2 hour</option>
           <option value="3h">3 hour</option>
         </select>
-        <button onClick={window.updateTimeRange}>Send</button>
+        <button id="timeBtn" onClick={window.updateTimeRange}>
+          Send
+        </button>
       </div>
       <div className="charts">
-        <div className="chart-wrap">
+        <div className="chartWrap">
           <div className="chart">
             <h3>CPU Average Usage</h3>
             <canvas id="cpuUsageChart"></canvas>
@@ -49,7 +51,7 @@ export function Graph() {
             <canvas id="requestSecondChart"></canvas>
           </div>
         </div>
-        <div className="chart-bar">
+        <div className="chartBar">
           <h3>Max response time per API (ms)</h3>
           <canvas id="maxResponseChart"></canvas>
         </div>
