@@ -15,7 +15,7 @@ async function getDashboard() {
   ]);
 }
 
-async function updateDashboard(timeRange) {
+export async function updateDashboard(timeRange) {
   await Promise.all([
     chart.getCPUChart(timeRange),
     chart.getMemoryChart(timeRange),
@@ -28,30 +28,26 @@ async function updateDashboard(timeRange) {
     chart.getRequestSecondChart(timeRange),
   ]);
 }
-// socket for auto generation page
-const SOCKET_URL = 'http://localhost:4000';
 
-window.updateTimeRange = async function() {
-  const selectedTimeRange = document.getElementById('timeRangeSelect').value;
-  console.log(selectedTimeRange);
-  await updateDashboard(selectedTimeRange);
-};
+// socket for auto generation page
+// const SOCKET_URL = 'http://localhost:4000';
 
 // eslint-disable-next-line no-undef
-const socket = io(SOCKET_URL, {
-  withCredentials: true,
-});
+// const socket = io(SOCKET_URL, {
+//   withCredentials: true,
+// });
 
-socket.on('connect', () => {
-  console.log('connected');
-});
-socket.on('dataUpdate', async () => {
-  console.log('client received');
-  const selectedTimeRange = document.getElementById('timeRangeSelect').value;
-  await updateDashboard(selectedTimeRange);
-});
-socket.on('error', (err) => {
-  console.error('Connection Error:', err);
-});
+// socket.on('connect', () => {
+//   console.log('connected');
+// });
+// socket.on('dataUpdate', async () => {
+//   console.log('client received');
+//   await updateDashboard(selectedTimeRange);
+// });
+// socket.on('error', (err) => {
+//   console.error('Connection Error:', err);
+// });
 
-await getDashboard();
+getDashboard();
+
+export default updateDashboard;
