@@ -49,6 +49,7 @@ export async function storeApplicationData() {
     }
     return `${MEASUREMENT},item=${item.metricName}${tags ? ',' + tags : ''} ${fields} ${timestamp}`;
   }).filter((item) => item !== null).join('\n');
+  console.log(appInflux);
 
   await axios.post(WRITE_API_URL, appInflux, {
   // eslint-disable-next-line quote-props
