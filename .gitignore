@@ -4,4 +4,4 @@ nohup.out
 
 .eslintrc.json
 
-/node_modules
+server/node_modules
