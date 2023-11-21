@@ -48,7 +48,6 @@ async function messageQueue() {
         });
       }
     } catch (error) {
-      await client.connect();
       continue;
     }
   }
