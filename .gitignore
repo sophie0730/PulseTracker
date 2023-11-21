@@ -5,3 +5,5 @@ nohup.out
 .eslintrc.json
 
 server/node_modules
+
+dist/
