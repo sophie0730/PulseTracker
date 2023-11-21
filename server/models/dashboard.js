@@ -14,6 +14,20 @@ async function getDashboard() {
     chart.getRequestSecondChart('1h'),
   ]);
 }
+
+async function updateDashboard() {
+  await Promise.all([
+    chart.getCPUChart('1h'),
+    chart.getMemoryChart('1h'),
+    chart.getDiskReadChart('1h'),
+    chart.getDiskWriteChart('1h'),
+    chart.getTotalRequestChart('1h'),
+    chart.getCPULoad1m('1h'),
+    chart.getCPULoad5m('1h'),
+    chart.getCPULoad15m('1h'),
+    chart.getRequestSecondChart('1h'),
+  ]);
+}
 // socket for auto generation page
 const SOCKET_URL = 'http://localhost:4000';
 
@@ -27,7 +41,7 @@ socket.on('connect', () => {
 });
 socket.on('dataUpdate', async () => {
   console.log('client received');
-  await getDashboard();
+  await updateDashboard();
 });
 socket.on('error', (err) => {
   console.error('Connection Error:', err);
