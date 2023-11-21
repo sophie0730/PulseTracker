@@ -1,0 +1,20 @@
+.chartWrap {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.chart {
+  flex: 1 1 50%;
+}
+
+
+.times {
+  margin-left: 1rem;
+  margin-top: 2rem;
+}
+#timeRangeSelect {
+  font-size: 1rem;
+  width: 10rem;
+}
