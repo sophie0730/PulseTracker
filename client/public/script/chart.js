@@ -7,12 +7,13 @@ import { mergeSort } from './sort.js';
 const apiUrl = 'http://localhost:4000';
 
 function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  const a = 0.5;
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+
 }
 
 const options = {
@@ -280,6 +281,8 @@ export async function getRequestSecondChart(time) {
   const data = await response.json();
   const times = data.map((entry) => entry._time);
   const values = data.map((entry) => entry._value);
+  console.log(times);
+  console.log(values);
 
   const ctx = document.getElementById('requestSecondChart');
 
@@ -287,22 +290,55 @@ export async function getRequestSecondChart(time) {
     charts[chartId].destroy();
   }
 
+  // charts[chartId] = new Chart(ctx, {
+  //   type: 'line',
+  //   data: {
+  //     labels: times,
+  //     datasets: [{
+  //       label: 'Request Per Second',
+  //       data: values,
+  //       backgroundColor: 'rgba(255, 99, 132, 0.2)',
+  //       borderColor: 'rgba(255, 99, 132, 1)',
+  //       borderWidth: 3,
+  //       lineTension: 0,
+  //       pointRadius: 0,
+  //       pointHoverRadius: 7,
+  //     }],
+  //   },
+  //   options,
+  // });
   charts[chartId] = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: times,
       datasets: [{
+        // labels: times,]
         label: 'Request Per Second',
         data: values,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
+        barThickness: 20,
       }],
     },
-    options,
+    options: {
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: 'minute',
+            // stepSize: 30,
+            displayFormats: {
+              minute: 'HH:mm',
+            },
+          },
+          ticks: {
+            maxRotation: 0,
+          },
+        },
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
   });
 }
 
