@@ -1,3 +1,4 @@
+/* eslint-disable no-inner-declarations */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable import/no-extraneous-dependencies */
 import express from 'express';
@@ -27,38 +28,40 @@ app.use(dashboardRouter);
 app.use('/api/1.0', fetchRouter);
 
 // socket io
-const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-  allowEIO3: true,
-});
 
-io.on('connection', () => {
-  console.log('connected');
-});
+if (client.isReady) {
+  const server = createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST'],
+    },
+    allowEIO3: true,
+  });
+  io.on('connection', () => {
+    console.log('connected');
+  });
 
-async function messageQueue() {
-  while (true) {
-    try {
-      const { element } = await client.blPop(SOCKET_KEY, 0);
-      if (element !== undefined) {
-        io.emit('dataUpdate', () => {
-          console.log('data is updated');
-        });
+  async function messageQueue() {
+    while (true) {
+      try {
+        const { element } = await client.blPop(SOCKET_KEY, 0);
+        if (element !== undefined) {
+          io.emit('dataUpdate', () => {
+            console.log('data is updated');
+          });
+        }
+      } catch (error) {
+        continue;
       }
-    } catch (error) {
-      continue;
     }
   }
+  messageQueue();
+  server.listen(4000, () => {
+    console.log('Server is running on port 4000');
+  });
+} else {
+  app.listen(4000, () => {
+    console.log('Server is running on port 4000');
+  });
 }
-messageQueue();
-
-export { io };
-export default { io };
-
-server.listen(4000, () => {
-  console.log('Server is running on port 4000');
-});

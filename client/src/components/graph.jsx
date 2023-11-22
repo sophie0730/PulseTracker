@@ -46,15 +46,15 @@ export function Graph() {
             <canvas id="diskWriteChart"></canvas>
           </div>
           <div className="chart">
-            <h3>CPU Average Load Time 1m</h3>
+            <h3>CPU Load Average 1m</h3>
             <canvas id="cpuLoad-1m"></canvas>
           </div>
           <div className="chart">
-            <h3>CPU Average Load Time 5m</h3>
+            <h3>CPU Load Average 5m</h3>
             <canvas id="cpuLoad-5m"></canvas>
           </div>
           <div className="chart">
-            <h3>CPU Average Load Time 15m</h3>
+            <h3>CPU Load Average 15m</h3>
             <canvas id="cpuLoad-15m"></canvas>
           </div>
           <div className="chart">
