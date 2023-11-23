@@ -1,8 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import redis from 'redis';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '/home/sophie/personal/.env' });
 
 // 往後要用aws 用這個
 // export const client = redis.createClient({
