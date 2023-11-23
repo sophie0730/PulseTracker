@@ -4,8 +4,6 @@
 /* eslint-disable no-new */
 import { mergeSort } from './sort.js';
 
-const apiUrl = 'http://localhost:4000';
-
 function getRandomColor() {
   const r = Math.floor(Math.random() * 256);
   const g = Math.floor(Math.random() * 256);
@@ -43,7 +41,7 @@ const charts = {};
 
 export async function getCPUChart(time) {
   const chartId = 'Cpu';
-  const response = await fetch(`${apiUrl}/api/1.0/cpu?time=${time}`);
+  const response = await fetch(`/api/1.0/cpu?time=${time}`);
   const cpus = await response.json();
   const times = cpus.map((cpu) => cpu._time);
   const values = cpus.map((cpu) => cpu._value);
@@ -74,7 +72,7 @@ export async function getCPUChart(time) {
 
 export async function getMemoryChart(time) {
   const chartId = 'Memory';
-  const response = await fetch(`${apiUrl}/api/1.0/memory?time=${time}`);
+  const response = await fetch(`/api/1.0/memory?time=${time}`);
   const memories = await response.json();
   const times = memories.map((memory) => memory._time);
   const values = memories.map((memory) => memory._value);
@@ -106,7 +104,7 @@ export async function getMemoryChart(time) {
 
 export async function getDiskReadChart(time) {
   const chartId = 'DiskRead';
-  const response = await fetch(`${apiUrl}/api/1.0/disk/read?time=${time}`);
+  const response = await fetch(`/api/1.0/disk/read?time=${time}`);
   const rawData = await response.json();
 
   const groupData = rawData.reduce((accumulator, entry) => {
@@ -149,7 +147,7 @@ export async function getDiskReadChart(time) {
 
 export async function getDiskWriteChart(time) {
   const chartId = 'DiskWrite';
-  const response = await fetch(`${apiUrl}/api/1.0/disk/write?time=${time}`);
+  const response = await fetch(`/api/1.0/disk/write?time=${time}`);
   const rawData = await response.json();
 
   const groupData = rawData.reduce((accumulator, entry) => {
@@ -192,7 +190,7 @@ export async function getDiskWriteChart(time) {
 
 export async function getTotalRequestChart(time) {
   const chartId = 'TotalRequest';
-  const response = await fetch(`${apiUrl}/api/1.0/request?time=${time}`);
+  const response = await fetch(`/api/1.0/request?time=${time}`);
   const memories = await response.json();
   const times = memories.map((memory) => memory._time);
   const values = memories.map((memory) => memory._value);
@@ -224,7 +222,7 @@ export async function getTotalRequestChart(time) {
 
 export async function getMaxResponseChart(time) {
   const chartId = 'MaxResponse';
-  const response = await fetch(`${apiUrl}/api/1.0/response?time=${time}`);
+  const response = await fetch(`/api/1.0/response?time=${time}`);
   const rawData = await response.json();
 
   const groupData = rawData.reduce((accumulator, entry) => {
@@ -277,7 +275,7 @@ export async function getMaxResponseChart(time) {
 
 export async function getRequestSecondChart(time) {
   const chartId = 'RequestSecond';
-  const response = await fetch(`${apiUrl}/api/1.0/request-second?time=${time}`);
+  const response = await fetch(`/api/1.0/request-second?time=${time}`);
   const data = await response.json();
   const times = data.map((entry) => entry._time);
   const values = data.map((entry) => entry._value);
@@ -344,7 +342,7 @@ export async function getRequestSecondChart(time) {
 
 export async function getCPULoad1m(time) {
   const chartId = 'CpuLoad_1m';
-  const response = await fetch(`${apiUrl}/api/1.0/cpu-load/1?time=${time}`);
+  const response = await fetch(`/api/1.0/cpu-load/1?time=${time}`);
   const loads = await response.json();
   const times = loads.map((load) => load._time);
   const values = loads.map((load) => load._value);
@@ -376,7 +374,7 @@ export async function getCPULoad1m(time) {
 
 export async function getCPULoad5m(time) {
   const chartId = 'CpuLoad_5m';
-  const response = await fetch(`${apiUrl}/api/1.0/cpu-load/5?time=${time}`);
+  const response = await fetch(`/api/1.0/cpu-load/5?time=${time}`);
   const loads = await response.json();
   const times = loads.map((load) => load._time);
   const values = loads.map((load) => load._value);
@@ -408,7 +406,7 @@ export async function getCPULoad5m(time) {
 
 export async function getCPULoad15m(time) {
   const chartId = 'CpuLoad_15m';
-  const response = await fetch(`${apiUrl}/api/1.0/cpu-load/15?time=${time}`);
+  const response = await fetch(`/api/1.0/cpu-load/15?time=${time}`);
   const loads = await response.json();
   const times = loads.map((load) => load._time);
   const values = loads.map((load) => load._value);
