@@ -63,10 +63,10 @@ async function setMetrics() {
   |> last()
   `;
   const lastData = await fetchData(fluxQuery);
+  if (lastData.length === 0) return;
+
   const lastTime = lastData[0]._time;
-  console.log(lastTime);
   const unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
-  console.log(unixLastTime);
   const requestsPerSecond = await calculate.getRequestPerSecond();
   for (const second in requestsPerSecond) {
     const count = requestsPerSecond[second];
