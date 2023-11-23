@@ -2,10 +2,7 @@
 /* eslint-disable padded-blocks */
 import * as fs from 'fs';
 import * as readline from 'readline';
-import dotenv from 'dotenv';
 import moment from 'moment';
-
-dotenv.config();
 
 const LOG_FILE_PATH = '/var/log/nginx/access.log';
 // let inputStream = fs.createReadStream(LOG_FILE_PATH);

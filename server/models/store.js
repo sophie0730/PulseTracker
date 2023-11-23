@@ -1,8 +1,9 @@
+/* eslint-disable import/first */
 /* eslint-disable prefer-template */
 import axios from 'axios';
 import { getMetrics } from './parse.js';
 import {
-  MEASUREMENT, TOKEN, WRITE_API_URL, DB_START_DATE, SYSTEM_URL, APPLICATION_URL,
+  SYSTEM_URL, WRITE_API_URL, TOKEN, APPLICATION_URL, MEASUREMENT, DB_START_DATE,
 } from '../utils/influxdb-util.js';
 import { client, SOCKET_KEY } from '../utils/redis-util.js';
 
@@ -49,7 +50,6 @@ export async function storeApplicationData() {
     }
     return `${MEASUREMENT},item=${item.metricName}${tags ? ',' + tags : ''} ${fields} ${timestamp}`;
   }).filter((item) => item !== null).join('\n');
-  console.log(appInflux);
 
   await axios.post(WRITE_API_URL, appInflux, {
   // eslint-disable-next-line quote-props

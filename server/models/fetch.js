@@ -1,11 +1,9 @@
 import { InfluxDB } from '@influxdata/influxdb-client';
-import {
-  INFLUXDB_URL, TOKEN, ORG,
-} from '../utils/influxdb-util.js';
+import * as influxUtils from '../utils/influxdb-util.js';
 
 export async function fetchData(fluxQuery) {
-  const client = new InfluxDB({ url: INFLUXDB_URL, token: TOKEN });
-  const queryClient = client.getQueryApi(ORG);
+  const client = new InfluxDB({ url: influxUtils.INFLUXDB_URL, token: influxUtils.TOKEN });
+  const queryClient = client.getQueryApi(influxUtils.ORG);
   const arr = [];
   const data = await new Promise((resolve, reject) => {
     queryClient.queryRows(fluxQuery, {

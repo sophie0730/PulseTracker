@@ -1,9 +1,12 @@
-import { storeSystemData, storeApplicationData } from '../models/store.js';
+import dotenv from 'dotenv';
+import * as store from '../models/store.js';
+
+dotenv.config();
 
 const TIMEOUT = 10000;
 
 function scheduleStoreSystemData() {
-  storeSystemData()
+  store.storeSystemData()
     .then(() => {
       setTimeout(scheduleStoreSystemData, TIMEOUT);
     })
@@ -14,7 +17,7 @@ function scheduleStoreSystemData() {
 }
 
 function scheduleStoreAppData() {
-  storeApplicationData()
+  store.storeApplicationData()
     .then(() => {
       setTimeout(scheduleStoreAppData, TIMEOUT);
     })
