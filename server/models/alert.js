@@ -1,8 +1,12 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
-import { BUCKET } from '../utils/influxdb-util.js';
+import axios from 'axios';
+import dotenv from 'dotenv';
 import { fetchData } from './fetch.js';
-import { storeAlert } from './store.js';
+
+dotenv.config();
+
+const WRITE_API_URL = `${process.env.INFLUXDB_URL}/api/v2/write?org=${process.env.ORG}&bucket=${process.env.BUCKET}&precision=ns`;
 
 function parseTime(durationStr) {
   const match = durationStr.match(/^(\d+)(m|s|h|d)$/);
@@ -38,6 +42,24 @@ function dateInterval(startTimeStr, endTimeStr) {
   return endTime - startTime;
 }
 
+async function storeAlert(groupName, alert) {
+  let influxQuery;
+  const timestamp = Date.now() * 1e6;
+  if (alert == null) {
+    influxQuery = `${process.env.ALERT_MEASUREMENT},item=${groupName} startTime="NA",isFiring="false" ${timestamp}`;
+  } else {
+    influxQuery = `${process.env.ALERT_MEASUREMENT},item=${groupName} startTime="${alert.startTime}",isFiring="${alert.isFiring}" ${timestamp}`;
+  }
+
+  await axios.post(WRITE_API_URL, influxQuery, {
+    headers: { Authorization: `Token ${process.env.TOKEN}` },
+  })
+    .then(() => {
+      console.log('writing alerting db successfully!');
+    })
+    .catch((error) => console.error(error));
+}
+
 export async function checkAlerts(alertStates, timeRange, alertFile) {
   try {
     const { groups } = alertFile;
@@ -48,7 +70,7 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       const group = groups[i];
       const duration = parseTime(group.rules[0].for);
 
-      const fluxQuery = `from(bucket: "${BUCKET}")
+      const fluxQuery = `from(bucket: "${process.env.BUCKET}")
       |> range(start: -${timeRange})
       |> filter(${group.rules[0].expr})`;
 
@@ -65,10 +87,10 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       }
 
       if (!alertStates[group.name]) {
-        alertStates[group.name] = { startTime: data[0]._time, isFiring: false };
+        alertStates[group.name] = { startTime: data[0]._time, isFiring: 'pending' };
         storeAlert(group.name, alertStates[group.name]);
       } else if (dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time) >= duration) {
-        alertStates[group.name].isFiring = true;
+        alertStates[group.name].isFiring = 'true';
         storeAlert(group.name, alertStates[group.name]);
       }
 
@@ -77,6 +99,16 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
   } catch (err) {
     console.log(err);
   }
+}
+
+export async function fetchAlerts(group) {
+  const fetchQuery = `from(bucket: ${process.env.BUCKET}
+  |> filter(fn: (r) => r._measurement == "${process.env.ALERT_MEASUREMENT}")
+  |> filter(fn: (r) => r.item == ${group.name})
+  |> last()
+  )
+  `;
+  console.log(fetchQuery);
 }
 
 export default { checkAlerts };
