@@ -64,3 +64,15 @@ export async function storeApplicationData() {
     })
     .catch((error) => console.error(error));
 }
+
+export async function storeAlert(groupName, alert) {
+  let influxQuery;
+  const timestamp = Date.now() * 1e6;
+  if (alert == null) {
+    influxQuery = `${MEASUREMENT},item=${groupName} startTime=null,isFiring=null ${timestamp}`;
+  } else {
+    influxQuery = `${MEASUREMENT},item=${groupName} startTime=${alert.startTime},isFiring=${alert.isFiring} ${timestamp}`;
+  }
+
+  console.log(influxQuery);
+}
