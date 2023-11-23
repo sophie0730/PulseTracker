@@ -1,12 +1,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
 import axios from 'axios';
-import dotenv from 'dotenv';
 import { fetchData } from './fetch.js';
-
-dotenv.config();
-
-const WRITE_API_URL = `${process.env.INFLUXDB_URL}/api/v2/write?org=${process.env.ORG}&bucket=${process.env.BUCKET}&precision=ns`;
+import * as influxUtils from '../utils/influxdb-util.js';
 
 function parseTime(durationStr) {
   const match = durationStr.match(/^(\d+)(m|s|h|d)$/);
@@ -46,13 +42,13 @@ async function storeAlert(groupName, alert) {
   let influxQuery;
   const timestamp = Date.now() * 1e6;
   if (alert == null) {
-    influxQuery = `${process.env.ALERT_MEASUREMENT},item=${groupName} startTime="NA",isFiring="false" ${timestamp}`;
+    influxQuery = `${influxUtils.ALERT_MEASUREMENT},item=${groupName} startTime="NA",isFiring="false" ${timestamp}`;
   } else {
-    influxQuery = `${process.env.ALERT_MEASUREMENT},item=${groupName} startTime="${alert.startTime}",isFiring="${alert.isFiring}" ${timestamp}`;
+    influxQuery = `${influxUtils.ALERT_MEASUREMENT},item=${groupName} startTime="${alert.startTime}",isFiring="${alert.isFiring}" ${timestamp}`;
   }
 
-  await axios.post(WRITE_API_URL, influxQuery, {
-    headers: { Authorization: `Token ${process.env.TOKEN}` },
+  await axios.post(influxUtils.WRITE_API_URL, influxQuery, {
+    headers: { Authorization: `Token ${influxUtils.TOKEN}` },
   })
     .then(() => {
       console.log('writing alerting db successfully!');
@@ -70,7 +66,7 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       const group = groups[i];
       const duration = parseTime(group.rules[0].for);
 
-      const fluxQuery = `from(bucket: "${process.env.BUCKET}")
+      const fluxQuery = `from(bucket: "${influxUtils.BUCKET}")
       |> range(start: -${timeRange})
       |> filter(${group.rules[0].expr})`;
 
@@ -101,14 +97,13 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
   }
 }
 
-export async function fetchAlerts(group) {
-  const fetchQuery = `from(bucket: ${process.env.BUCKET}
-  |> filter(fn: (r) => r._measurement == "${process.env.ALERT_MEASUREMENT}")
-  |> filter(fn: (r) => r.item == ${group.name})
+export async function fetchAlertStatus(group) {
+  const fetchAlertQuery = `from(bucket: "${influxUtils.BUCKET}")
+  |> range(start: -14d)
+  |> filter(fn: (r) => r._measurement == "${influxUtils.ALERT_MEASUREMENT}")
+  |> filter(fn: (r) => r.item == "${group.name}")
   |> last()
-  )
   `;
-  console.log(fetchQuery);
+  const alertStatus = await fetchData(fetchAlertQuery);
+  return alertStatus;
 }
-
-export default { checkAlerts };
