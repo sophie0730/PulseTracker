@@ -13,11 +13,11 @@ export async function showAlerts(req, res) {
         // eslint-disable-next-line no-await-in-loop
         const alertStatus = await fetchAlertStatus(group);
 
-        const [groupIsFiring] = alertStatus.filter((status) => status._field === 'isFiring');
-        group.groupIsFiring = (groupIsFiring) ? groupIsFiring._value : undefined;
+        const [isFiring] = alertStatus.filter((status) => status._field === 'isFiring');
+        group.isFiring = (isFiring) ? isFiring._value : undefined;
 
-        const [groupStartTime] = alertStatus.filter((status) => status._field === 'startTime');
-        group.groupStartTime = (groupStartTime) ? groupStartTime._value : undefined;
+        const [startTime] = alertStatus.filter((status) => status._field === 'startTime');
+        group.startTime = (startTime) ? startTime._value : undefined;
 
         arr.push(group);
       }
