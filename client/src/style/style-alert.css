@@ -1,0 +1,85 @@
+.title {
+  margin-left: 1.5rem;
+}
+
+.alerts {
+  margin-left: 1.5rem;
+}
+
+#alertText {
+  white-space: pre-wrap;
+}
+
+.FIRING {
+  color: red;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.PENDING {
+  color: yellow;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.NORMAL {
+  color: green;
+  font-weight: bold;
+}
+
+.alerts {
+  margin: 2rem;
+}
+
+.alert {
+  margin-bottom: 2rem;
+}
+
+.rule {
+  background-color: #f2f2f2;
+  border-radius: 7px;
+  padding-left: 0.8rem;
+  font-size: 1.2rem;
+
+}
+
+.groupName {
+  font-size: 0.85rem;
+  border-radius: 7px;
+}
+
+.groupName h2 {
+  margin-left: 1rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+
+/* th {
+  background-color: #f2f2f2;
+} */
+
+.RED {
+  background-color: rgb(248,215,218);
+  border: 1px solid rgb(248,215,218);
+}
+
+.GREEN {
+  background-color: rgb(212,237,218);
+  border: 1px solid rgb(212,237,218);
+}
+
+.YELLOW {
+  background-color: rgb(255,243,205);
+  border: rgb(255,243,205);
+}
