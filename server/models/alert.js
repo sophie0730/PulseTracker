@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { fetchData } from './fetch.js';
 import * as influxUtils from '../utils/influxdb-util.js';
+import { sendEmail } from '../utils/email-util.js';
 
 function parseTime(durationStr) {
   const match = durationStr.match(/^(\d+)(m|s|h|d)$/);
@@ -88,6 +89,7 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       } else if (dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time) >= duration) {
         alertStates[group.name].isFiring = 'true';
         storeAlert(group.name, alertStates[group.name]);
+        sendEmail(group.name, group.rules[0].expr);
       }
 
     }
