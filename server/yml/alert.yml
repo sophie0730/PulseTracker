@@ -2,8 +2,8 @@ groups:
 - name: server_is_down
   rules:
   - alert: server_is_down
-    expr: 'fn: (r) => r.up == 0'
-    for: 1m
+    expr: 'fn: (r) => r.item == "up" and r._value == 0'
+    for: 30s
     annotations:
       summary: Server(s) are down.
 
