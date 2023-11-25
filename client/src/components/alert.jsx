@@ -36,6 +36,9 @@ function Target() {
         if (group.startTime === 'NA') {
           firingClass = 'NORMAL';
           backGroundClass = 'GREEN';
+        } else if (!group.startTime) {
+          firingClass = 'NOT_DETECTED';
+          backGroundClass = 'GREY';
         } else {
           firingClass = (group.isFiring === 'true') ? 'FIRING' : 'PENDING';
           backGroundClass = (group.isFiring === 'true') ? 'RED' : 'YELLOW';
