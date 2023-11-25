@@ -9,8 +9,8 @@ function AlertTitle() {
   );
 }
 
-function Target() {
-  const alertAPI = '/api/1.0/alert';
+function Alert() {
+  const alertAPI = 'http://localhost:4000/api/1.0/alert';
   const [alertStatus, setAlertStatus] = useState({});
 
   useEffect(() => {
@@ -19,18 +19,13 @@ function Target() {
         const alertObj = response.data;
         setAlertStatus(alertObj);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.error(error));
   }, []);
-
-  useEffect(() => {
-    console.log(alertStatus.groups);
-  }, [alertStatus]);
 
   // eslint-disable-next-line block-spacing, no-lone-blocks, no-unused-expressions
   return (
     <div className='alerts'>
       {alertStatus.groups && alertStatus.groups.map((group) => {
-        console.log(group);
         let firingClass = '';
         let backGroundClass = '';
         if (group.startTime === 'NA') {
@@ -43,6 +38,7 @@ function Target() {
           firingClass = (group.isFiring === 'true') ? 'FIRING' : 'PENDING';
           backGroundClass = (group.isFiring === 'true') ? 'RED' : 'YELLOW';
         }
+        const startTimeLocale = (group.startTime !== 'NA') ? new Date(group.startTime).toLocaleString() : 'NA';
         return (
             <div className='alert' key={group.name}>
               <div className={`groupName ${backGroundClass}`}>
@@ -67,7 +63,7 @@ function Target() {
                 <tbody>
                   <tr>
                     <td><span className={`state ${firingClass}`}>{firingClass}</span></td>
-                    <td><span className='startTime'>{group.startTime}</span></td>
+                    <td><span className='startTime'>{startTimeLocale}</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -82,7 +78,7 @@ export function AlertPanel() {
   return (
     <main>
       <AlertTitle />
-      <Target />
+      <Alert />
     </main>
   );
 }

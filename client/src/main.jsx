@@ -7,6 +7,7 @@ import App from './App.jsx';
 import './style/style-header.css';
 import './style/style-graph.css';
 import './style/style-alert.css';
+import './style/style-target.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
