@@ -53,8 +53,6 @@ function Target() {
                   alert: {group.rules[0].alert} <br />
                   expr: {group.rules[0].expr} <br />
                   for: {group.rules[0].for} <br />
-                  labels: <br />
-                  &nbsp;&nbsp;&nbsp;&nbsp;severity: {group.rules[0].labels.severity} <br />
                   annotations: <br />
                   &nbsp;&nbsp;&nbsp;&nbsp;summary: {group.rules[0].annotations.summary} <br />
                 </pre>
