@@ -27,5 +27,15 @@ function scheduleStoreAppData() {
     });
 }
 
+function scheduleStoreExporterStatus() {
+  store.storeExporterStatus()
+    .then(() => setTimeout(scheduleStoreExporterStatus, TIMEOUT))
+    .catch((error) => {
+      console.error(error);
+      setTimeout(scheduleStoreExporterStatus, TIMEOUT);
+    });
+}
+
 scheduleStoreSystemData();
 scheduleStoreAppData();
+scheduleStoreExporterStatus();

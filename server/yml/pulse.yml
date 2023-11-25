@@ -13,7 +13,7 @@ alerting:
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-   - "test.yml"
+   - "alert.yml"
   # - "second_rules.yml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
@@ -21,22 +21,21 @@ rule_files:
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: "prometheus"
-
+    scheme: http
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
-
     static_configs:
-      - targets: ["localhost:9090"]
+      targets: "localhost:4000"
 
-  - job_name: 'server'
+  - job_name: 'system'
     scheme: http
     static_configs:
-      - targets: ["localhost:9100"]
+      targets: "localhost:9100"
     metrics_path: '/metrics'
 
-  - job_name: 'nginx'
+  - job_name: 'nginx-application'
     scheme: http
     static_configs:
-      - targets: ["localhost:9113"]
+      targets: "localhost:9101"
     metrics_path: '/metrics'
 

@@ -2,10 +2,8 @@ groups:
 - name: server_is_down
   rules:
   - alert: server_is_down
-    expr: 'fn: (r) => r.up == 0'
-    for: 1m
-    labels:
-      severity: page
+    expr: 'fn: (r) => r.item == "up" and r._value == 0'
+    for: 30s
     annotations:
       summary: Server(s) are down.
 
@@ -14,7 +12,5 @@ groups:
   - alert: memory_is_30
     expr: 'fn: (r) => r.item == "memory_usage" and r._value > 30'
     for: 40s
-    labels:
-      severity: page
     annotations:
       summary: Memory usage rate > 30
