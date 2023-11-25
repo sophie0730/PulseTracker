@@ -21,6 +21,7 @@
     "express-validator": "^7.0.1",
     "js-yaml": "^4.1.0",
     "moment": "^2.29.4",
+    "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
     "prom-client": "^15.0.0",
     "redis": "^4.6.10",
