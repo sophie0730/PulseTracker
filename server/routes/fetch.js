@@ -22,4 +22,6 @@ router.route('/cpu-load/:loadTime').get(
   fetch.fetchCPULoad,
 );
 
+router.route('/targets').get(fetch.fetchTargets);
+
 export default router;
