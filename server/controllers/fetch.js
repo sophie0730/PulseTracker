@@ -1,4 +1,5 @@
-import { BUCKET } from '../utils/influxdb-util.js';
+import { BUCKET, MEASUREMENT } from '../utils/influxdb-util.js';
+import { serverUrlArr } from '../utils/yml-util.js';
 import { fetchData } from '../models/fetch.js';
 
 // const GROUP_BY_CLAUSE = `
@@ -128,5 +129,49 @@ export async function fetchCPULoad(req, res) {
   } catch (error) {
     console.error(error);
     res.json(error);
+  }
+}
+
+function createTargetQuery(bucket, measurment, targetHost, field) {
+  return `from(bucket: "${bucket}")
+  |> range(start: -14d)
+  |> filter(fn: (r) => r._measurement == "${measurment}")
+  |> filter(fn: (r) => r.item == "up")
+  |> filter(fn: (r) => r.target == "${targetHost}")
+  |> filter(fn: (r) => r._field == "${field}")
+  |> last()`;
+}
+
+function getTimeInterval(startTime, endTime) {
+  const nowDate = new Date(endTime);
+  const recordDate = new Date(startTime);
+  return (nowDate.getTime() - recordDate.getTime()) / 1000;
+}
+
+export async function fetchTargets(req, res) {
+  try {
+    const dataArr = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const item of serverUrlArr) {
+      const targetHost = item.static_configs.targets;
+
+      const fluxQuery = createTargetQuery(BUCKET, MEASUREMENT, targetHost, 'value');
+      const errorQuery = createTargetQuery(BUCKET, MEASUREMENT, targetHost, 'error');
+
+      const data = await fetchData(fluxQuery);
+      if (data[0]._value === 1) {
+        const lastScrape = getTimeInterval(data[0]._time, Date.now());
+        data[0].lastScrape = `${lastScrape}s ago`;
+        dataArr.push(data[0]);
+      } else {
+        const error = await fetchData(errorQuery);
+        const lastScrape = getTimeInterval(error[0]._time, Date.now());
+        error[0].lastScrape = `${lastScrape}s ago`;
+        dataArr.push(error[0]);
+      }
+    }
+    res.json(dataArr);
+  } catch (error) {
+    console.error(error);
   }
 }

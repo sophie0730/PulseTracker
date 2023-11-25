@@ -73,14 +73,18 @@ export async function storeExporterStatus() {
     // eslint-disable-next-line no-await-in-loop
     const targetUrl = `${targetProtocol}://${targetHost}${targetPath}`;
 
+    let errorResponse = '';
     const targetStatus = await axios.get(targetUrl)
       .then((response) => response.status)
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        errorResponse = error;
+        return null;
+      });
 
-    const up = (targetStatus === 200) ? 0 : 1;
+    const up = (targetStatus === 200) ? 1 : 0;
     const timestamp = Date.now() * 1e6;
-    const statusFlux = `${MEASUREMENT},item=up,target=${targetHost} value=${up} ${timestamp}`;
-    console.log(statusFlux);
+    const statusFlux = `${MEASUREMENT},item=up,target=${targetHost} value=${up},error="${errorResponse}"  ${timestamp}`;
     axios.post(WRITE_API_URL, statusFlux, {
       headers: { Authorization: `Token ${TOKEN}` },
     })
