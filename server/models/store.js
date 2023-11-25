@@ -5,6 +5,7 @@ import { getMetrics } from './parse.js';
 import {
   SYSTEM_URL, WRITE_API_URL, TOKEN, APPLICATION_URL, MEASUREMENT, DB_START_DATE,
 } from '../utils/influxdb-util.js';
+import { serverUrlArr } from '../utils/yml-util.js';
 import { client, SOCKET_KEY } from '../utils/redis-util.js';
 
 export async function storeSystemData() {
@@ -17,8 +18,7 @@ export async function storeSystemData() {
   }).join('\n');
 
   await axios.post(WRITE_API_URL, systemInflux, {
-  // eslint-disable-next-line quote-props
-    headers: { 'Authorization': `Token ${TOKEN}` },
+    headers: { Authorization: `Token ${TOKEN}` },
   })
     .then(() => {
       console.log('writing system db successfully!');
@@ -42,7 +42,7 @@ export async function storeApplicationData() {
     if (item.label.startsWith('time=')) {
       const timeStr = item.label;
       const match = timeStr.match(/time="(\d+)"/);
-      timestamp = (match) ? match[1] * 1e9 : Date.now * 1e6; // 從reqpest per second 過來的時間是秒級，Date.now()是毫秒級
+      timestamp = (match) ? match[1] * 1e9 : Date.now() * 1e6; // 從reqpest per second 過來的時間是秒級，Date.now()是毫秒級
     }
 
     if (timestamp < DB_START_DATE) {
@@ -52,8 +52,7 @@ export async function storeApplicationData() {
   }).filter((item) => item !== null).join('\n');
 
   await axios.post(WRITE_API_URL, appInflux, {
-  // eslint-disable-next-line quote-props
-    headers: { 'Authorization': `Token ${TOKEN}` },
+    headers: { Authorization: `Token ${TOKEN}` },
   })
     .then(() => {
       console.log('writing app db successfully!');
@@ -63,4 +62,28 @@ export async function storeApplicationData() {
       }
     })
     .catch((error) => console.error(error));
+}
+
+export async function storeExporterStatus() {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const item of serverUrlArr) {
+    const targetHost = item.static_configs.targets;
+    const targetProtocol = item.scheme;
+    const targetPath = (item.metrics_path === undefined) ? '' : item.metrics_path;
+    // eslint-disable-next-line no-await-in-loop
+    const targetUrl = `${targetProtocol}://${targetHost}${targetPath}`;
+
+    const targetStatus = await axios.get(targetUrl)
+      .then((response) => response.status)
+      .catch((error) => console.error(error));
+
+    const up = (targetStatus === 200) ? 0 : 1;
+    const timestamp = Date.now() * 1e6;
+    const statusFlux = `${MEASUREMENT},item=up,target=${targetHost} value=${up} ${timestamp}`;
+    console.log(statusFlux);
+    axios.post(WRITE_API_URL, statusFlux, {
+      headers: { Authorization: `Token ${TOKEN}` },
+    })
+      .catch((error) => console.error(error));
+  }
 }

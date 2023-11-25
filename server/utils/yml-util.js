@@ -15,4 +15,6 @@ export const alertFile = yaml.load(fs.readFileSync(alertFilePath), 'utf-8');
 
 //  email
 export const emailReceivers = configFile.alerting.static_configs.receivers;
+
 // server url
+export const serverUrlArr = configFile.scrape_configs;
