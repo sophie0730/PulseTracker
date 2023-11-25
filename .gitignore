@@ -7,3 +7,5 @@ nohup.out
 server/node_modules
 
 dist/
+
+yml/
