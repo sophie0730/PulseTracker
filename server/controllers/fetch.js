@@ -132,12 +132,12 @@ export async function fetchCPULoad(req, res) {
   }
 }
 
-function createTargetQuery(bucket, measurment, targetHost, field) {
+function createTargetQuery(bucket, measurment, targetUrl, field) {
   return `from(bucket: "${bucket}")
   |> range(start: -14d)
   |> filter(fn: (r) => r._measurement == "${measurment}")
   |> filter(fn: (r) => r.item == "up")
-  |> filter(fn: (r) => r.target == "${targetHost}")
+  |> filter(fn: (r) => r.target == "${targetUrl}")
   |> filter(fn: (r) => r._field == "${field}")
   |> last()`;
 }
@@ -154,9 +154,12 @@ export async function fetchTargets(req, res) {
     // eslint-disable-next-line no-restricted-syntax
     for await (const item of serverUrlArr) {
       const targetHost = item.static_configs.targets;
+      const targetProtocol = item.scheme;
+      const targetPath = (item.metrics_path === undefined) ? '' : item.metrics_path;
+      const targetUrl = `${targetProtocol}://${targetHost}${targetPath}`;
 
-      const fluxQuery = createTargetQuery(BUCKET, MEASUREMENT, targetHost, 'value');
-      const errorQuery = createTargetQuery(BUCKET, MEASUREMENT, targetHost, 'error');
+      const fluxQuery = createTargetQuery(BUCKET, MEASUREMENT, targetUrl, 'value');
+      const errorQuery = createTargetQuery(BUCKET, MEASUREMENT, targetUrl, 'error');
 
       const data = await fetchData(fluxQuery);
       if (data[0]._value === 1) {
