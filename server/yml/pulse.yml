@@ -6,9 +6,9 @@ global:
 
 # Alertmanager configuration
 alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
+  static_configs:
+    receivers: 
+      - target: "r09426003@ntu.edu.tw"
           # - alertmanager:9093
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
