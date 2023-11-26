@@ -45,7 +45,7 @@ export function Target() {
             </thead>
             <tbody>
               <tr>
-                <td><span className='endpoint'><a href='{server.target}' className="custom-link">{server.target}</a></span></td>
+                <td><span className='endpoint'><a href={`${server.target}`} className="custom-link">{server.target}</a></span></td>
                 <td><span className={`state${state}`}>{state}</span></td>
                 <td><span className='scrape'>{server.lastScrape}</span></td>
                 <td><span className='error'>{errorMessage}</span></td>
