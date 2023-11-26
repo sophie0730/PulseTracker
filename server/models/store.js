@@ -72,6 +72,7 @@ export async function storeExporterStatus() {
     const targetPath = (item.metrics_path === undefined) ? '' : item.metrics_path;
     // eslint-disable-next-line no-await-in-loop
     const targetUrl = `${targetProtocol}://${targetHost}${targetPath}`;
+    const targetName = item.job_name;
 
     let errorResponse = '';
     const targetStatus = await axios.get(targetUrl)
@@ -84,7 +85,7 @@ export async function storeExporterStatus() {
 
     const up = (targetStatus === 200) ? 1 : 0;
     const timestamp = Date.now() * 1e6;
-    const statusFlux = `${MEASUREMENT},item=up,target=${targetHost} value=${up},error="${errorResponse}"  ${timestamp}`;
+    const statusFlux = `${MEASUREMENT},item=up,target=${targetUrl},name=${targetName} value=${up},error="${errorResponse}"  ${timestamp}`;
     axios.post(WRITE_API_URL, statusFlux, {
       headers: { Authorization: `Token ${TOKEN}` },
     })
