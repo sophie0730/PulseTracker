@@ -7,10 +7,10 @@ groups:
     annotations:
       summary: Server(s) are down.
 
-- name: memory_is_30
+- name: memory_is_35
   rules:
-  - alert: memory_is_30
-    expr: 'fn: (r) => r.item == "memory_usage" and r._value > 30'
+  - alert: memory_is_35
+    expr: 'fn: (r) => r.item == "memory_usage" and r._value > 35'
     for: 40s
     annotations:
-      summary: Memory usage rate > 30
+      summary: Memory usage rate > 35
