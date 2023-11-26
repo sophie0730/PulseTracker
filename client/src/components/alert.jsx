@@ -10,7 +10,7 @@ function AlertTitle() {
 }
 
 function Alert() {
-  const alertAPI = 'http://localhost:4000/api/1.0/alert';
+  const alertAPI = '/api/1.0/alert';
   const [alertStatus, setAlertStatus] = useState({});
 
   useEffect(() => {
