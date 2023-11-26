@@ -1,41 +1,28 @@
-import dotenv from 'dotenv';
 import * as store from '../models/store.js';
+import { storeTimeout } from '../utils/yml-util.js';
 
-dotenv.config();
-
-const TIMEOUT = 10000;
-
-function scheduleStoreSystemData() {
-  store.storeSystemData()
-    .then(() => {
-      setTimeout(scheduleStoreSystemData, TIMEOUT);
-    })
-    .catch((error) => {
-      console.error(error);
-      setTimeout(scheduleStoreSystemData, TIMEOUT);
-    });
-}
-
-function scheduleStoreAppData() {
-  store.storeApplicationData()
-    .then(() => {
-      setTimeout(scheduleStoreAppData, TIMEOUT);
-    })
-    .catch((error) => {
-      console.error(error);
-      setTimeout(scheduleStoreAppData, TIMEOUT);
-    });
-}
-
+const TIMEOUT = storeTimeout * 1000; // unit of storeTimeout = second
 function scheduleStoreExporterStatus() {
   store.storeExporterStatus()
-    .then(() => setTimeout(scheduleStoreExporterStatus, TIMEOUT))
+    .then(() => {
+      setTimeout(scheduleStoreExporterStatus, TIMEOUT);
+    })
     .catch((error) => {
       console.error(error);
       setTimeout(scheduleStoreExporterStatus, TIMEOUT);
     });
 }
 
-scheduleStoreSystemData();
-scheduleStoreAppData();
+function scheduleStoreExporterMetrices() {
+  store.storeExporterMetrices()
+    .then(() => {
+      setTimeout(scheduleStoreExporterMetrices, TIMEOUT);
+    })
+    .catch((error) => {
+      console.error(error);
+      setTimeout(scheduleStoreExporterMetrices, TIMEOUT);
+    });
+}
+
 scheduleStoreExporterStatus();
+scheduleStoreExporterMetrices();

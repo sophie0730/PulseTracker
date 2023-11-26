@@ -18,3 +18,8 @@ export const emailReceivers = configFile.alerting.static_configs.receivers;
 
 // server url
 export const serverUrlArr = configFile.scrape_configs;
+
+// timeout setting
+export const storeTimeout = configFile.global.store_timeout;
+export const alertTimeout = configFile.global.alert_timeout;
+console.log(configFile);
