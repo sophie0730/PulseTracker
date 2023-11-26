@@ -30,7 +30,9 @@ export function parsePrometheusMetrics(metrics) {
 }
 
 export async function getMetrics(metricUrl) {
-  const data = await axios.get(metricUrl).then((response) => response.data);
+
+  const data = await axios.get(metricUrl)
+    .then((response) => response.data);
   const parsedData = parsePrometheusMetrics(data);
 
   return parsedData.filter((item) => !item.metricName.startsWith('nodejs') && !item.metricName.startsWith('process'));
