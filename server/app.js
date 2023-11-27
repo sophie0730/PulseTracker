@@ -5,12 +5,12 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
-// import { createServer } from 'http';
-// import { Server } from 'socket.io';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import fetchRouter from './routes/fetch.js';
 import dashboardRouter from './routes/dashboard.js';
 import alertRouter from './routes/alert.js';
-// import { client, SOCKET_KEY } from './utils/redis-util.js';
+import { client, SOCKET_KEY } from './utils/redis-util.js';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -30,35 +30,44 @@ app.use('/api/1.0', [fetchRouter, alertRouter]);
 
 // socket io
 
-// if (client.isReady) {
-//   const server = createServer(app);
-//   const io = new Server(server, {
-//     cors: {
-//       origin: '*',
-//       methods: ['GET', 'POST'],
-//     },
-//     allowEIO3: true,
-//   });
-//   io.on('connection', () => {
-//     console.log('connected');
-//   });
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+  allowEIO3: true,
+});
+io.on('connection', () => {
+  console.log('connected');
+});
 
-//   async function messageQueue() {
-//     while (true) {
-//       try {
-//         const { element } = await client.blPop(SOCKET_KEY, 0);
-//         if (element !== undefined) {
-//           io.emit('dataUpdate', () => {
-//             console.log('data is updated');
-//           });
-//         }
-//       } catch (error) {
-//         continue;
-//       }
-//     }
-//   }
-//   messageQueue();
+export { io };
+export default io;
 
-app.listen(4000, () => {
+async function messageQueue() {
+  while (!client.isReady) {
+    await new Promise((resolve) => { setTimeout(resolve, 1000); });
+    console.log('waiting for Redis client to be ready');
+  }
+
+  while (true) {
+    try {
+      const { element } = await client.blPop(SOCKET_KEY, 0);
+      console.log('queue pop');
+
+      if (element !== undefined) {
+        io.emit('dataUpdate', element);
+      }
+    } catch (error) {
+      console.error(`pop error ${error}`);
+      continue;
+    }
+  }
+
+}
+
+server.listen(4000, () => {
   console.log('Server is running on port 4000');
+  messageQueue();
 });

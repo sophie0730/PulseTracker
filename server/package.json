@@ -1,11 +1,20 @@
 {
   "name": "personal",
   "version": "1.0.0",
-  "main": "log.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode production",
+    "package": "pkg dist/server.bundle.js --targets node14-linux-x64 --output PulseTracker",
+    "package-exporter": "pkg dist/exporter.bundle.js --targets node14-linux-x64 --output Exporter"
   },
+  "pkg": {
+    "assets": [
+      "node_modules/**/*"
+    ]
+  },
+  "bin": "PulseTracker.js",
   "pre-commit": [
     "lint"
   ],
@@ -28,8 +37,13 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
+    "esbuild": "0.19.8",
     "eslint": "^8.53.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "npk": "^0.0.4",
     "pre-commit": "^1.2.2",
     "prettier": "^3.1.0",
     "prettier-eslint": "^16.1.2"

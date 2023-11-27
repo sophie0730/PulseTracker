@@ -1,9 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import redis from 'redis';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '/home/sophie/personal/.env' });
-
 // 往後要用aws 用這個
 // export const client = redis.createClient({
 //   url: `rediss://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
@@ -30,4 +26,9 @@ async function connectRedis() {
 
 connectRedis();
 
-export default { client };
+export async function sendMessageQueue() {
+  if (client.isReady) {
+    client.rPush(SOCKET_KEY, 'update');
+    console.log('queue push');
+  }
+}

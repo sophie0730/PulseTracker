@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { checkAlerts } from '../models/alert.js';
-import { alertFile } from '../utils/yml-util.js';
+import { alertFile, alertTimeout } from '../utils/yml-util.js';
 
 const CHECK_TIME_RANGE = '10s';
-const TIMEOUT = 10000;
+const TIMEOUT = alertTimeout * 1000; // unit: second
 
 const alertStates = {};
 

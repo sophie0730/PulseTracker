@@ -24,7 +24,6 @@ export async function showAlerts(req, res) {
     }
 
     await addAlertStatus();
-    console.log(arr);
     res.json(alertFile);
   } catch (error) {
     console.error(error);
