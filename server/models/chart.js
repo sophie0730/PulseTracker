@@ -279,8 +279,6 @@ export async function getRequestSecondChart(time) {
   const data = await response.json();
   const times = data.map((entry) => entry._time);
   const values = data.map((entry) => entry._value);
-  console.log(times);
-  console.log(values);
 
   const ctx = document.getElementById('requestSecondChart');
 

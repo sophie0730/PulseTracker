@@ -17,7 +17,6 @@ export async function fetchData(fluxQuery) {
       },
 
       complete: () => {
-        console.log('\nSuccess');
         resolve(arr);
       },
     });

@@ -22,4 +22,7 @@ export const serverUrlArr = configFile.scrape_configs;
 // timeout setting
 export const storeTimeout = configFile.global.store_timeout;
 export const alertTimeout = configFile.global.alert_timeout;
-console.log(configFile);
+
+// influxdb
+export const influxPath = configFile.influx_db.execute_path;
+export const influxPort = configFile.influx_db.port;

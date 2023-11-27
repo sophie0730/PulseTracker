@@ -80,9 +80,6 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
         storeAlert(group.name, alertStates[group.name]);
         continue;
       }
-      if (alertStates[group.name]) {
-        console.log(dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time));
-      }
 
       if (!alertStates[group.name]) {
         alertStates[group.name] = { startTime: data[0]._time, isFiring: 'pending' };

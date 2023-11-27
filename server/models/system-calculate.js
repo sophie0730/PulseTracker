@@ -4,7 +4,6 @@ import { exec } from 'child_process';
 
 export function getCPUInfo() {
   const cpus = os.cpus();
-  console.log(cpus);
   let idleTotal = 0;
   let total = 0;
 
