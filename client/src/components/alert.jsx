@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import io from 'socket.io-client';
 
 function AlertTitle() {
   return (
@@ -10,7 +11,8 @@ function AlertTitle() {
 }
 
 function Alert() {
-  const alertAPI = '/api/1.0/alert';
+  const alertAPI = 'http://localhost:4000/api/1.0/alert';
+  const SERVER_URL = 'http://localhost:4000';
   const [alertStatus, setAlertStatus] = useState({});
 
   useEffect(() => {
@@ -20,6 +22,17 @@ function Alert() {
         setAlertStatus(alertObj);
       })
       .catch((error) => console.error(error));
+
+    const socket = io(SERVER_URL);
+    socket.on('connect', () => console.log('connected to socket.io server'));
+    socket.on('dataUpdate', () => {
+      axios.get(alertAPI)
+        .then((response) => {
+          const alertObj = response.data;
+          setAlertStatus(alertObj);
+        })
+        .catch((error) => console.error(error));
+    });
   }, []);
 
   // eslint-disable-next-line block-spacing, no-lone-blocks, no-unused-expressions

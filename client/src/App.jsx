@@ -13,6 +13,7 @@ function App() {
     <div>
       <Header />
       <Routes>
+        <Route path="/" element={<Graph />}></Route>
         <Route path="/target" element={<Target />}></Route>
         <Route path="/graph" element={<Graph />}></Route>
         <Route path="/alert" element={<AlertPanel />}></Route>

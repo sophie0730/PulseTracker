@@ -1,6 +1,7 @@
 /* eslint-disable arrow-body-style */
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import io from 'socket.io-client';
 
 function TargetTitle() {
   return (
@@ -11,16 +12,28 @@ function TargetTitle() {
 }
 
 export function Target() {
-  const targetAPI = '/api/1.0/targets';
+  const targetAPI = 'http://localhost:4000/api/1.0/targets';
+  const SERVER_URL = 'http://localhost:4000';
   const [targetStatus, setTargetStatus] = useState([]);
 
   useEffect(() => {
     axios.get(targetAPI)
       .then((response) => {
-        const targetArr = response.data;
-        setTargetStatus(targetArr);
+        const targetObj = response.data;
+        setTargetStatus(targetObj);
       })
       .catch((error) => console.error(error));
+
+    const socket = io(SERVER_URL);
+    socket.on('connect', () => console.log('connected to socket.io server'));
+    socket.on('dataUpdate', () => {
+      axios.get(targetAPI)
+        .then((response) => {
+          const targetObj = response.data;
+          setTargetStatus(targetObj);
+        })
+        .catch((error) => console.error(error));
+    });
   }, []);
 
   return (
