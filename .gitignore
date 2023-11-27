@@ -7,3 +7,7 @@ nohup.out
 server/node_modules
 
 dist/
+
+.babelrc
+
+webpack.config.mjs

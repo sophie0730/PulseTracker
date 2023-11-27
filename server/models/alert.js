@@ -5,6 +5,7 @@ import { fetchData } from './fetch.js';
 import * as influxUtils from '../utils/influxdb-util.js';
 import { sendEmail } from '../utils/email-util.js';
 import { sendLineMessage } from '../utils/line-util.js';
+import { sendMessageQueue } from '../utils/redis-util.js';
 
 function parseTime(durationStr) {
   const match = durationStr.match(/^(\d+)(m|s|h|d)$/);
@@ -78,17 +79,20 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       if (data.length === 0) {
         alertStates[group.name] = null;
         storeAlert(group.name, alertStates[group.name]);
+        sendMessageQueue();
         continue;
       }
 
       if (!alertStates[group.name]) {
         alertStates[group.name] = { startTime: data[0]._time, isFiring: 'pending' };
         storeAlert(group.name, alertStates[group.name]);
+        sendMessageQueue();
       } else if (alertStates[group.name].isFiring !== 'true' && dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time) >= duration) {
         alertStates[group.name].isFiring = 'true';
         storeAlert(group.name, alertStates[group.name]);
-        sendEmail(group.name, group.rules[0].expr);
-        sendLineMessage(group.name, group.rules[0].expr);
+        sendMessageQueue();
+        // sendEmail(group.name, group.rules[0].expr);
+        // sendLineMessage(group.name, group.rules[0].expr);
       }
     }
 
