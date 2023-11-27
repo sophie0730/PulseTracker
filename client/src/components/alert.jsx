@@ -11,7 +11,7 @@ function AlertTitle() {
 }
 
 function Alert() {
-  const alertAPI = 'http://localhost:4000/api/1.0/alert';
+  const alertAPI = '/api/1.0/alert';
   const SERVER_URL = 'http://localhost:4000';
   const [alertStatus, setAlertStatus] = useState({});
 

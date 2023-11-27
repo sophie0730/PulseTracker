@@ -12,15 +12,15 @@ function TargetTitle() {
 }
 
 export function Target() {
-  const targetAPI = 'http://localhost:4000/api/1.0/targets';
+  const targetAPI = '/api/1.0/targets';
   const SERVER_URL = 'http://localhost:4000';
   const [targetStatus, setTargetStatus] = useState([]);
 
   useEffect(() => {
     axios.get(targetAPI)
       .then((response) => {
-        const targetObj = response.data;
-        setTargetStatus(targetObj);
+        const targetArr = response.data;
+        setTargetStatus(targetArr);
       })
       .catch((error) => console.error(error));
 
@@ -29,8 +29,8 @@ export function Target() {
     socket.on('dataUpdate', () => {
       axios.get(targetAPI)
         .then((response) => {
-          const targetObj = response.data;
-          setTargetStatus(targetObj);
+          const targetArr = response.data;
+          setTargetStatus(targetArr);
         })
         .catch((error) => console.error(error));
     });
