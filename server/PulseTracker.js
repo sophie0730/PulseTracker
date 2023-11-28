@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
 import * as net from 'net';
-import { influxPort, influxPath } from './utils/yml-util.js';
+import { influxPort, influxPath, redisPort } from './utils/yml-util.js';
+
+const systemExporterFile = './exporters/system.js';
+const applicationExporterFile = './exporters/application.js';
 
 const workerPath = './workers/';
 //  start influxdb
@@ -22,6 +25,13 @@ function checkPort(port, callback) {
   server.listen(port);
 }
 
+function startExporter(fileName) {
+  const worker = spawn('node', [fileName]);
+  worker.stdout.on('data', (data) => console.log(data.toString()));
+  worker.stderr.on('data', (data) => console.error(`Exporter error: ${data.toString()}`));
+  worker.on('close', (code) => console.log(`Exporter is closed by code ${code}`));
+}
+
 function startInfluxDb() {
   checkPort(influxPort, (isUsed) => {
     if (!isUsed) {
@@ -37,6 +47,20 @@ function startInfluxDb() {
   });
 }
 
+function startRedis() {
+  checkPort(redisPort, (isUsed) => {
+    if (!isUsed) {
+      const redis = spawn('redis-server');
+      redis.stdout.on('data', (data) => console.log(data.toString()));
+      redis.stderr.on('data', (data) => console.error(`Redis error: ${data.toString()}`));
+      redis.on('close', (code) => console.log(`Redis is closed by ${code}`));
+    } else {
+      console.log('Redis has been already running.');
+    }
+  });
+
+}
+
 function startWorker(fileName) {
   const worker = spawn('node', [`${workerPath}/${fileName}`]);
   worker.stdout.on('data', (data) => console.log(data.toString()));
@@ -45,13 +69,16 @@ function startWorker(fileName) {
 }
 
 function startServer() {
-  const worker = spawn('node', ['app.js']);
+  const worker = spawn('node', ['./app.js']);
   worker.stdout.on('data', (data) => console.log(data.toString()));
   worker.stderr.on('data', (data) => console.error(`Server error: ${data.toString()}`));
   worker.on('close', (code) => console.log(`Worker is closed by code ${code}`));
 }
 
 startInfluxDb();
+startRedis();
+// startExporter(applicationExporterFile);
+// startExporter(systemExporterFile);
 startWorker('store.js');
 startWorker('alert.js');
 startServer();

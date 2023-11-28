@@ -3,8 +3,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import express from 'express';
 import cors from 'cors';
-import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import fetchRouter from './routes/fetch.js';
