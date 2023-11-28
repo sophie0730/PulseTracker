@@ -6,6 +6,9 @@ nohup.out
 
 server/node_modules
 
+server/src/node_modules
+
+
 dist/
 
 .babelrc
