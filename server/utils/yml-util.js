@@ -6,10 +6,10 @@ import path, { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const filePath = path.join(__dirname, '..', '..', 'pulse.yml');
+const filePath = path.join(__dirname, '..', 'pulse.yml');
 export const configFile = yaml.load(fs.readFileSync(filePath), 'utf-8');
 
-const alertFilePath = path.join(__dirname, '..', '..', configFile.rule_files[0]);
+const alertFilePath = path.join(__dirname, '..', configFile.rule_files[0]);
 export const alertFile = yaml.load(fs.readFileSync(alertFilePath), 'utf-8');
 // 現在先設只能有一個config檔!!
 
@@ -27,6 +27,5 @@ export const alertTimeout = configFile.global.alert_timeout;
 export const influxPath = configFile.influx_db.execute_path;
 export const influxPort = configFile.influx_db.port;
 
-//redis
+// redis
 export const redisPort = configFile.redis.port;
-

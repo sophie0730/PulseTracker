@@ -75,12 +75,10 @@ function startServer() {
   worker.on('close', (code) => console.log(`Worker is closed by code ${code}`));
 }
 
-
-
 startInfluxDb();
 startRedis();
-startExporter(applicationExporterFile);
-startExporter(systemExporterFile);
+// startExporter(applicationExporterFile);
+// startExporter(systemExporterFile);
 startWorker('store.js');
 startWorker('alert.js');
 startServer();
