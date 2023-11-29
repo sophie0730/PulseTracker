@@ -11,6 +11,10 @@ server/src/node_modules
 
 dist/
 
-.babelrc
-
-webpack.config.mjs
+sea-prep.blob
+sea-config.json
+pulsetracker.js
+dump.rdb
+Dockerfile
+.dockerignore
+pulsetracker

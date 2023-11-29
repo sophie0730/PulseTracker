@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "PulseTracker.js",
   "type": "module",
-    "scripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "esbuild ./  --bundle --outfile=pulsetracker.js --allow-overwrite --format=cjs --platform=node",
-    "package": "npx pkg ./pulsetracker.js --out-path ./"
+    "build": "esbuild ./  --bundle --outfile=pulsetracker.js --allow-overwrite --format=cjs --platform=node"
   },
   "pre-commit": [
     "lint"
@@ -21,30 +20,22 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "form-data": "^4.0.0",
     "js-yaml": "^4.1.0",
+    "mailgun.js": "^9.3.0",
     "moment": "^2.29.4",
-    "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
     "prom-client": "^15.0.0",
     "redis": "^4.6.10",
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
-    "@babel/core": "^7.23.3",
-    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
-    "@babel/preset-env": "^7.23.3",
-    "babel-loader": "^9.1.3",
-    "caxa": "^3.0.1",
     "esbuild": "0.19.8",
     "eslint": "^8.53.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "npk": "^0.0.4",
     "pre-commit": "^1.2.2",
     "prettier": "^3.1.0",
-    "prettier-eslint": "^16.1.2",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "prettier-eslint": "^16.1.2"
   },
   "description": ""
 }
