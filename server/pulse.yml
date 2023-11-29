@@ -45,3 +45,4 @@ scrape_configs:
       targets: "localhost:9101"
     metrics_path: '/metrics'
 
+  

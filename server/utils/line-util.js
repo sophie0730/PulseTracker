@@ -1,11 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: `${__dirname}/../.env` });
+dotenv.config({ path: `${process.cwd()}/../.env` });
 
 const lineUrl = process.env.LINE_URL;
 const token = process.env.LINE_TOKEN;

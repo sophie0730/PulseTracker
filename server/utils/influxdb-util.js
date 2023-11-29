@@ -1,11 +1,7 @@
 import dotenv from 'dotenv';
 import moment from 'moment';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: `${__dirname}/../.env` });
+dotenv.config({ path: `${process.cwd()}/.env` });
 
 export const {
   INFLUXDB_URL, ORG, BUCKET, MEASUREMENT, ALERT_MEASUREMENT, TOKEN,

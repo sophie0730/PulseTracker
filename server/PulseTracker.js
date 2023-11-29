@@ -2,8 +2,8 @@ import { spawn } from 'child_process';
 import * as net from 'net';
 import { influxPort, influxPath, redisPort } from './utils/yml-util.js';
 
-const systemExporterFile = './exporters/system.js';
-const applicationExporterFile = './exporters/application.js';
+// const systemExporterFile = './exporters/system.js';
+// const applicationExporterFile = './exporters/application.js';
 
 const workerPath = './workers/';
 //  start influxdb

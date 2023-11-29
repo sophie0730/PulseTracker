@@ -13,11 +13,15 @@ import alertRouter from './routes/alert.js';
 import { client, SOCKET_KEY } from './utils/redis-util.js';
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const viewPath = path.join(__dirname, 'views');
-const modelPath = path.join(__dirname, 'models');
-const distPath = path.join(__dirname, 'dist');
+// let __dirname;
+// if (typeof __dirname === 'undefined') {
+//   const __filename = fileURLToPath(import.meta.url);
+//   __dirname = dirname(__filename);
+// }
+
+const viewPath = path.join(process.cwd(), 'views');
+const modelPath = path.join(process.cwd(), 'models');
+const distPath = path.join(process.cwd(), 'dist');
 
 app.use(cors());
 app.use(express.json());

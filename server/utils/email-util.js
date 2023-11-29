@@ -1,12 +1,8 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import { emailReceivers } from './yml-util.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: `${__dirname}/../.env` });
+dotenv.config({ path: `${process.cwd()}/.env` });
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.mailgun.org',
