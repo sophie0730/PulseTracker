@@ -1,11 +1,12 @@
 import { spawn } from 'child_process';
 import * as net from 'net';
 import { influxPort, influxPath, redisPort } from './utils/yml-util.js';
+import * as storeWorker from './workers/store.js';
+import * as alertWorker from './workers/alert.js';
+import * as server from './app.js';
 
 // const systemExporterFile = './exporters/system.js';
 // const applicationExporterFile = './exporters/application.js';
-
-const workerPath = './workers/';
 //  start influxdb
 function checkPort(port, callback) {
   const server = net.createServer();
@@ -25,12 +26,12 @@ function checkPort(port, callback) {
   server.listen(port);
 }
 
-function startExporter(fileName) {
-  const worker = spawn('node', [fileName]);
-  worker.stdout.on('data', (data) => console.log(data.toString()));
-  worker.stderr.on('data', (data) => console.error(`Exporter error: ${data.toString()}`));
-  worker.on('close', (code) => console.log(`Exporter is closed by code ${code}`));
-}
+// function startExporter(fileName) {
+//   const worker = spawn('node', [fileName]);
+//   worker.stdout.on('data', (data) => console.log(data.toString()));
+//   worker.stderr.on('data', (data) => console.error(`Exporter error: ${data.toString()}`));
+//   worker.on('close', (code) => console.log(`Exporter is closed by code ${code}`));
+// }
 
 function startInfluxDb() {
   checkPort(influxPort, (isUsed) => {
@@ -61,24 +62,24 @@ function startRedis() {
 
 }
 
-function startWorker(fileName) {
-  const worker = spawn('node', [`${workerPath}/${fileName}`]);
-  worker.stdout.on('data', (data) => console.log(data.toString()));
-  worker.stderr.on('data', (data) => console.error(`Worker error: ${data.toString()}`));
-  worker.on('close', (code) => console.log(`Worker is closed by code ${code}`));
-}
+// function startWorker(fileName) {
+//   const worker = spawn('node', [`${workerPath}/${fileName}`]);
+//   worker.stdout.on('data', (data) => console.log(data.toString()));
+//   worker.stderr.on('data', (data) => console.error(`Worker error: ${data.toString()}`));
+//   worker.on('close', (code) => console.log(`Worker is closed by code ${code}`));
+// }
 
-function startServer() {
-  const worker = spawn('node', ['./app.js']);
-  worker.stdout.on('data', (data) => console.log(data.toString()));
-  worker.stderr.on('data', (data) => console.error(`Server error: ${data.toString()}`));
-  worker.on('close', (code) => console.log(`Worker is closed by code ${code}`));
-}
+// function startServer() {
+//   const worker = spawn('node', ['./app.js']);
+//   worker.stdout.on('data', (data) => console.log(data.toString()));
+//   worker.stderr.on('data', (data) => console.error(`Server error: ${data.toString()}`));
+//   worker.on('close', (code) => console.log(`Worker is closed by code ${code}`));
+// }
 
 startInfluxDb();
 startRedis();
 // startExporter(applicationExporterFile);
 // startExporter(systemExporterFile);
-startWorker('store.js');
-startWorker('alert.js');
-startServer();
+// startWorker('store.js');
+// startWorker('alert.js');
+// startServer();

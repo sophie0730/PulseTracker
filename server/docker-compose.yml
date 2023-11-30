@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  db:
+    image: 
+    volumes:
+      - db_data:containerPath:ro
+    restart:
+    environment:
+    
