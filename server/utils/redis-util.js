@@ -29,6 +29,5 @@ connectRedis();
 export async function sendMessageQueue() {
   if (client.isReady) {
     client.rPush(SOCKET_KEY, 'update');
-    console.log('queue push');
   }
 }

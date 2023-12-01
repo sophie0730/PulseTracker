@@ -91,8 +91,8 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
         alertStates[group.name].isFiring = 'true';
         storeAlert(group.name, alertStates[group.name]);
         sendMessageQueue();
-        // sendEmail(group.name, group.rules[0].expr);
-        // sendLineMessage(group.name, group.rules[0].expr);
+        sendEmail(group.name, group.rules[0].expr);
+        sendLineMessage(group.name, group.rules[0].expr);
       }
     }
 

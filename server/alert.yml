@@ -3,7 +3,7 @@ groups:
   rules:
   - alert: server_is_down
     expr: 'fn: (r) => r.item == "up" and r._value == 0'
-    for: 30s
+    for: 15s
     annotations:
       summary: Server(s) are down.
 
@@ -14,3 +14,11 @@ groups:
     for: 40s
     annotations:
       summary: Memory usage rate > 35
+
+- name: cpu_average_usage_greater_0.1
+  rules:
+  - alert: cpu_average_usage_greater_0.1
+    expr: 'fn: (r) => r.item == "cpu_average_usage" and r._value > 0.1'
+    for: 20s
+    annotations:
+      summary: cpu_average_usage is greater than 0.1
