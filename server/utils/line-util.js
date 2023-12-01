@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { findUp } from 'find-up';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: `${process.cwd()}/../.env` });
+const dotenvPath = await findUp('.env');
+dotenv.config({ path: dotenvPath });
 
 const lineUrl = process.env.LINE_URL;
 const token = process.env.LINE_TOKEN;

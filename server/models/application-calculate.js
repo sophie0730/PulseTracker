@@ -102,3 +102,5 @@ export async function getRequestPerSecond() {
 
   });
 }
+
+getRequestPerSecond();

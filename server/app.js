@@ -3,8 +3,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import express from 'express';
 import cors from 'cors';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import fetchRouter from './routes/fetch.js';
@@ -13,11 +12,6 @@ import alertRouter from './routes/alert.js';
 import { client, SOCKET_KEY } from './utils/redis-util.js';
 
 const app = express();
-// let __dirname;
-// if (typeof __dirname === 'undefined') {
-//   const __filename = fileURLToPath(import.meta.url);
-//   __dirname = dirname(__filename);
-// }
 
 const viewPath = path.join(process.cwd(), 'views');
 const modelPath = path.join(process.cwd(), 'models');
@@ -58,8 +52,6 @@ async function messageQueue() {
   while (true) {
     try {
       const { element } = await client.blPop(SOCKET_KEY, 0);
-      console.log('queue pop');
-
       if (element !== undefined) {
         io.emit('dataUpdate', element);
       }

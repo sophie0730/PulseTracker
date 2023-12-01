@@ -6,8 +6,9 @@
   "bin": "PulseTracker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx esbuild ./PulseTracker.js --allow-overwrite --bundle --platform=node --outfile=/home/sophie/pulsetracker/pulsetracker.js",
-    "package":"bun build ./pulsetracker.js --compile --outfile /home/sophie/pulsetracker/pulsetracker"
+    "build": "npx esbuild ./PulseTracker.js --allow-overwrite --bundle --platform=node --format=esm --outfile=./pulsetracker.js",
+    "package": "bun build ./pulsetracker.js --compile --outfile /home/sophie/pulsetracker/pulsetracker",
+    "exporter-build": "npx esbuild ./Exporter.js --allow-overwrite --bundle --platform=node --outfile=./exporter.js"
   },
   "pre-commit": [
     "lint"
@@ -22,6 +23,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "find-up": "^7.0.0",
     "form-data": "^4.0.0",
     "js-yaml": "^4.1.0",
     "moment": "^2.29.4",

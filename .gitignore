@@ -18,3 +18,6 @@ dump.rdb
 Dockerfile
 .dockerignore
 pulsetracker
+sea-config.json
+sea-prep.blob
+exporter.js

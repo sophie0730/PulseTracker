@@ -1,7 +1,9 @@
+import { findUp } from 'find-up';
 import dotenv from 'dotenv';
 import moment from 'moment';
 
-dotenv.config({ path: `${process.cwd()}/.env` });
+const dotenvPath = await findUp('.env');
+dotenv.config({ path: dotenvPath });
 
 export const {
   INFLUXDB_URL, ORG, BUCKET, MEASUREMENT, ALERT_MEASUREMENT, TOKEN,

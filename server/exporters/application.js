@@ -62,19 +62,22 @@ async function setMetrics() {
   |> filter(fn: (r) => r.item == "request_per_second")
   |> last()
   `;
-  const lastData = await fetchData(fluxQuery);
-  if (lastData.length === 0) return;
-
-  const lastTime = lastData[0]._time;
-  const unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
   const requestsPerSecond = await calculate.getRequestPerSecond();
+  const lastData = await fetchData(fluxQuery);
+  let lastTime;
+  let unixLastTime;
+  if (lastData.length !== 0) {
+    lastTime = lastData[0]._time;
+    unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
+  }
+
   for (const second in requestsPerSecond) {
     const count = requestsPerSecond[second];
     // 和db最後一筆比對
-    console.log(second);
-    if (second <= unixLastTime) continue;
+    if (unixLastTime !== undefined && second <= unixLastTime) continue;
     guageRequestPerSecond.set({ time: second }, count);
   }
+
 }
 
 app.get('/metrics', async (req, res) => {

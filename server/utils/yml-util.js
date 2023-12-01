@@ -1,11 +1,13 @@
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import { findUp } from 'find-up';
 import path from 'path';
 
-const filePath = path.join(process.cwd(), 'pulse.yml');
+const filePath = await findUp('pulse.yml');
+
 export const configFile = yaml.load(fs.readFileSync(filePath), 'utf-8');
 
-const alertFilePath = path.join(process.cwd(), configFile.rule_files[0]);
+const alertFilePath = path.join(path.dirname(filePath), configFile.rule_files[0]);
 export const alertFile = yaml.load(fs.readFileSync(alertFilePath), 'utf-8');
 // 現在先設只能有一個config檔!!
 
