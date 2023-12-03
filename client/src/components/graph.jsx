@@ -1,18 +1,30 @@
 // import '../script/dashboard.js';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { updateDashboard } from '../script/dashboard.js';
-
-// ]value={selectedTimeRange} onChange={updateTimeRange}
 
 export function Graph() {
   const [selectedTimeRange, setSelectedTimeRange] = useState('');
-
   const updateTimeRange = async (event) => {
     setSelectedTimeRange(event.target.value);
     console.log(event.target.value);
     await updateDashboard(event.target.value);
   };
+
+  const fetchItemsAPI = 'http://localhost:4000/api/1.0/fetchItems';
+  const [allItems, setAllItems] = useState('');
+
+  useEffect(() => {
+    axios.get(fetchItemsAPI)
+      .then((response) => {
+        const items = response.data;
+        setAllItems(items);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <main>
@@ -22,53 +34,23 @@ export function Graph() {
           <option value="1h">1 hour</option>
           <option value="2h">2 hour</option>
           <option value="3h">3 hour</option>
+          <option value="6h">6 hour</option>
+          <option value="8h">8 hour</option>
+          <option value="12h">12 hour</option>
+          <option value="24h">24 hour</option>
         </select>
-        {/* <button id="timeBtn" onClick={window.updateTimeRange}>
-          Send
-        </button> */}
+
       </div>
       <div className="charts">
         <div className="chartWrap">
-          <div className="chart">
-            <h3>CPU Average Usage</h3>
-            <canvas id="cpuUsageChart"></canvas>
-          </div>
-          <div className="chart">
-            <h3>Memory Usage</h3>
-            <canvas id="memoryUsageChart"></canvas>
-          </div>
-          <div className="chart">
-            <h3>Disk Average Read Time (ms)</h3>
-            <canvas id="diskReadChart"></canvas>
-          </div>
-          <div className="chart">
-            <h3>Disk Average Write Time (ms)</h3>
-            <canvas id="diskWriteChart"></canvas>
-          </div>
-          <div className="chart">
-            <h3>CPU Load Average 1m</h3>
-            <canvas id="cpuLoad-1m"></canvas>
-          </div>
-          <div className="chart">
-            <h3>CPU Load Average 5m</h3>
-            <canvas id="cpuLoad-5m"></canvas>
-          </div>
-          <div className="chart">
-            <h3>CPU Load Average 15m</h3>
-            <canvas id="cpuLoad-15m"></canvas>
-          </div>
-          <div className="chart">
-            <h3>Http Total Request</h3>
-            <canvas id="httpRequestChart"></canvas>
-          </div>
-          <div className="chart">
-            <h3>Request Per Second</h3>
-            <canvas id="requestSecondChart"></canvas>
-          </div>
-        </div>
-        <div className="chartBar">
-          <h3>Max response time per API (ms)</h3>
-          <canvas id="maxResponseChart"></canvas>
+          {allItems && allItems
+            .filter((item) => item.item !== 'up')
+            .map((item) => (
+              <div className="chart" key={item.item}>
+                <h3>{item.item}</h3>
+                <canvas id={item.item}></canvas>
+              </div>
+            ))}
         </div>
       </div>
     </main>
