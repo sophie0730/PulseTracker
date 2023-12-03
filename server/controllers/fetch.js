@@ -5,131 +5,169 @@ import { fetchData } from '../models/fetch.js';
 // const GROUP_BY_CLAUSE = `
 // |> aggregateWindow(every: 10s, fn: mean)
 // `;
-const GROUP_BY_CLAUSE = '';
+// const GROUP_BY_CLAUSE = '';
 
-export async function fetchCPU(req, res) {
+// export async function fetchCPU(req, res) {
+//   try {
+//     const { time } = req.query;
+//     let fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "cpu_average_usage")`;
+
+//     if (!time.includes('s')) {
+//       fluxQuery += GROUP_BY_CLAUSE;
+//     }
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+// export async function fetchMemory(req, res) {
+//   try {
+//     const { time } = req.query;
+//     let fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "memory_usage")`;
+
+//     if (!time.includes('s')) {
+//       fluxQuery += GROUP_BY_CLAUSE;
+//     }
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+
+// }
+
+// export async function fetchDisk(req, res) {
+//   try {
+//     const { type } = req.params;
+//     const { time } = req.query;
+//     // const { device } = req.query;
+//     let fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "disk_${type}_average_time")`;
+
+//     if (!time.includes('s')) {
+//       fluxQuery += GROUP_BY_CLAUSE;
+//     }
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// export async function fetchHttpRequest(req, res) {
+//   try {
+//     const { time } = req.query;
+//     let fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "http_total_requests")`;
+
+//     if (!time.includes('s')) {
+//       fluxQuery += GROUP_BY_CLAUSE;
+//     }
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// export async function fetchResponse(req, res) {
+//   try {
+//     const { time } = req.query;
+//     const fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "max_response_time")
+//     |> last()
+//     `;
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// export async function fetchRequestSecond(req, res) {
+//   try {
+//     const { time } = req.query;
+//     const fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "request_per_second")`;
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// export async function fetchCPULoad(req, res) {
+//   try {
+//     const { time } = req.query;
+//     const { loadTime } = req.params;
+//     let fluxQuery = `from(bucket: "${BUCKET}")
+//     |> range(start: -${time})
+//     |> filter(fn: (r) => r.item == "load_duration_${loadTime}m")`;
+
+//     if (!time.includes('s')) {
+//       fluxQuery += GROUP_BY_CLAUSE;
+//     }
+
+//     const data = await fetchData(fluxQuery);
+//     res.json(data);
+//   } catch (error) {
+//     console.error(error);
+//     res.json(error);
+//   }
+// }
+
+export async function fetchAllItems(req, res) {
   try {
-    const { time } = req.query;
-    let fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "cpu_average_usage")`;
-
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function fetchMemory(req, res) {
-  try {
-    const { time } = req.query;
-    let fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "memory_usage")`;
-
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
-  } catch (error) {
-    console.log(error);
-  }
-
-}
-
-export async function fetchDisk(req, res) {
-  try {
-    const { type } = req.params;
-    const { time } = req.query;
-    // const { device } = req.query;
-    let fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "disk_${type}_average_time")`;
-
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
+    const items = await fetchData(`from(bucket: "${BUCKET}")
+    |> range(start: -14d)
+    |> filter(fn: (r) => r._measurement == "${MEASUREMENT}")
+    |> keep(columns: ["item"])
+    |> distinct(column: "item")
+    `);
+    // const items = await fetchData(`from(bucket: "${BUCKET}")
+    // |> range(start: -${time})
+    // |> filter(fn: (r) => r._measurement == "${MEASUREMENT}")
+    // `);
+    res.json(items);
   } catch (error) {
     console.error(error);
   }
 }
 
-export async function fetchHttpRequest(req, res) {
-  try {
-    const { time } = req.query;
-    let fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "http_total_requests")`;
+export async function fetchDataByItems(req, res) {
+  const { item } = req.params;
+  const { time } = req.query;
 
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function fetchResponse(req, res) {
-  try {
-    const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "max_response_time")
-    |> last()
-    `;
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function fetchRequestSecond(req, res) {
-  try {
-    const { time } = req.query;
-    const fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "request_per_second")`;
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function fetchCPULoad(req, res) {
-  try {
-    const { time } = req.query;
-    const { loadTime } = req.params;
-    let fluxQuery = `from(bucket: "${BUCKET}")
-    |> range(start: -${time})
-    |> filter(fn: (r) => r.item == "load_duration_${loadTime}m")`;
-
-    if (!time.includes('s')) {
-      fluxQuery += GROUP_BY_CLAUSE;
-    }
-
-    const data = await fetchData(fluxQuery);
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-    res.json(error);
-  }
+  const fluxQuery = `from(bucket: "${BUCKET}")
+  |> range(start: -${time})
+  |> filter(fn: (r) => r.item == "${item}")`;
+  const responseDataArr = [];
+  const data = await fetchData(fluxQuery);
+  data.forEach((record) => {
+    const tag = Object.keys(record).filter((key) => (
+      !['_start', '_stop', '_time', '_value', '_field', '_measurement', 'result', 'item'].includes(key) && typeof record[key] === 'string'
+    ));
+    // eslint-disable-next-line prefer-destructuring, no-param-reassign
+    record.tag = tag[0];
+    responseDataArr.push(record);
+  });
+  res.json(responseDataArr);
 }
 
 function createTargetQuery(bucket, measurment, targetUrl, field) {
@@ -178,3 +216,5 @@ export async function fetchTargets(req, res) {
     console.error(error);
   }
 }
+
+export default fetchTargets;

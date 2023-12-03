@@ -2,6 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-undef */
 /* eslint-disable no-new */
+import axios from 'axios';
 import { mergeSort } from './sort.js';
 
 function getRandomColor() {
@@ -38,6 +39,74 @@ const options = {
 };
 
 const charts = {};
+
+export async function getChart(item, time) {
+  const chartId = item;
+  const response = await axios.get(`http://localhost:4000/api/1.0/fetch/${item}?time=${time}`);
+  const responseData = await response.data;
+  const times = responseData.map((element) => element._time);
+  const values = responseData.map((element) => element._value);
+
+  const ctx = document.getElementById(`${item}`).getContext('2d');
+  console.log(ctx);
+
+  let datasets = [{
+    label: `${item}`,
+    data: values,
+    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    borderColor: 'rgba(255, 99, 132, 1)',
+    borderWidth: 3,
+    lineTension: 0,
+    pointRadius: 0,
+    pointHoverRadius: 7,
+  }];
+
+  let data = {
+    labels: times,
+    datasets,
+  };
+
+  const tags = responseData.map((element) => element.tag);
+  if (tags && tags[0] !== undefined) {
+    const tag = tags[0];
+    console.log(tag);
+    const groupData = responseData.reduce((accumulator, entry) => {
+      if (!accumulator[entry[tag]]) {
+        accumulator[entry[tag]] = [];
+      }
+      accumulator[entry[tag]].push(entry);
+      return accumulator;
+    }, {});
+
+    const groupKeys = Object.keys(groupData);
+    datasets = groupKeys.map((key) => {
+      return {
+        label: `${tag} ${key}`,
+        data: groupData[key].map((entry) => entry._value),
+        fill: false,
+        borderColor: getRandomColor(),
+        borderWidth: 3,
+        pointRadius: 0,
+        pointHoverRadius: 7,
+      };
+    });
+
+    data = {
+      labels: responseData.map((entry) => entry._time),
+      datasets,
+    };
+  }
+
+  if (charts[chartId]) {
+    charts[chartId].destroy();
+  }
+
+  charts[chartId] = new Chart(ctx, {
+    type: 'line',
+    data,
+    options,
+  });
+}
 
 export async function getCPUChart(time) {
   const chartId = 'Cpu';
