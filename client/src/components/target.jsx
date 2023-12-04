@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 
 function TargetTitle() {
   return (
-    <div className="title">
+    <div className="targetTitle">
       <h1>Targets</h1>
     </div>
   );
