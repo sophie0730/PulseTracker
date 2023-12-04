@@ -1,6 +1,3 @@
-.title {
-  margin-left: 1.5rem;
-}
 
 .alerts {
   margin-left: 1.5rem;
@@ -49,12 +46,14 @@
 }
 
 .groupName {
+  display: flex;
+  flex-wrap: wrap;
   font-size: 0.85rem;
   border-radius: 7px;
 }
 
 .groupName h2 {
-  margin-left: 1rem;
+  margin-left: 0.5rem;
 }
 table {
   width: 100%;
@@ -93,3 +92,50 @@ th, td {
   background-color: gray;
   border: 1px solid grey;
 }
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  margin-left: 1.5rem;
+  margin-bottom: -1rem;
+}
+.search {
+  border: 1px solid #979797;
+  border-radius: 0.7rem;
+  height: 2.7rem;
+  width: 14rem;
+  margin-right: 2rem;
+  margin-left: auto;
+  margin-top: 1.3rem;
+}
+
+.search input {
+  border: none;
+  outline: none;
+  transform: translateY(-18px);
+    padding-left: 1rem;
+}
+
+.alert {
+  cursor: pointer;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.arrow img {
+  width: 1.5rem;
+  margin-top: 0.9rem;
+  margin-left: 0.8rem;
+}
+
+.arrow.up {
+  transform: rotate(90deg); /* Rotates the arrow to point up */
+}
+
+
+
+
