@@ -1,12 +1,20 @@
+/* eslint-disable one-var-declaration-per-line */
+/* eslint-disable one-var */
 import { findUp } from 'find-up';
 import dotenv from 'dotenv';
-import moment from 'moment';
 
-const dotenvPath = await findUp('.env');
-dotenv.config({ path: dotenvPath });
+// eslint-disable-next-line import/no-mutable-exports
+export let INFLUXDB_URL, ORG, BUCKET, MEASUREMENT, ALERT_MEASUREMENT, TOKEN, WRITE_API_URL;
 
-export const {
-  INFLUXDB_URL, ORG, BUCKET, MEASUREMENT, ALERT_MEASUREMENT, TOKEN,
-} = process.env;
-export const WRITE_API_URL = `${process.env.INFLUXDB_URL}/api/v2/write?org=${process.env.ORG}&bucket=${process.env.BUCKET}&precision=ns`;
-export const DB_START_DATE = moment('17/NOV/2023T20:00:00', 'DD/MMM/YYYYTHH:mm:ss').unix() * 1e6;
+(async () => {
+  const dotenvPath = await findUp('.env');
+  dotenv.config({ path: dotenvPath });
+
+  INFLUXDB_URL = process.env.INFLUXDB_URL;
+  ORG = process.env.ORG;
+  BUCKET = process.env.BUCKET;
+  MEASUREMENT = process.env.MEASUREMENT;
+  ALERT_MEASUREMENT = process.env.ALERT_MEASUREMENT;
+  TOKEN = process.env.TOKEN;
+  WRITE_API_URL = `${process.env.INFLUXDB_URL}/api/v2/write?org=${process.env.ORG}&bucket=${process.env.BUCKET}&precision=ns`;
+})();

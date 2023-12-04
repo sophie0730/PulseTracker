@@ -25,7 +25,6 @@ app.use(express.static(distPath));
 
 app.use(dashboardRouter);
 app.use('/api/1.0', [fetchRouter, alertRouter]);
-
 // socket io
 
 const server = createServer(app);

@@ -11,6 +11,11 @@ const alertFilePath = path.join(path.dirname(filePath), configFile.rule_files[0]
 export const alertFile = yaml.load(fs.readFileSync(alertFilePath), 'utf-8');
 // 現在先設只能有一個config檔!!
 
+// server
+const port = configFile.scrape_configs[0].static_configs.targets;
+const protocol = configFile.scrape_configs[0].scheme;
+export const serverPort = `${protocol}://${port}`;
+
 //  email
 export const emailReceivers = configFile.alerting.static_configs.receivers;
 

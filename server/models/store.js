@@ -4,7 +4,7 @@
 import axios from 'axios';
 import { getMetrics } from './parse.js';
 import {
-  WRITE_API_URL, TOKEN, MEASUREMENT, DB_START_DATE,
+  WRITE_API_URL, TOKEN, MEASUREMENT,
 } from '../utils/influxdb-util.js';
 import { serverUrlArr } from '../utils/yml-util.js';
 import { sendMessageQueue } from '../utils/redis-util.js';
@@ -21,10 +21,6 @@ async function storeMetrices(targetUrl) {
         const timeStr = item.label;
         const match = timeStr.match(/time="(\d+)"/);
         timestamp = (match) ? match[1] * 1e9 : Date.now() * 1e6;
-      }
-
-      if (timestamp < DB_START_DATE) {
-        return null;
       }
 
       return `${MEASUREMENT},item=${item.metricName}${tags ? ',' + tags : ''} ${fields} ${timestamp}`;
