@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx esbuild ./PulseTracker.js --allow-overwrite --bundle --platform=node --format=esm --outfile=./pulsetracker.js",
     "package": "bun build ./pulsetracker.js --compile --outfile /home/sophie/pulsetracker/pulsetracker",
-    "exporter-build": "npx esbuild ./Exporter.js --allow-overwrite --bundle --platform=node --outfile=./exporter.js"
+    "exporter-build": "npx esbuild ./Exporter.js --allow-overwrite --bundle --platform=node --outfile=./exporter.js",
+    "exporter-package": "bun build ./exporter.js --compile --outfile /home/sophie/pulsetracker/exporter"
   },
   "pre-commit": [
     "lint"

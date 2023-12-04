@@ -12,7 +12,7 @@ export function Graph() {
     await updateDashboard(event.target.value);
   };
 
-  const fetchItemsAPI = 'http://localhost:4000/api/1.0/fetchItems';
+  const fetchItemsAPI = '/api/1.0/fetchItems';
   const [allItems, setAllItems] = useState('');
 
   useEffect(() => {
