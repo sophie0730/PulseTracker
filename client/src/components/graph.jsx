@@ -41,7 +41,6 @@ function GraphList() {
   useEffect(() => {
     if (allItems.length > 0) {
       allItems.forEach((item) => {
-        // 這裡現在會在 allItems 更新後執行
         getChart(item.item, selectedTimeRange, selectedChartType);
       });
     }
