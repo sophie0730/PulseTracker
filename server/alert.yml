@@ -7,10 +7,58 @@ groups:
     annotations:
       summary: Server(s) are down.
 
-- name: memory_is_35
+- name: memory_greater_35
   rules:
-  - alert: memory_is_35
+  - alert: memory_greater_35
     expr: 'fn: (r) => r.item == "memory_usage" and r._value > 35'
     for: 40s
     annotations:
       summary: Memory usage rate > 35
+
+- name: cpu_load_1m_greater_1
+  rules:
+  - alert: cpu_load_1m_greater_1
+    expr: 'fn: (r) => r.item == "load_duration_1m" and r._value > 1'
+    for: 40s
+    annotations:
+      summary: load_duration_1m > 1
+
+- name: cpu_load_5m_greater_1
+  rules:
+  - alert: cpu_load_5m_greater_1
+    expr: 'fn: (r) => r.item == "load_duration_5m" and r._value > 1'
+    for: 40s
+    annotations:
+      summary: load_duration_5m > 1
+
+- name: cpu_load_15m_greater_1
+  rules:
+  - alert: cpu_load_15m_greater_1
+    expr: 'fn: (r) => r.item == "load_duration_15m" and r._value > 1'
+    for: 40s
+    annotations:
+      summary: load_duration_15m > 1
+
+- name: cpu_average_greater_2
+  rules:
+  - alert: cpu_average_greater_2
+    expr: 'fn: (r) => r.item == "cpu_average_usage" and r._value > 2'
+    for: 40s
+    annotations:
+      summary: cpu_average_usage > 2
+
+- name: memory_less_5
+  rules:
+  - alert: memory_less_5
+    expr: 'fn: (r) => r.item == "memory_usage" and r._value < 5'
+    for: 40s
+    annotations:
+      summary: Memory usage rate < 5
+
+- name: request_per_second_greater_500
+  rules:
+  - alert: request_per_second_greater_500
+    expr: 'fn: (r) => r.item == "request_per_second" and r._value > 500'
+    for: 40s
+    annotations:
+      summary: request_per_second > 500

@@ -1,3 +1,33 @@
+.graphTitle {
+  margin-left: 1rem;
+}
+
+.chartContainer {
+  margin-top: 1rem;
+}
+
+.timeLabel {
+  margin-right: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.typeLabel {
+  margin-left: 2rem;
+  margin-right: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.clearBtn {
+  margin-left: 2rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  color: white;
+  border: none;
+  background-color: rgba(255, 99, 132);
+  height: 1.5rem;
+  cursor: pointer;
+}
+
 .chartWrap {
   margin-top: 1rem;
   display: flex;
@@ -6,15 +36,39 @@
 
 
 .chart {
-  flex: 1 1 50%;
+  width: 40rem;
+  flex: 1 1 auto;
 }
 
 
 .times {
   margin-left: 1rem;
-  margin-top: 2rem;
 }
+
 #timeRangeSelect {
   font-size: 1rem;
   width: 10rem;
+}
+
+#typeSelect {
+  font-size: 1rem;
+  width: 14rem;
+}
+.chart-selection {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.chart-selection input{
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 1305px) {
+  .chart {
+    width: 30rem;
+    flex: 1 1 auto;
+  }
 }
