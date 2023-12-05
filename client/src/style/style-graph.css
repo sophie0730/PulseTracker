@@ -1,3 +1,12 @@
+.graphTitle {
+  margin-left: 1rem;
+}
+
+.timeLabel {
+  margin-right: 0.5rem;
+  font-size: 1.25rem;
+}
+
 .chartWrap {
   margin-top: 1rem;
   display: flex;
@@ -6,7 +15,8 @@
 
 
 .chart {
-  flex: 1 1 50%;
+  width: 40rem;
+  flex: 1 1 auto;
 }
 
 
@@ -17,4 +27,18 @@
 #timeRangeSelect {
   font-size: 1rem;
   width: 10rem;
+}
+
+.chart-selection {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+@media screen and (max-width: 1305px) {
+  .chart {
+    width: 30rem;
+    flex: 1 1 auto;
+  }
 }

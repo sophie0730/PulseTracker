@@ -3,7 +3,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-new */
 import axios from 'axios';
-import { mergeSort } from './sort.js';
 
 function getRandomColor() {
   const r = Math.floor(Math.random() * 256);
@@ -38,9 +37,31 @@ const options = {
   },
 };
 
+const optionsBar = {
+  scales: {
+    y: {
+      beginAtZero: true,
+    },
+  },
+};
+
+const optionsBarWithTime = {
+  scales: {
+    x: {
+      type: 'time',
+    },
+    y: {
+      beginAtZero: true,
+    },
+  },
+};
+
 const charts = {};
 
-export async function getChart(item, time) {
+export async function getChart(item, time, type) {
+  // if (item === 'max_response_time') {
+  //   await getMaxResponseChart(item, time);
+  // }
   const chartId = item;
   const response = await axios.get(`http://localhost:4000/api/1.0/fetch/${item}?time=${time}`);
   const responseData = await response.data;
@@ -79,22 +100,37 @@ export async function getChart(item, time) {
     }, {});
 
     const groupKeys = Object.keys(groupData);
-    datasets = groupKeys.map((key) => {
-      return {
-        label: `${tag} ${key}`,
-        data: groupData[key].map((entry) => entry._value),
-        fill: false,
-        borderColor: getRandomColor(),
-        borderWidth: 3,
-        pointRadius: 0,
-        pointHoverRadius: 7,
+
+    if (type === 'line') {
+      datasets = groupKeys.map((key) => {
+        return {
+          label: `${tag} ${key}`,
+          data: groupData[key].map((entry) => entry._value),
+          fill: false,
+          borderColor: getRandomColor(),
+          borderWidth: 3,
+          pointRadius: 0,
+          pointHoverRadius: 7,
+        };
+      });
+      data = {
+        labels: responseData.map((entry) => entry._time),
+        datasets,
       };
-    });
+    } else {
+      datasets = groupKeys.map((key) => {
+        return {
+          label: `${tag}`,
+          data: groupData[key].map((entry) => entry._value),
+          backgroundColor: getRandomColor(),
+        };
+      });
+      data = {
+        labels: groupKeys,
+        datasets,
+      };
+    }
 
-    data = {
-      labels: responseData.map((entry) => entry._time),
-      datasets,
-    };
   }
 
   if (charts[chartId]) {
@@ -102,72 +138,10 @@ export async function getChart(item, time) {
   }
 
   charts[chartId] = new Chart(ctx, {
-    type: 'line',
+    type: (type === 'line') ? 'line' : 'bar',
     data,
-    options,
-  });
-}
-
-export async function getCPUChart(time) {
-  const chartId = 'Cpu';
-  const response = await fetch(`/api/1.0/cpu?time=${time}`);
-  const cpus = await response.json();
-  const times = cpus.map((cpu) => cpu._time);
-  const values = cpus.map((cpu) => cpu._value);
-
-  const ctx = document.getElementById('cpuUsageChart').getContext('2d');
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [{
-        label: 'CPU Average Usage (%)',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
-      }],
-    },
-    options,
-  });
-}
-
-export async function getMemoryChart(time) {
-  const chartId = 'Memory';
-  const response = await fetch(`/api/1.0/memory?time=${time}`);
-  const memories = await response.json();
-  const times = memories.map((memory) => memory._time);
-  const values = memories.map((memory) => memory._value);
-
-  const ctx = document.getElementById('memoryUsageChart').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [{
-        label: 'Memory Usage (%)',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
-      }],
-    },
-    options,
+    // eslint-disable-next-line no-nested-ternary
+    options: (type === 'line') ? options : (type === 'bar-time') ? optionsBarWithTime : optionsBar,
   });
 }
 
@@ -205,7 +179,7 @@ export async function getDiskReadChart(time) {
   }
 
   charts[chartId] = new Chart(ctx, {
-    type: 'line',
+    type,
     data: {
       labels: rawData.map((entry) => entry._time),
       datasets,
@@ -289,67 +263,12 @@ export async function getTotalRequestChart(time) {
   });
 }
 
-export async function getMaxResponseChart(time) {
-  const chartId = 'MaxResponse';
-  const response = await fetch(`/api/1.0/response?time=${time}`);
-  const rawData = await response.json();
-
-  const groupData = rawData.reduce((accumulator, entry) => {
-    if (!accumulator[entry.api]) {
-      accumulator[entry.api] = [];
-    }
-    accumulator[entry.api].push(entry);
-    return accumulator;
-  }, {});
-
-  const groupKeys = Object.keys(groupData);
-
-  const data = groupKeys.map((api) => groupData[api].map((entry) => { return { api: entry.api, value: entry._value }; }));
-
-  const parsedData = data.map((item) => item[0]);
-  //  data.value 從大排到小, merging sort
-  const sortedData = mergeSort(parsedData);
-  const sortedValues = sortedData.map((item) => item.value);
-  const sortedKeys = sortedData.map((item) => item.api);
-
-  const ctx = document.getElementById('maxResponseChart');
-  const backgroundColors = [];
-  for (let i = 0; i < groupKeys.length; i++) {
-    backgroundColors.push(getRandomColor());
-  }
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: sortedKeys,
-      datasets: [{
-        label: '# of APIs',
-        data: sortedValues,
-        backgroundColor: backgroundColors,
-      }],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
-  });
-}
-
 export async function getRequestSecondChart(time) {
   const chartId = 'RequestSecond';
   const response = await fetch(`/api/1.0/request-second?time=${time}`);
   const data = await response.json();
   const times = data.map((entry) => entry._time);
   const values = data.map((entry) => entry._value);
-  console.log(times);
-  console.log(values);
 
   const ctx = document.getElementById('requestSecondChart');
 
