@@ -58,368 +58,114 @@ const optionsBarWithTime = {
 
 const charts = {};
 
-export async function getChart(item, time, type) {
-  // if (item === 'max_response_time') {
-  //   await getMaxResponseChart(item, time);
-  // }
-  const chartId = item;
-  const response = await axios.get(`http://localhost:4000/api/1.0/fetch/${item}?time=${time}`);
-  const responseData = await response.data;
-  const times = responseData.map((element) => element._time);
-  const values = responseData.map((element) => element._value);
+function groupByTag(data, tag) {
+  return data.reduce((accumulator, entry) => {
+    if (!accumulator[entry[tag]]) {
+      accumulator[entry[tag]] = [];
+    }
+    accumulator[entry[tag]].push(entry);
+    return accumulator;
+  }, {});
+}
 
-  const ctx = document.getElementById(`${item}`).getContext('2d');
-  console.log(ctx);
+function createDatasets(groupData, tag, type) {
+  const groupKeys = Object.keys(groupData);
 
-  let datasets = [{
-    label: `${item}`,
-    data: values,
-    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-    borderColor: 'rgba(255, 99, 132, 1)',
+  return groupKeys.map((key) => ({
+    label: type === 'line' ? `${tag} ${key}` : `${tag}`,
+    data: groupData[key].map((entry) => entry._value),
+    borderColor: type === 'line' ? getRandomColor() : undefined,
     borderWidth: 3,
-    lineTension: 0,
-    pointRadius: 0,
-    pointHoverRadius: 7,
+    pointRadius: type === 'line' ? 0 : undefined,
+    pointHoverRadius: type === 'line' ? 7 : undefined,
+  }));
+}
+
+function getMaxValueDatasets(groupData, tag) {
+  const groupKeys = Object.keys(groupData);
+  const labelArr = [];
+  const dataArr = [];
+  const colorArr = [];
+
+  groupKeys.forEach((key) => {
+    const lastElement = groupData[key][groupData[key].length - 1];
+    const color = getRandomColor();
+    labelArr.push(key);
+    dataArr.push(lastElement._value);
+    colorArr.push(color);
+
+  });
+
+  return [{
+    label: tag,
+    data: dataArr,
+    backgroundColor: colorArr,
+    barThickness: 50,
   }];
 
-  let data = {
-    labels: times,
-    datasets,
-  };
+  // return groupKeys.map(key => {
+  //   const lastElement = groupData[key][groupData[key].length - 1];
+  //   return {
+  //     label: `${key}`,
+  //     data: [lastElement._value],
+  //     backgroundColor: getRandomColor(),
+  //     barThickness: 50,
+  //   };
+  // });
+}
 
+export async function getChart(item, time, type) {
+  const chartId = item;
+  const response = await axios.get(`http://localhost:4000/api/1.0/fetch/${item}?time=${time}`);
+  const responseData = response.data;
+
+  const times = responseData.map((element) => element._time);
+  const values = responseData.map((element) => element._value);
   const tags = responseData.map((element) => element.tag);
+
+  const ctx = document.getElementById(`${item}`).getContext('2d');
+
+  let datasets = [];
+  let groupData = {};
+
   if (tags && tags[0] !== undefined) {
     const tag = tags[0];
-    console.log(tag);
-    const groupData = responseData.reduce((accumulator, entry) => {
-      if (!accumulator[entry[tag]]) {
-        accumulator[entry[tag]] = [];
-      }
-      accumulator[entry[tag]].push(entry);
-      return accumulator;
-    }, {});
 
-    const groupKeys = Object.keys(groupData);
+    groupData = groupByTag(responseData, tag);
+    datasets = createDatasets(groupData, tag, type);
+  } else {
+    datasets = [{
+      label: `${item}`,
+      data: values,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 3,
+      lineTension: 0,
+      pointRadius: 0,
+      pointHoverRadius: 7,
+    }];
+  }
 
-    if (type === 'line') {
-      datasets = groupKeys.map((key) => {
-        return {
-          label: `${tag} ${key}`,
-          data: groupData[key].map((entry) => entry._value),
-          fill: false,
-          borderColor: getRandomColor(),
-          borderWidth: 3,
-          pointRadius: 0,
-          pointHoverRadius: 7,
-        };
-      });
-      data = {
-        labels: responseData.map((entry) => entry._time),
-        datasets,
-      };
-    } else {
-      datasets = groupKeys.map((key) => {
-        return {
-          label: `${tag}`,
-          data: groupData[key].map((entry) => entry._value),
-          backgroundColor: getRandomColor(),
-        };
-      });
-      data = {
-        labels: groupKeys,
-        datasets,
-      };
-    }
-
+  if (item.includes('max')) {
+    datasets = getMaxValueDatasets(groupData, tags[0]);
   }
 
   if (charts[chartId]) {
     charts[chartId].destroy();
   }
 
+  const data = { labels: (type === 'bar-group' && item.includes('max')) ? Object.keys(groupData) : times, datasets };
+  if (item.includes('max')) {
+    console.log(data);
+  }
+
   charts[chartId] = new Chart(ctx, {
-    type: (type === 'line') ? 'line' : 'bar',
+    type: type === 'line' ? 'line' : 'bar',
     data,
     // eslint-disable-next-line no-nested-ternary
-    options: (type === 'line') ? options : (type === 'bar-time') ? optionsBarWithTime : optionsBar,
+    options: type === 'line' ? options : type === 'bar-time' ? optionsBarWithTime : optionsBar,
   });
+
 }
 
-export async function getDiskReadChart(time) {
-  const chartId = 'DiskRead';
-  const response = await fetch(`/api/1.0/disk/read?time=${time}`);
-  const rawData = await response.json();
-
-  const groupData = rawData.reduce((accumulator, entry) => {
-    if (!accumulator[entry.device]) {
-      accumulator[entry.device] = [];
-    }
-    accumulator[entry.device].push(entry);
-    return accumulator;
-  }, {});
-
-  const groupkeys = Object.keys(groupData);
-  const datasets = groupkeys.map((device) => {
-    return {
-      label: `Device ${device}`,
-      data: groupData[device].map((entry) => entry._value),
-      fill: false,
-      //   borderColor: color,
-      // backgroundColor: getRandomColor(),
-      borderColor: getRandomColor(),
-      borderWidth: 3,
-      pointRadius: 0,
-      pointHoverRadius: 7,
-    };
-  });
-  const ctx = document.getElementById('diskReadChart').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type,
-    data: {
-      labels: rawData.map((entry) => entry._time),
-      datasets,
-    },
-    options,
-  });
-}
-
-export async function getDiskWriteChart(time) {
-  const chartId = 'DiskWrite';
-  const response = await fetch(`/api/1.0/disk/write?time=${time}`);
-  const rawData = await response.json();
-
-  const groupData = rawData.reduce((accumulator, entry) => {
-    if (!accumulator[entry.device]) {
-      accumulator[entry.device] = [];
-    }
-    accumulator[entry.device].push(entry);
-    return accumulator;
-  }, {});
-
-  const groupKeys = Object.keys(groupData);
-  const datasets = groupKeys.map((device) => {
-    return {
-      label: `Device ${device}`,
-      data: groupData[device].map((entry) => entry._value),
-      fill: false,
-      // borderColor: color,
-      // backgroundColor: getRandomColor(),
-      borderColor: getRandomColor(),
-      borderWidth: 3,
-      pointRadius: 0,
-      pointHoverRadius: 7,
-    };
-  });
-  const ctx = document.getElementById('diskWriteChart').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: rawData.map((entry) => entry._time),
-      datasets,
-    },
-    options,
-  });
-}
-
-export async function getTotalRequestChart(time) {
-  const chartId = 'TotalRequest';
-  const response = await fetch(`/api/1.0/request?time=${time}`);
-  const memories = await response.json();
-  const times = memories.map((memory) => memory._time);
-  const values = memories.map((memory) => memory._value);
-
-  const ctx = document.getElementById('httpRequestChart').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [{
-        label: 'Http Total Request',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
-      }],
-    },
-    options,
-  });
-}
-
-export async function getRequestSecondChart(time) {
-  const chartId = 'RequestSecond';
-  const response = await fetch(`/api/1.0/request-second?time=${time}`);
-  const data = await response.json();
-  const times = data.map((entry) => entry._time);
-  const values = data.map((entry) => entry._value);
-
-  const ctx = document.getElementById('requestSecondChart');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  // charts[chartId] = new Chart(ctx, {
-  //   type: 'line',
-  //   data: {
-  //     labels: times,
-  //     datasets: [{
-  //       label: 'Request Per Second',
-  //       data: values,
-  //       backgroundColor: 'rgba(255, 99, 132, 0.2)',
-  //       borderColor: 'rgba(255, 99, 132, 1)',
-  //       borderWidth: 3,
-  //       lineTension: 0,
-  //       pointRadius: 0,
-  //       pointHoverRadius: 7,
-  //     }],
-  //   },
-  //   options,
-  // });
-  charts[chartId] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: times,
-      datasets: [{
-        // labels: times,]
-        label: 'Request Per Second',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        barThickness: 20,
-      }],
-    },
-    options: {
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'minute',
-            // stepSize: 30,
-            displayFormats: {
-              minute: 'HH:mm',
-            },
-          },
-          ticks: {
-            maxRotation: 0,
-          },
-        },
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
-  });
-}
-
-export async function getCPULoad1m(time) {
-  const chartId = 'CpuLoad_1m';
-  const response = await fetch(`/api/1.0/cpu-load/1?time=${time}`);
-  const loads = await response.json();
-  const times = loads.map((load) => load._time);
-  const values = loads.map((load) => load._value);
-
-  const ctx = document.getElementById('cpuLoad-1m').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [{
-        label: 'CPU Average Load 1m',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
-      }],
-    },
-    options,
-  });
-}
-
-export async function getCPULoad5m(time) {
-  const chartId = 'CpuLoad_5m';
-  const response = await fetch(`/api/1.0/cpu-load/5?time=${time}`);
-  const loads = await response.json();
-  const times = loads.map((load) => load._time);
-  const values = loads.map((load) => load._value);
-
-  const ctx = document.getElementById('cpuLoad-5m').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [{
-        label: 'CPU Average Load 5m',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
-      }],
-    },
-    options,
-  });
-}
-
-export async function getCPULoad15m(time) {
-  const chartId = 'CpuLoad_15m';
-  const response = await fetch(`/api/1.0/cpu-load/15?time=${time}`);
-  const loads = await response.json();
-  const times = loads.map((load) => load._time);
-  const values = loads.map((load) => load._value);
-
-  const ctx = document.getElementById('cpuLoad-15m').getContext('2d');
-
-  if (charts[chartId]) {
-    charts[chartId].destroy();
-  }
-
-  charts[chartId] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [{
-        label: 'CPU Average Load 15m',
-        data: values,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 3,
-        lineTension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 7,
-      }],
-    },
-    options,
-  });
-}
+export default getChart;

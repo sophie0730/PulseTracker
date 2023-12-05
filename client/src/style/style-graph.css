@@ -7,6 +7,12 @@
   font-size: 1.25rem;
 }
 
+.typeLabel {
+  margin-left: 2rem;
+  margin-right: 0.5rem;
+  font-size: 1.25rem;
+}
+
 .chartWrap {
   margin-top: 1rem;
   display: flex;
@@ -24,11 +30,16 @@
   margin-left: 1rem;
   margin-top: 2rem;
 }
+
 #timeRangeSelect {
   font-size: 1rem;
   width: 10rem;
 }
 
+#typeSelect {
+  font-size: 1rem;
+  width: 14rem;
+}
 .chart-selection {
   display: flex;
   flex-wrap: wrap;
