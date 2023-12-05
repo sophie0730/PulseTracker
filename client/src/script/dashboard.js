@@ -3,7 +3,7 @@ import * as chart from './chart.js';
 
 async function getDashboard() {
   try {
-    const fetchItemsAPI = 'http://localhost:4000/api/1.0/fetchItems';
+    const fetchItemsAPI = '/api/1.0/fetchItems';
     const response = await axios.get(fetchItemsAPI);
     const results = response.data;
     window.onload = async () => {
@@ -20,7 +20,7 @@ async function getDashboard() {
 
 export async function updateDashboard(timeRange) {
   try {
-    const fetchItemsAPI = 'http://localhost:4000/api/1.0/fetchItems';
+    const fetchItemsAPI = '/api/1.0/fetchItems';
     const response = await axios.get(fetchItemsAPI);
     const results = response.data;
     console.log(results);

@@ -116,7 +116,7 @@ function getMaxValueDatasets(groupData, tag) {
 
 export async function getChart(item, time, type) {
   const chartId = item;
-  const response = await axios.get(`http://localhost:4000/api/1.0/fetch/${item}?time=${time}`);
+  const response = await axios.get(`/api/1.0/fetch/${item}?time=${time}`);
   const responseData = response.data;
 
   const times = responseData.map((element) => element._time);

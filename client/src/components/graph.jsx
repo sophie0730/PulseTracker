@@ -18,7 +18,7 @@ function GraphList() {
   const [allItems, setAllItems] = useState([]);
   const [visibleCharts, setVisibleCharts] = useState({});
 
-  const fetchItemsAPI = 'http://localhost:4000/api/1.0/fetchItems';
+  const fetchItemsAPI = '/api/1.0/fetchItems';
 
   useEffect(() => {
     axios.get(fetchItemsAPI)
