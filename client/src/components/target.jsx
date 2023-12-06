@@ -12,7 +12,7 @@ function TargetTitle() {
 }
 
 export function Target() {
-  const targetAPI = '/api/1.0/targets';
+  const targetAPI = `${import.meta.env.VITE_HOST}/api/1.0/targets`;
   const SERVER_URL = 'http://localhost:4000';
   const [targetStatus, setTargetStatus] = useState([]);
 

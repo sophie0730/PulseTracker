@@ -93,7 +93,7 @@ function AlertList({
 }
 
 function AlertContainer() {
-  const alertAPI = '/api/1.0/alert';
+  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert`;
   const SERVER_URL = 'http://localhost:4000';
   const [alertStatus, setAlertStatus] = useState({ groups: [] });
   const [collapsedGroups, setCollapsedGroups] = useState({});

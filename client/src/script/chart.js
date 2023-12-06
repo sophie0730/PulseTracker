@@ -49,6 +49,16 @@ const optionsBarWithTime = {
   scales: {
     x: {
       type: 'time',
+      time: {
+        unit: 'minute',
+        // stepSize: 30,
+        displayFormats: {
+          minute: 'HH:mm',
+        },
+      },
+      ticks: {
+        maxRotation: 0,
+      },
     },
     y: {
       beginAtZero: true,
@@ -116,7 +126,7 @@ function getMaxValueDatasets(groupData, tag) {
 
 export async function getChart(item, time, type) {
   const chartId = item;
-  const response = await axios.get(`/api/1.0/fetch/${item}?time=${time}`);
+  const response = await axios.get(`${import.meta.env.VITE_HOST}/api/1.0/fetch/${item}?time=${time}`);
   const responseData = response.data;
 
   const times = responseData.map((element) => element._time);
@@ -155,9 +165,6 @@ export async function getChart(item, time, type) {
   }
 
   const data = { labels: (type === 'bar-group' && item.includes('max')) ? Object.keys(groupData) : times, datasets };
-  if (item.includes('max')) {
-    console.log(data);
-  }
 
   charts[chartId] = new Chart(ctx, {
     type: type === 'line' ? 'line' : 'bar',
