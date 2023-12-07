@@ -1,5 +1,5 @@
 import * as yaml from 'js-yaml';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { findUp } from 'find-up';
 import path from 'path';
 

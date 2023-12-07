@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-operators */
 /* eslint-disable padded-blocks */
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import * as readline from 'readline';
 import moment from 'moment';
 
