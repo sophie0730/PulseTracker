@@ -1,0 +1,89 @@
+
+.targetTitle {
+  margin-top: 1.7rem;
+  margin-left: 1.5rem;
+}
+.servers {
+  margin-left: 2rem;
+}
+
+.server {
+  margin-right: 1rem;
+}
+
+.serverName h2 {
+  font-size: 1.6rem;
+}
+
+.UP {
+  color: rgb(15, 76, 129);
+  font-weight: bold
+}
+
+.DOWN {
+  color: red;
+}
+
+.stateUP {
+  background-color: rgb(15, 76, 129);
+  color: white;
+  font-weight: bold;
+  border-radius: 7px;
+  display: inline-block;
+  width: 3rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  text-align: center;
+  
+}
+
+.stateDOWN {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  border-radius: 7px;
+  display: inline-block;
+  width: 5rem;
+  height: 1.8rem;
+  line-height: 1.8rem;
+  padding: auto;
+  text-align: center;
+}
+
+td .error {
+  color: red;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+td {
+  background-color: #f2f2f2;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.custom-link {
+  text-decoration: none;
+}
+.custom-link:link {
+  color: rgb(5, 99, 193);
+}
+
+.custom-link:visited {
+  color: rgb(111, 45, 168);
+}
+
+.custom-link:hover {
+  color: rgb(49, 138, 231);
+}
+
+.custom-link:active {
+  color: rgb(22, 155, 213);
+}
