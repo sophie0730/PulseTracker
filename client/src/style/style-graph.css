@@ -28,6 +28,17 @@
   cursor: pointer;
 }
 
+.selectBtn {
+  margin-left: 2rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  color: white;
+  border: none;
+  background-color: rgb(15, 76, 129);
+  height: 1.5rem;
+  cursor: pointer;
+}
+
 .chartWrap {
   margin-top: 1rem;
   display: flex;
