@@ -86,6 +86,20 @@ function GraphList() {
     }), {}));
   };
 
+  const selectAllCharts = () => {
+    const newVisibleCharts = allItems.reduce((acc, chart) => ({
+      ...acc, [chart.item]: true,
+    }), {});
+
+    setVisibleCharts(newVisibleCharts);
+
+    allItems.forEach((chart) => {
+      if (newVisibleCharts[chart.item]) {
+        getChart(chart.item, selectedTimeRange, selectedChartType);
+      }
+    });
+  };
+
   return (
     <div className='chartContainer'>
       <div className="times">
@@ -107,6 +121,7 @@ function GraphList() {
           <option value="bar-time">Bar Chart, x-axis=time</option>
         </select>
         <button className='clearBtn' onClick={clearAllCharts}>Clear All Charts</button>
+        <button className='selectBtn' onClick={selectAllCharts}>Select All Charts</button>
       </div>
 
       <div className='chart-selection'>
