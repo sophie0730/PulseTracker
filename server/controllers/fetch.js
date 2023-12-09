@@ -10,10 +10,6 @@ export async function fetchAllItems(req, res) {
     |> keep(columns: ["item"])
     |> distinct(column: "item")
     `);
-    // const items = await fetchData(`from(bucket: "${BUCKET}")
-    // |> range(start: -${time})
-    // |> filter(fn: (r) => r._measurement == "${MEASUREMENT}")
-    // `);
     res.json(items);
   } catch (error) {
     console.error(error);
