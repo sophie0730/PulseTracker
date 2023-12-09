@@ -65,37 +65,36 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
 
     if (groups.length === 0) return;
 
-    for (let i = 0; i < groups.length; i++) {
-      const group = groups[i];
+    const alertPromises = groups.map(async (group) => {
       const duration = parseTime(group.rules[0].for);
-
       const fluxQuery = `from(bucket: "${influxUtils.BUCKET}")
       |> range(start: -${timeRange})
       |> filter(${group.rules[0].expr})`;
 
-      // eslint-disable-next-line no-await-in-loop
       const data = await fetchData(fluxQuery);
 
       if (data.length === 0) {
         alertStates[group.name] = null;
-        storeAlert(group.name, alertStates[group.name]);
+        await storeAlert(group.name, alertStates[group.name]);
         sendMessageQueue();
-        continue;
+        return;
       }
 
       if (!alertStates[group.name]) {
         alertStates[group.name] = { startTime: data[0]._time, isFiring: 'pending' };
-        storeAlert(group.name, alertStates[group.name]);
+        await storeAlert(group.name, alertStates[group.name]);
         sendMessageQueue();
       } else if (alertStates[group.name].isFiring !== 'true' && dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time) >= duration) {
         alertStates[group.name].isFiring = 'true';
-        storeAlert(group.name, alertStates[group.name]);
+        await storeAlert(group.name, alertStates[group.name]);
         sendMessageQueue();
         sendEmail(group.name, group.rules[0].expr);
         sendLineMessage(group.name, group.rules[0].expr);
       }
-    }
+    });
 
+    await Promise.allSettled(alertPromises);
+    sendMessageQueue();
   } catch (err) {
     console.log(err);
   }
