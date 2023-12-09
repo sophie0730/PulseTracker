@@ -10,31 +10,36 @@ export async function fetchAllItems(req, res) {
     |> keep(columns: ["item"])
     |> distinct(column: "item")
     `);
+
     res.json(items);
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ message: error.message, stack: error.stack });
   }
 }
 
 export async function fetchDataByItems(req, res) {
-  const { item } = req.params;
-  const { time } = req.query;
+  try {
+    const { item } = req.params;
+    const { time } = req.query;
 
-  const fluxQuery = `from(bucket: "${BUCKET}")
-  |> range(start: -${time})
-  |> filter(fn: (r) => r.item == "${item}")`;
+    const fluxQuery = `from(bucket: "${BUCKET}")
+    |> range(start: -${time})
+    |> filter(fn: (r) => r.item == "${item}")`;
 
-  const responseDataArr = [];
-  const data = await fetchData(fluxQuery);
-  data.forEach((record) => {
-    const tag = Object.keys(record).filter((key) => (
-      !['_start', '_stop', '_time', '_value', '_field', '_measurement', 'result', 'item'].includes(key) && typeof record[key] === 'string'
-    ));
-    // eslint-disable-next-line prefer-destructuring, no-param-reassign
-    record.tag = tag[0];
-    responseDataArr.push(record);
-  });
-  res.json(responseDataArr);
+    const responseDataArr = [];
+    const data = await fetchData(fluxQuery);
+    data.forEach((record) => {
+      const tag = Object.keys(record).filter((key) => (
+        !['_start', '_stop', '_time', '_value', '_field', '_measurement', 'result', 'item'].includes(key) && typeof record[key] === 'string'
+      ));
+      // eslint-disable-next-line prefer-destructuring, no-param-reassign
+      record.tag = tag[0];
+      responseDataArr.push(record);
+    });
+    res.json(responseDataArr);
+  } catch (error) {
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
 }
 
 function createTargetQuery(bucket, measurment, targetUrl, field) {
@@ -80,7 +85,7 @@ export async function fetchTargets(req, res) {
     }
     res.json(dataArr);
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ message: error.message, stack: error.stack });
   }
 }
 

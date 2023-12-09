@@ -31,7 +31,6 @@ function AlertList({
       group.name.toLowerCase().includes(searchTerm.toLowerCase()))
     // eslint-disable-next-line react/prop-types
     : alertStatus.groups;
-  console.log(filteredGroups);
   // eslint-disable-next-line block-spacing, no-lone-blocks, no-unused-expressions
   return (
     <div className='alerts'>
@@ -98,6 +97,8 @@ function AlertContainer() {
   const [alertStatus, setAlertStatus] = useState({ groups: [] });
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [responseError, setError] = useState(null);
+
   useEffect(() => {
     axios.get(alertAPI)
       .then((response) => {
@@ -110,7 +111,10 @@ function AlertContainer() {
         });
         setCollapsedGroups(initialCollapseState);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setError(error);
+      });
 
     const socket = io(SERVER_URL);
     socket.on('connect', () => console.log('connected to socket.io server'));
@@ -131,6 +135,18 @@ function AlertContainer() {
       [groupName]: !prevState[groupName],
     }));
   };
+
+  if (responseError) {
+    return (
+      <div className='error'>
+        <div className="title">
+          <h1>Alerts</h1>
+        </div>
+        <h2>{responseError.message}</h2>
+        <p>{responseError.stack}</p>
+      </div>
+    );
+  }
 
   return (
     <div>

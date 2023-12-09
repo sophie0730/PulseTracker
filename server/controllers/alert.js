@@ -23,7 +23,7 @@ export async function showAlerts(req, res) {
     res.json(alertFile);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ message: error.message, stack: error.stack });
   }
 }
 

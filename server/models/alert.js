@@ -53,10 +53,7 @@ async function storeAlert(groupName, alert) {
   await axios.post(influxUtils.WRITE_API_URL, influxQuery, {
     headers: { Authorization: `Token ${influxUtils.TOKEN}` },
   })
-    .then(() => {
-      console.log('writing alerting db successfully!');
-    })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error({ path: error.path, message: error.message }));
 }
 
 export async function checkAlerts(alertStates, timeRange, alertFile) {
@@ -88,25 +85,25 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
         alertStates[group.name].isFiring = 'true';
         await storeAlert(group.name, alertStates[group.name]);
         sendMessageQueue();
-        sendEmail(group.name, group.rules[0].expr);
-        sendLineMessage(group.name, group.rules[0].expr);
+        // sendEmail(group.name, group.rules[0].expr);
+        // sendLineMessage(group.name, group.rules[0].expr);
       }
     });
 
     await Promise.allSettled(alertPromises);
     sendMessageQueue();
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.error({ path: error.path, message: error.message });
   }
 }
 
 export async function fetchAlertStatus(group) {
   const fetchAlertQuery = `from(bucket: "${influxUtils.BUCKET}")
-  |> range(start: -14d)
-  |> filter(fn: (r) => r._measurement == "${influxUtils.ALERT_MEASUREMENT}")
-  |> filter(fn: (r) => r.item == "${group.name}")
-  |> last()
-  `;
+    |> range(start: -14d)
+    |> filter(fn: (r) => r._measurement == "${influxUtils.ALERT_MEASUREMENT}")
+    |> filter(fn: (r) => r.item == "${group.name}")
+    |> last()
+    `;
   const alertStatus = await fetchData(fetchAlertQuery);
   return alertStatus;
 }

@@ -17,9 +17,9 @@ function GraphList() {
   const [selectedChartType, setSelectedChartType] = useState('line');
   const [allItems, setAllItems] = useState([]);
   const [visibleCharts, setVisibleCharts] = useState({});
+  const [responseError, setError] = useState(null);
 
   const fetchItemsAPI = `${import.meta.env.VITE_HOST}/api/1.0/fetchItems`;
-  console.log(fetchItemsAPI);
 
   useEffect(() => {
     axios.get(fetchItemsAPI)
@@ -36,6 +36,7 @@ function GraphList() {
       })
       .catch((error) => {
         console.error(error);
+        setError(error);
       });
   }, []);
 
@@ -99,6 +100,15 @@ function GraphList() {
       }
     });
   };
+
+  if (responseError) {
+    return (
+      <div className='error'>
+        <h2>{responseError.message}</h2>
+        <p>{responseError.stack}</p>
+      </div>
+    );
+  }
 
   return (
     <div className='chartContainer'>

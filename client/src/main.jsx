@@ -8,6 +8,7 @@ import './style/style-header.css';
 import './style/style-graph.css';
 import './style/style-alert.css';
 import './style/style-target.css';
+import './style/style-error.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
