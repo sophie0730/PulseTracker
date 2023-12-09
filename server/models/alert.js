@@ -58,6 +58,7 @@ async function storeAlert(groupName, alert) {
 
 export async function checkAlerts(alertStates, timeRange, alertFile) {
   try {
+    if (!alertFile) return;
     const { groups } = alertFile;
 
     if (groups.length === 0) return;
