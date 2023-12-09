@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import fetchRouter from './routes/fetch.js';
 import dashboardRouter from './routes/dashboard.js';
 import alertRouter from './routes/alert.js';
-import { client, SOCKET_KEY } from './utils/redis-util.js';
+import { subscriber, PUBSUB_CHANNEL } from './utils/redis-util.js';
 
 const app = express();
 
@@ -47,22 +47,15 @@ export { io };
 export default io;
 
 async function messageQueue() {
-  while (!client.isReady) {
+  while (!subscriber.isReady) {
     await new Promise((resolve) => { setTimeout(resolve, 1000); });
     console.log('waiting for Redis client to be ready');
   }
 
-  while (true) {
-    try {
-      const { element } = await client.blPop(SOCKET_KEY, 0);
-      if (element !== undefined) {
-        io.emit('dataUpdate', element);
-      }
-    } catch (error) {
-      console.error(`pop error ${error}`);
-      continue;
-    }
-  }
+  subscriber.subscribe(PUBSUB_CHANNEL, (message) => {
+    console.log(`Received: ${message}`);
+    io.emit('dataUpdate', message);
+  })
 
 }
 
