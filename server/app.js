@@ -53,9 +53,8 @@ async function messageQueue() {
   }
 
   subscriber.subscribe(PUBSUB_CHANNEL, (message) => {
-    console.log(`Received: ${message}`);
     io.emit('dataUpdate', message);
-  })
+  });
 
 }
 
