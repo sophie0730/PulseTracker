@@ -39,9 +39,9 @@ const io = new Server(server, {
   },
   allowEIO3: true,
 });
-io.on('connection', () => {
-  console.log('connected');
-});
+// io.on('connection', () => {
+//   console.log('connected');
+// });
 
 export { io };
 export default io;

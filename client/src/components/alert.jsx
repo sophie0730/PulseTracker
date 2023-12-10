@@ -22,7 +22,7 @@ function AlertTitle({ onSearchChange }) {
 // eslint-disable-next-line react/prop-types
 function AlertList({
   // eslint-disable-next-line react/prop-types
-  alertStatus, collapsedGroups, toggleCollapse, searchTerm,
+  alertStatus, collapsedGroups, toggleCollapse, searchTerm, handlePriviousClick, handleNextClick,
 }) {
   const filteredGroups = searchTerm
     // eslint-disable-next-line react/prop-types
@@ -87,51 +87,58 @@ function AlertList({
           </div>
         );
       })}
+      <div>
+        <button onClick={handlePriviousClick}>Previous Page</button>
+        <button onClick={handleNextClick}>Next Page</button>
+      </div>
     </div>
   );
 }
 
 function AlertContainer() {
-  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert`;
-  const SERVER_URL = 'http://localhost:4000';
   const [alertStatus, setAlertStatus] = useState({ groups: [] });
+  const [pageStatus, setPageStatus] = useState({ groups: [] });
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [responseError, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${itemsPerPage}`;
+  const SERVER_URL = 'http://localhost:4000';
 
   useEffect(() => {
-    axios.get(alertAPI)
-      .then((response) => {
-        const alertObj = response.data;
-        setAlertStatus(alertObj);
-
-        const initialCollapseState = {};
-        if (alertObj.groups) {
-          alertObj.groups.forEach((group) => {
-            initialCollapseState[group.name] = true;
-          });
-          setCollapsedGroups(initialCollapseState);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError(error);
-      });
-
-    const socket = io(SERVER_URL);
-    socket.on('connect', () => console.log('connected to socket.io server'));
-    socket.on('dataUpdate', () => {
+    const fetchData = () => {
       axios.get(alertAPI)
         .then((response) => {
           const alertObj = response.data;
-          setAlertStatus(alertObj);
+          setPageStatus(alertObj);
+          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length - 1) });
+
+          const initialCollapseState = {};
+          if (alertObj.groups) {
+            alertObj.groups.forEach((group) => {
+              initialCollapseState[group.name] = true;
+            });
+            setCollapsedGroups(initialCollapseState);
+          }
         })
         .catch((error) => {
-          setError(error);
           console.error(error);
+          setError(error);
         });
-    });
-  }, []);
+    };
+
+    fetchData();
+
+    const socket = io(SERVER_URL);
+    socket.on('connect', () => console.log('connected to socket.io server'));
+    socket.on('dataUpdate', fetchData);
+
+    return () => {
+      socket.off('dataUpdate', fetchData);
+      socket.disconnect();
+    };
+  }, [currentPage]);
 
   const toggleCollapse = (groupName, event) => {
     event.stopPropagation(); // Stop event from triggering on child elements.
@@ -139,6 +146,14 @@ function AlertContainer() {
       ...prevState,
       [groupName]: !prevState[groupName],
     }));
+  };
+
+  const handlePriviousClick = () => {
+    setCurrentPage(currentPage > 1 ? currentPage - 1 : 1);
+  };
+
+  const handleNextClick = () => {
+    setCurrentPage(pageStatus.groups.length < itemsPerPage + 1 ? currentPage : currentPage + 1);
   };
 
   if (responseError) {
@@ -172,6 +187,8 @@ function AlertContainer() {
         collapsedGroups={collapsedGroups}
         toggleCollapse={toggleCollapse}
         searchTerm={searchTerm}
+        handlePriviousClick={handlePriviousClick}
+        handleNextClick={handleNextClick}
       ></AlertList>
     </div>
   );

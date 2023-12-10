@@ -5,13 +5,18 @@ import { fetchAlertStatus } from '../models/alert.js';
 
 export async function showAlerts(req, res) {
   try {
-    if (!alertFile) {
+    const { page, limit } = req.query;
+    const pageInt = Number(page);
+    const limitInt = Number(limit);
+
+    if (!alertFile || !pageInt || pageInt === 0 || !limitInt || limitInt === 0) {
       return res.status(200).json({ message: 'There is no alerting rule currently' });
     }
 
     const { groups } = alertFile;
+    const slicedGroups = groups.slice(limit * (page - 1), limit * page + 1);
 
-    const alertPromises = groups.map(async (group) => {
+    const alertPromises = slicedGroups.map(async (group) => {
       const alertStatus = await fetchAlertStatus(group);
 
       const isFiring = alertStatus.find((status) => status._field === 'isFiring');
@@ -24,7 +29,7 @@ export async function showAlerts(req, res) {
     });
 
     await Promise.allSettled(alertPromises);
-    return res.status(200).json(alertFile);
+    return res.status(200).json({ groups: slicedGroups });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message, stack: error.stack });
