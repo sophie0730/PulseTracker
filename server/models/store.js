@@ -7,7 +7,7 @@ import {
   WRITE_API_URL, TOKEN, MEASUREMENT,
 } from '../utils/influxdb-util.js';
 import { serverUrlArr } from '../utils/yml-util.js';
-import { sendMessageQueue } from '../utils/redis-util.js';
+import { publishUpdateMessage } from '../utils/redis-util.js';
 
 async function storeMetrices(targetUrl) {
   try {
@@ -65,7 +65,7 @@ export async function storeExporterStatus() {
     const targetName = item.job_name;
 
     storeStatus(targetUrl, targetName);
-    sendMessageQueue();
+    await publishUpdateMessage();
   }
 }
 

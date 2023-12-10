@@ -5,6 +5,10 @@ import { fetchAlertStatus } from '../models/alert.js';
 
 export async function showAlerts(req, res) {
   try {
+    if (!alertFile) {
+      return res.status(200).json({ message: 'There is no alerting rule currently' });
+    }
+
     const { groups } = alertFile;
 
     const alertPromises = groups.map(async (group) => {
@@ -20,10 +24,10 @@ export async function showAlerts(req, res) {
     });
 
     await Promise.allSettled(alertPromises);
-    res.json(alertFile);
+    return res.status(200).json(alertFile);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message, stack: error.stack });
+    return res.status(500).json({ message: error.message, stack: error.stack });
   }
 }
 

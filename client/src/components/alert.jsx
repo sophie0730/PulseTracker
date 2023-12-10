@@ -106,10 +106,12 @@ function AlertContainer() {
         setAlertStatus(alertObj);
 
         const initialCollapseState = {};
-        alertObj.groups.forEach((group) => {
-          initialCollapseState[group.name] = true;
-        });
-        setCollapsedGroups(initialCollapseState);
+        if (alertObj.groups) {
+          alertObj.groups.forEach((group) => {
+            initialCollapseState[group.name] = true;
+          });
+          setCollapsedGroups(initialCollapseState);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -124,7 +126,10 @@ function AlertContainer() {
           const alertObj = response.data;
           setAlertStatus(alertObj);
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          setError(error);
+          console.error(error);
+        });
     });
   }, []);
 
@@ -144,6 +149,17 @@ function AlertContainer() {
         </div>
         <h2>{responseError.message}</h2>
         <p>{responseError.stack}</p>
+      </div>
+    );
+  }
+
+  if (alertStatus.message) {
+    return (
+      <div className='error'>
+        <div className="title">
+          <h1>Alerts</h1>
+        </div>
+        <h2>{alertStatus.message}</h2>
       </div>
     );
   }
