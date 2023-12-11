@@ -5,14 +5,21 @@ import PropTypes from 'prop-types';
 
 // eslint-disable-next-line react/prop-types
 function AlertTitle({ onSearchChange }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSearchIconClick = () => {
+    onSearchChange(inputValue);
+  };
   return (
     <div className='head'>
       <div className="title">
         <h1>Alerts</h1>
       </div>
       <div className="search">
-        <input className="searchBar" placeholder="Search Alerts..." onChange={(e) => onSearchChange(e.target.value)}></input>
-        <a href="#">
+        <input className="searchBar" placeholder="Search Alerts..." onChange={(e) => {
+          setInputValue(e.target.value);
+        }}></input>
+        <a href="#" onClick={handleSearchIconClick}>
           <img src="./images/search.png" alt="Search"></img>
         </a>
       </div>
@@ -23,19 +30,11 @@ function AlertTitle({ onSearchChange }) {
 // eslint-disable-next-line react/prop-types
 function AlertList({
   // eslint-disable-next-line react/prop-types
-  alertStatus, collapsedGroups, toggleCollapse, searchTerm,
+  alertStatusGroups, collapsedGroups, toggleCollapse,
 }) {
-  const filteredGroups = searchTerm
-    // eslint-disable-next-line react/prop-types
-    ? alertStatus.groups.filter((group) =>
-      // eslint-disable-next-line react/prop-types, implicit-arrow-linebreak
-      group.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    // eslint-disable-next-line react/prop-types
-    : alertStatus.groups;
-  // eslint-disable-next-line block-spacing, no-lone-blocks, no-unused-expressions
   return (
     <div className='alerts'>
-      {filteredGroups && filteredGroups.map((group) => {
+      {alertStatusGroups && alertStatusGroups.map((group) => {
         let firingClass = '';
         let backGroundClass = '';
         if (group.startTime === 'NA') {
@@ -92,6 +91,15 @@ function AlertList({
   );
 }
 
+AlertList.propTypes = {
+  alertStatusGroups: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+    startTime: PropTypes.string,
+  })).isRequired,
+  collapsedGroups: PropTypes.object.isRequired,
+  toggleCollapse: PropTypes.func.isRequired,
+};
+
 function Pagination({
   currentPage, totalPages, handlePageChange, handlePageSizeChange, pageSize,
 }) {
@@ -124,7 +132,7 @@ Pagination.propTypes = {
   totalPages: PropTypes.number.isRequired,
   handlePageChange: PropTypes.func.isRequired,
   handlePageSizeChange: PropTypes.func.isRequired,
-  pageSize: PropTypes.number.isRequired,
+  pageSize: PropTypes.string.isRequired,
 };
 
 function AlertContainer() {
@@ -215,11 +223,40 @@ function AlertContainer() {
     setPageSize(newSize);
   };
 
+  const handleSearchTerm = (newTerm) => {
+    setSearchTerm(newTerm);
+    setCurrentPage(1);
+
+    const searchAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert/search?page=${currentPage}&term=${newTerm}&limit=${pageSize}`;
+    axios.get(searchAPI)
+      .then((response) => {
+        const alertObj = response.data;
+        setPageStatus(alertObj);
+        console.log(alertObj);
+        if (!alertObj.message) {
+          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length) });
+          setTotalPages(alertObj.total);
+        }
+
+        const initialCollapseState = {};
+        if (alertObj.groups) {
+          alertObj.groups.forEach((group) => {
+            initialCollapseState[group.name] = true;
+          });
+          setCollapsedGroups(initialCollapseState);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setError(error);
+      });
+  };
+
   return (
     <div>
-      <AlertTitle onSearchChange={setSearchTerm} />
+      <AlertTitle onSearchChange={handleSearchTerm} />
       <AlertList
-        alertStatus={alertStatus}
+        alertStatusGroups={alertStatus.groups}
         collapsedGroups={collapsedGroups}
         toggleCollapse={toggleCollapse}
         searchTerm={searchTerm}
