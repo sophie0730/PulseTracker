@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
+import PropTypes from 'prop-types';
 
 // eslint-disable-next-line react/prop-types
 function AlertTitle({ onSearchChange }) {
@@ -22,7 +23,7 @@ function AlertTitle({ onSearchChange }) {
 // eslint-disable-next-line react/prop-types
 function AlertList({
   // eslint-disable-next-line react/prop-types
-  alertStatus, collapsedGroups, toggleCollapse, searchTerm, handlePriviousClick, handleNextClick,
+  alertStatus, collapsedGroups, toggleCollapse, searchTerm,
 }) {
   const filteredGroups = searchTerm
     // eslint-disable-next-line react/prop-types
@@ -87,13 +88,44 @@ function AlertList({
           </div>
         );
       })}
-      <div>
-        <button onClick={handlePriviousClick}>Previous Page</button>
-        <button onClick={handleNextClick}>Next Page</button>
-      </div>
     </div>
   );
 }
+
+function Pagination({
+  currentPage, totalPages, handlePageChange, handlePageSizeChange, pageSize,
+}) {
+  return (
+      <ul className='pagination pagination-md justify-content-end'>
+        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => handlePageChange(1)}>&laquo;&laquo;</span>
+        </li>
+        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}>&laquo;</span>
+        </li>
+        {currentPage}
+        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}>&raquo;</span>
+        </li>
+        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => handlePageChange(totalPages)}>&raquo;&raquo;</span>
+        </li>
+        <select value={pageSize} onChange={(e) => handlePageSizeChange(e.target.value)}>
+        {[5, 10, 15, 20].map((size) => (
+          <option key={size} value={size}>{size}</option>
+        ))}
+        </select>
+      </ul>
+  );
+}
+
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  handlePageChange: PropTypes.func.isRequired,
+  handlePageSizeChange: PropTypes.func.isRequired,
+  pageSize: PropTypes.number.isRequired,
+};
 
 function AlertContainer() {
   const [alertStatus, setAlertStatus] = useState({ groups: [] });
@@ -102,8 +134,9 @@ function AlertContainer() {
   const [searchTerm, setSearchTerm] = useState('');
   const [responseError, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${itemsPerPage}`;
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${pageSize}`;
   const SERVER_URL = 'http://localhost:4000';
 
   useEffect(() => {
@@ -112,7 +145,10 @@ function AlertContainer() {
         .then((response) => {
           const alertObj = response.data;
           setPageStatus(alertObj);
-          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length - 1) });
+          if (!alertObj.message) {
+            setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length) });
+            setTotalPages(alertObj.total);
+          }
 
           const initialCollapseState = {};
           if (alertObj.groups) {
@@ -138,7 +174,7 @@ function AlertContainer() {
       socket.off('dataUpdate', fetchData);
       socket.disconnect();
     };
-  }, [currentPage]);
+  }, [currentPage, pageSize]);
 
   const toggleCollapse = (groupName, event) => {
     event.stopPropagation(); // Stop event from triggering on child elements.
@@ -146,14 +182,6 @@ function AlertContainer() {
       ...prevState,
       [groupName]: !prevState[groupName],
     }));
-  };
-
-  const handlePriviousClick = () => {
-    setCurrentPage(currentPage > 1 ? currentPage - 1 : 1);
-  };
-
-  const handleNextClick = () => {
-    setCurrentPage(pageStatus.groups.length < itemsPerPage + 1 ? currentPage : currentPage + 1);
   };
 
   if (responseError) {
@@ -168,16 +196,24 @@ function AlertContainer() {
     );
   }
 
-  if (alertStatus.message) {
+  if (pageStatus.message) {
     return (
       <div className='error'>
         <div className="title">
           <h1>Alerts</h1>
         </div>
-        <h2>{alertStatus.message}</h2>
+        <h2>{pageStatus.message}</h2>
       </div>
     );
   }
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+  };
 
   return (
     <div>
@@ -187,9 +223,15 @@ function AlertContainer() {
         collapsedGroups={collapsedGroups}
         toggleCollapse={toggleCollapse}
         searchTerm={searchTerm}
-        handlePriviousClick={handlePriviousClick}
-        handleNextClick={handleNextClick}
       ></AlertList>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+        handlePageSizeChange={handlePageSizeChange}
+        pageSize={pageSize}
+      />
+
     </div>
   );
 }

@@ -15,6 +15,7 @@ export async function showAlerts(req, res) {
 
     const { groups } = alertFile;
     const slicedGroups = groups.slice(limit * (page - 1), limit * page + 1);
+    const totalPage = Math.ceil(groups.length / limit);
 
     const alertPromises = slicedGroups.map(async (group) => {
       const alertStatus = await fetchAlertStatus(group);
@@ -29,7 +30,7 @@ export async function showAlerts(req, res) {
     });
 
     await Promise.allSettled(alertPromises);
-    return res.status(200).json({ groups: slicedGroups });
+    return res.status(200).json({ groups: slicedGroups, total: totalPage });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message, stack: error.stack });
