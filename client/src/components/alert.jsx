@@ -145,33 +145,29 @@ function AlertContainer() {
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${pageSize}`;
+  const searchAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert/search?page=${currentPage}&term=${searchTerm}&limit=${pageSize}`;
+
   const SERVER_URL = 'http://localhost:4000';
 
+  const fetchData = () => {
+    const api = searchTerm ? searchAPI : alertAPI;
+    axios.get(api)
+      .then((response) => {
+        const alertObj = response.data;
+        setPageStatus(alertObj);
+        if (!alertObj.message) {
+          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length - 1) });
+          setTotalPages(alertObj.total);
+        }
+
+      })
+      .catch((error) => {
+        console.error(error);
+        setError(error);
+      });
+  };
+
   useEffect(() => {
-    const fetchData = () => {
-      axios.get(alertAPI)
-        .then((response) => {
-          const alertObj = response.data;
-          setPageStatus(alertObj);
-          if (!alertObj.message) {
-            setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length) });
-            setTotalPages(alertObj.total);
-          }
-
-          const initialCollapseState = {};
-          if (alertObj.groups) {
-            alertObj.groups.forEach((group) => {
-              initialCollapseState[group.name] = true;
-            });
-            setCollapsedGroups(initialCollapseState);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          setError(error);
-        });
-    };
-
     fetchData();
 
     const socket = io(SERVER_URL);
@@ -182,10 +178,15 @@ function AlertContainer() {
       socket.off('dataUpdate', fetchData);
       socket.disconnect();
     };
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, searchTerm]);
+
+  const handleSearchTerm = (newTerm) => {
+    setSearchTerm(newTerm);
+    setCurrentPage(1);
+  };
 
   const toggleCollapse = (groupName, event) => {
-    event.stopPropagation(); // Stop event from triggering on child elements.
+    event.stopPropagation();
     setCollapsedGroups((prevState) => ({
       ...prevState,
       [groupName]: !prevState[groupName],
@@ -221,35 +222,6 @@ function AlertContainer() {
 
   const handlePageSizeChange = (newSize) => {
     setPageSize(newSize);
-  };
-
-  const handleSearchTerm = (newTerm) => {
-    setSearchTerm(newTerm);
-    setCurrentPage(1);
-
-    const searchAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert/search?page=${currentPage}&term=${newTerm}&limit=${pageSize}`;
-    axios.get(searchAPI)
-      .then((response) => {
-        const alertObj = response.data;
-        setPageStatus(alertObj);
-        console.log(alertObj);
-        if (!alertObj.message) {
-          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length) });
-          setTotalPages(alertObj.total);
-        }
-
-        const initialCollapseState = {};
-        if (alertObj.groups) {
-          alertObj.groups.forEach((group) => {
-            initialCollapseState[group.name] = true;
-          });
-          setCollapsedGroups(initialCollapseState);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError(error);
-      });
   };
 
   return (
