@@ -1,17 +1,25 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
+import PropTypes from 'prop-types';
 
 // eslint-disable-next-line react/prop-types
 function AlertTitle({ onSearchChange }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSearchIconClick = () => {
+    onSearchChange(inputValue);
+  };
   return (
     <div className='head'>
       <div className="title">
         <h1>Alerts</h1>
       </div>
       <div className="search">
-        <input className="searchBar" placeholder="Search Alerts..." onChange={(e) => onSearchChange(e.target.value)}></input>
-        <a href="#">
+        <input className="searchBar" placeholder="Search Alerts..." onChange={(e) => {
+          setInputValue(e.target.value);
+        }}></input>
+        <a href="#" onClick={handleSearchIconClick}>
           <img src="./images/search.png" alt="Search"></img>
         </a>
       </div>
@@ -22,19 +30,11 @@ function AlertTitle({ onSearchChange }) {
 // eslint-disable-next-line react/prop-types
 function AlertList({
   // eslint-disable-next-line react/prop-types
-  alertStatus, collapsedGroups, toggleCollapse, searchTerm,
+  alertStatusGroups, collapsedGroups, toggleCollapse,
 }) {
-  const filteredGroups = searchTerm
-    // eslint-disable-next-line react/prop-types
-    ? alertStatus.groups.filter((group) =>
-      // eslint-disable-next-line react/prop-types, implicit-arrow-linebreak
-      group.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    // eslint-disable-next-line react/prop-types
-    : alertStatus.groups;
-  // eslint-disable-next-line block-spacing, no-lone-blocks, no-unused-expressions
   return (
     <div className='alerts'>
-      {filteredGroups && filteredGroups.map((group) => {
+      {alertStatusGroups && alertStatusGroups.map((group) => {
         let firingClass = '';
         let backGroundClass = '';
         if (group.startTime === 'NA') {
@@ -91,50 +91,102 @@ function AlertList({
   );
 }
 
+AlertList.propTypes = {
+  alertStatusGroups: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+    startTime: PropTypes.string,
+  })).isRequired,
+  collapsedGroups: PropTypes.object.isRequired,
+  toggleCollapse: PropTypes.func.isRequired,
+};
+
+function Pagination({
+  currentPage, totalPages, handlePageChange, handlePageSizeChange, pageSize,
+}) {
+  return (
+      <ul className='pagination pagination-md justify-content-end'>
+        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => handlePageChange(1)}>&laquo;&laquo;</span>
+        </li>
+        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}>&laquo;</span>
+        </li>
+        {currentPage}
+        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}>&raquo;</span>
+        </li>
+        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+          <span className='page-link' onClick={() => handlePageChange(totalPages)}>&raquo;&raquo;</span>
+        </li>
+        <select value={pageSize} onChange={(e) => handlePageSizeChange(e.target.value)}>
+        {[5, 10, 15, 20].map((size) => (
+          <option key={size} value={size}>{size}</option>
+        ))}
+        </select>
+      </ul>
+  );
+}
+
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  handlePageChange: PropTypes.func.isRequired,
+  handlePageSizeChange: PropTypes.func.isRequired,
+  pageSize: PropTypes.string.isRequired,
+};
+
 function AlertContainer() {
-  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert`;
-  const SERVER_URL = 'http://localhost:4000';
   const [alertStatus, setAlertStatus] = useState({ groups: [] });
+  const [pageStatus, setPageStatus] = useState({ groups: [] });
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [responseError, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${pageSize}`;
+  const searchAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert/search?page=${currentPage}&term=${searchTerm}&limit=${pageSize}`;
 
-  useEffect(() => {
-    axios.get(alertAPI)
+  const SERVER_URL = 'http://localhost:4000';
+
+  const fetchData = () => {
+    const api = searchTerm ? searchAPI : alertAPI;
+    axios.get(api)
       .then((response) => {
         const alertObj = response.data;
-        setAlertStatus(alertObj);
-
-        const initialCollapseState = {};
-        if (alertObj.groups) {
-          alertObj.groups.forEach((group) => {
-            initialCollapseState[group.name] = true;
-          });
-          setCollapsedGroups(initialCollapseState);
+        setPageStatus(alertObj);
+        if (!alertObj.message) {
+          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length - 1) });
+          setTotalPages(alertObj.total);
         }
+
       })
       .catch((error) => {
         console.error(error);
         setError(error);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
 
     const socket = io(SERVER_URL);
     socket.on('connect', () => console.log('connected to socket.io server'));
-    socket.on('dataUpdate', () => {
-      axios.get(alertAPI)
-        .then((response) => {
-          const alertObj = response.data;
-          setAlertStatus(alertObj);
-        })
-        .catch((error) => {
-          setError(error);
-          console.error(error);
-        });
-    });
-  }, []);
+    socket.on('dataUpdate', fetchData);
+
+    return () => {
+      socket.off('dataUpdate', fetchData);
+      socket.disconnect();
+    };
+  }, [currentPage, pageSize, searchTerm]);
+
+  const handleSearchTerm = (newTerm) => {
+    setSearchTerm(newTerm);
+    setCurrentPage(1);
+  };
 
   const toggleCollapse = (groupName, event) => {
-    event.stopPropagation(); // Stop event from triggering on child elements.
+    event.stopPropagation();
     setCollapsedGroups((prevState) => ({
       ...prevState,
       [groupName]: !prevState[groupName],
@@ -153,26 +205,42 @@ function AlertContainer() {
     );
   }
 
-  if (alertStatus.message) {
+  if (pageStatus.message) {
     return (
       <div className='error'>
         <div className="title">
           <h1>Alerts</h1>
         </div>
-        <h2>{alertStatus.message}</h2>
+        <h2>{pageStatus.message}</h2>
       </div>
     );
   }
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(newSize);
+  };
+
   return (
     <div>
-      <AlertTitle onSearchChange={setSearchTerm} />
+      <AlertTitle onSearchChange={handleSearchTerm} />
       <AlertList
-        alertStatus={alertStatus}
+        alertStatusGroups={alertStatus.groups}
         collapsedGroups={collapsedGroups}
         toggleCollapse={toggleCollapse}
         searchTerm={searchTerm}
       ></AlertList>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+        handlePageSizeChange={handlePageSizeChange}
+        pageSize={pageSize}
+      />
+
     </div>
   );
 }
