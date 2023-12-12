@@ -8,7 +8,7 @@ const filePath = await findUp('pulse.yml');
 export const configFile = yaml.load(fs.readFileSync(filePath), 'utf-8');
 
 const alertFilePath = path.join(path.dirname(filePath), configFile.rule_files[0]);
-export const alertFile = yaml.load(fs.readFileSync(alertFilePath), 'utf-8');
+export const alertFile = (configFile.rule_files[0]) ? yaml.load(fs.readFileSync(alertFilePath), 'utf-8') : undefined;
 // 現在先設只能有一個config檔!!
 
 // server

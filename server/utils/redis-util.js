@@ -5,29 +5,47 @@ import redis from 'redis';
 //   url: `rediss://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
 // });
 
-export const SOCKET_KEY = 'socket';
-export const client = redis.createClient();
+export const PUBSUB_CHANNEL = 'dataUpdateChannel';
+export const publisher = redis.createClient();
+export const subscriber = redis.createClient();
 
-client.on('error', async (err) => {
-  console.error('Failed to connect to Redis', err);
-  await client.disconnect();
+publisher.on('error', async (err) => {
+  console.error('Failed to connect to Subscriber', err);
+  await publisher.disconnect();
 });
 
-async function connectRedis() {
+subscriber.on('error', async (err) => {
+  console.error('Failed to connect to Subscriber', err);
+  await subscriber.disconnect();
+});
+
+async function connectPublisher() {
   try {
-    await client.connect();
-    console.log('Connect to Redis');
+    await publisher.connect();
+    console.log('Connect to Publisher');
   } catch (err) {
-    console.error('Failed to connect to Redis', err);
-    await client.disconnect();
-    await client.connect();
+    console.error('Failed to connect to Publisher', err);
+    await publisher.disconnect();
+    await publisher.connect();
   }
 }
 
-connectRedis();
+async function connectSubscriber() {
+  try {
+    await subscriber.connect();
+    console.log('Connect to Subscriber');
+  } catch (err) {
+    console.error('Failed to connect to Subscriber', err);
+    await subscriber.disconnect();
+    await subscriber.connect();
+  }
+}
 
-export async function sendMessageQueue() {
-  if (client.isReady) {
-    client.rPush(SOCKET_KEY, 'update');
+connectPublisher();
+connectSubscriber();
+
+export async function publishUpdateMessage() {
+  if (publisher.isReady) {
+    publisher.publish(PUBSUB_CHANNEL, 'update');
   }
 }

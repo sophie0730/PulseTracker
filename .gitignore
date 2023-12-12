@@ -22,3 +22,6 @@ sea-config.json
 sea-prep.blob
 exporter.js
 exporter
+alert.yml
+pulse.yml
+scriptAlert.js

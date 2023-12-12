@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import fetchRouter from './routes/fetch.js';
 import dashboardRouter from './routes/dashboard.js';
 import alertRouter from './routes/alert.js';
-import { client, SOCKET_KEY } from './utils/redis-util.js';
+import { subscriber, PUBSUB_CHANNEL } from './utils/redis-util.js';
 
 const app = express();
 
@@ -25,6 +25,10 @@ app.use(express.static(distPath));
 
 app.use(dashboardRouter);
 app.use('/api/1.0', [fetchRouter, alertRouter]);
+
+app.use((req, res) => {
+  res.status(404).send('PAGE NOT FOUND');
+});
 // socket io
 
 const server = createServer(app);
@@ -35,30 +39,22 @@ const io = new Server(server, {
   },
   allowEIO3: true,
 });
-io.on('connection', () => {
-  console.log('connected');
-});
+// io.on('connection', () => {
+//   console.log('connected');
+// });
 
 export { io };
 export default io;
 
 async function messageQueue() {
-  while (!client.isReady) {
+  while (!subscriber.isReady) {
     await new Promise((resolve) => { setTimeout(resolve, 1000); });
     console.log('waiting for Redis client to be ready');
   }
 
-  while (true) {
-    try {
-      const { element } = await client.blPop(SOCKET_KEY, 0);
-      if (element !== undefined) {
-        io.emit('dataUpdate', element);
-      }
-    } catch (error) {
-      console.error(`pop error ${error}`);
-      continue;
-    }
-  }
+  subscriber.subscribe(PUBSUB_CHANNEL, (message) => {
+    io.emit('dataUpdate', message);
+  });
 
 }
 

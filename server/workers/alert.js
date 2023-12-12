@@ -3,7 +3,7 @@
 import { checkAlerts } from '../models/alert.js';
 import { alertFile, alertTimeout } from '../utils/yml-util.js';
 
-const CHECK_TIME_RANGE = '10s';
+const CHECK_TIME_RANGE = `${(alertTimeout + 5).toString()}s`;
 const TIMEOUT = alertTimeout * 1000; // unit: second
 
 const alertStates = {};
@@ -11,6 +11,7 @@ const alertStates = {};
 function sendAlerts() {
   checkAlerts(alertStates, CHECK_TIME_RANGE, alertFile)
     .then(() => {
+      console.log('writting alert success');
       setTimeout(sendAlerts, TIMEOUT);
     })
     .catch((error) => {
@@ -19,10 +20,10 @@ function sendAlerts() {
     });
 }
 
-// self.onmessage = (event) => {
-//   console.log(`Alert worker received: ${event.data}`);
-//   sendAlerts();
-//   postMessage('Complete alert worker tasks');
-// };
-
 sendAlerts();
+
+function sendHeartbeat() {
+  process.send({ type: 'heartbeat' });
+}
+
+setInterval(sendHeartbeat, TIMEOUT);

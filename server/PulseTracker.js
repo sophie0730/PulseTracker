@@ -1,27 +1,42 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import * as server from './app.js';
-import * as storeWorker from './workers/store.js';
-import * as alertWorker from './workers/alert.js';
+// import * as storeWorker from './workers/store.js';
+// import * as alertWorker from './workers/alert.js';
+import { storeTimeout } from './utils/yml-util.js';
 
-// function createWorker(fileName) {
-//   const url = new URL(`./workers/${fileName}`, import.meta.url);
-//   const worker = new Worker(url, { type: 'module' });
+const storeWorkerPath = './workers/store.js';
+const alertWorkerPath = './workers/alert.js';
 
-//   worker.onmessage = (event) => {
-//     console.log(`Message from Worker: ${event.data}`);
-//   };
+function createWorker(scriptPath) {
+  const worker = Bun.spawn(['bun', scriptPath], {
+    onExit(proc, exitCode, signalCode, error) {
+      console.log(`child process exit, code: ${exitCode}, signal: ${signalCode}`);
+      console.log('child process restarting...');
+      createWorker(scriptPath);
+    },
+    ipc(message) {
+      if (message.type === 'heartbeat') {
+        worker.lastHeartbeat = Date.now();
+      }
+    },
+    stdio: ['inherit', 'inherit', 'inherit'],
+  });
 
-//   worker.onerror = (error) => {
-//     console.error('Worker error', error);
-//     worker.terminate();
-//     createWorker();
-//   };
+  worker.lastHeartbeat = Date.now();
+  return worker;
+}
 
-//   return worker;
-// }
+const storeWorker = createWorker(storeWorkerPath);
+const alertWorker = createWorker(alertWorkerPath);
 
-// const store = createWorker('store.js');
-// const alert = createWorker('alert.js');
-
-// store.postMessage('Start store worker tasks');
-// alert.postMessage('Start alert worker tasks');
+setInterval(() => {
+  if (Date.now() - storeWorker.lastHeartbeat > storeTimeout * 1000 + 10000) {
+    console.log('Heartbeat from store worker is lost. Restarting...');
+    storeWorker.kill();
+  }
+  if (Date.now() - alertWorker.lastHeartbeat > storeTimeout * 1000 + 10000) {
+    console.log('Heartbeat from alert worker is lost. Restarting...');
+    alertWorker.kill();
+  }
+}, 5000);

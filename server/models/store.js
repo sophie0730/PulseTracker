@@ -7,7 +7,7 @@ import {
   WRITE_API_URL, TOKEN, MEASUREMENT,
 } from '../utils/influxdb-util.js';
 import { serverUrlArr } from '../utils/yml-util.js';
-import { sendMessageQueue } from '../utils/redis-util.js';
+import { publishUpdateMessage } from '../utils/redis-util.js';
 
 async function storeMetrices(targetUrl) {
   try {
@@ -29,11 +29,10 @@ async function storeMetrices(targetUrl) {
     await axios.post(WRITE_API_URL, storeQuery, {
       headers: { Authorization: `Token ${TOKEN}` },
     })
-      .then(() => {
-        console.log('Writing data to DB successfully!');
-      });
+      .catch((error) => console.error({ path: error.path, message: error.message }));
+
   } catch (error) {
-    console.error(error);
+    console.error({ path: error.path, message: error.message });
   }
 
 }
@@ -43,7 +42,7 @@ async function storeStatus(targetUrl, targetName) {
   const targetStatus = await axios.get(targetUrl)
     .then((response) => response.status)
     .catch((error) => {
-      console.error(error);
+      console.error({ path: error.path, message: error.message });
       errorResponse = error;
     });
 
@@ -53,7 +52,7 @@ async function storeStatus(targetUrl, targetName) {
   axios.post(WRITE_API_URL, statusFlux, {
     headers: { Authorization: `Token ${TOKEN}` },
   })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error({ path: error.path, message: error.message }));
 }
 
 export async function storeExporterStatus() {
@@ -66,7 +65,7 @@ export async function storeExporterStatus() {
     const targetName = item.job_name;
 
     storeStatus(targetUrl, targetName);
-    sendMessageQueue();
+    await publishUpdateMessage();
   }
 }
 

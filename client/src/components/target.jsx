@@ -15,6 +15,7 @@ export function Target() {
   const targetAPI = `${import.meta.env.VITE_HOST}/api/1.0/targets`;
   const SERVER_URL = 'http://localhost:4000';
   const [targetStatus, setTargetStatus] = useState([]);
+  const [responseError, setError] = useState(null);
 
   useEffect(() => {
     axios.get(targetAPI)
@@ -22,7 +23,10 @@ export function Target() {
         const targetArr = response.data;
         setTargetStatus(targetArr);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setError(error);
+      });
 
     const socket = io(SERVER_URL);
     socket.on('connect', () => console.log('connected to socket.io server'));
@@ -35,6 +39,15 @@ export function Target() {
         .catch((error) => console.error(error));
     });
   }, []);
+
+  if (responseError) {
+    return (
+      <div className='error'>
+        <h2>{responseError.message}</h2>
+        <p>{responseError.stack}</p>
+      </div>
+    );
+  }
 
   return (
     <div className='servers'>
