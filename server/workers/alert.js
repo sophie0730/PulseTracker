@@ -19,10 +19,4 @@ function sendAlerts() {
     });
 }
 
-// self.onmessage = (event) => {
-//   console.log(`Alert worker received: ${event.data}`);
-//   sendAlerts();
-//   postMessage('Complete alert worker tasks');
-// };
-
 sendAlerts();
