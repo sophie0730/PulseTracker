@@ -38,7 +38,7 @@ docker compose up
 
 - Please sign in InfluxDB([YOUR HOST]:8086) to create a bucket and API token. They will be used for storing your data.
 
-- Edit .env.templetate according to your InfluxDB setting.
+- Edit .env.template according to your InfluxDB settings. Please remember to rename it to .env after editing all the required information.
 
 - (optional) Edit pulse.yml and alert.yml based on your needs.
 
