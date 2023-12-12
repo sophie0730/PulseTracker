@@ -29,8 +29,8 @@ function scheduleStoreExporterMetrices() {
 scheduleStoreExporterMetrices();
 scheduleStoreExporterStatus();
 
-function sendHeartbeat() {
-  process.send({ type: 'heartbeat' });
-}
+// function sendHeartbeat() {
+//   process.send({ type: 'heartbeat' });
+// }
 
-setInterval(sendHeartbeat, TIMEOUT);
+// setInterval(sendHeartbeat, TIMEOUT);
