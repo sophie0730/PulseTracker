@@ -23,9 +23,13 @@ export async function showAlerts(req, res) {
     const { page, limit } = req.query;
     const pageInt = Number(page);
     const limitInt = Number(limit);
-    const { groups } = alertFile;
 
-    if (!alertFile || !groups || groups.length === 0 || !pageInt || pageInt === 0 || !limitInt || limitInt === 0) {
+    if (!alertFile || !pageInt || pageInt === 0 || !limitInt || limitInt === 0) {
+      return res.status(200).json({ message: 'There is no alerting rule currently' });
+    }
+
+    const { groups } = alertFile;
+    if (!groups || groups.length === 0) {
       return res.status(200).json({ message: 'There is no alerting rule currently' });
     }
 
