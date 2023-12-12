@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -88,8 +87,8 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       } else if (alertStates[group.name].isFiring !== 'true' && dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time) >= duration) {
         alertStates[group.name].isFiring = 'true';
         alertsArr.push({ groupName: group.name, value: alertStates[group.name] });
-        // sendEmail(group.name, group.rules[0].expr);
-        // sendLineMessage(group.name, group.rules[0].expr);
+        sendEmail(group.name, group.rules[0].expr);
+        sendLineMessage(group.name, group.rules[0].expr);
       }
     }
 

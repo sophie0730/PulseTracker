@@ -156,7 +156,7 @@ function AlertContainer() {
         const alertObj = response.data;
         setPageStatus(alertObj);
         if (!alertObj.message) {
-          setAlertStatus({ groups: alertObj.groups.slice(0, alertObj.groups.length - 1) });
+          setAlertStatus({ groups: (alertObj.groups.length > pageSize) ? alertObj.groups.slice(0, alertObj.groups.length - 1) : alertObj.groups.slice(0, alertObj.groups.length) });
           setTotalPages(alertObj.total);
         }
 

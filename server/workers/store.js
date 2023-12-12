@@ -26,11 +26,11 @@ function scheduleStoreExporterMetrices() {
     });
 }
 
-// self.onmessage = (event) => {
-//   console.log(`Store worker received: ${event.data}`);
-//   scheduleStoreExporterMetrices();
-//   scheduleStoreExporterStatus();
-//   postMessage('Complete store worker tasks');
-// };
 scheduleStoreExporterMetrices();
 scheduleStoreExporterStatus();
+
+function sendHeartbeat() {
+  process.send({ type: 'heartbeat' });
+}
+
+setInterval(sendHeartbeat, TIMEOUT);
