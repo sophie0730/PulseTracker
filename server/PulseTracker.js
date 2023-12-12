@@ -1,27 +1,17 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import * as server from './app.js';
 import * as storeWorker from './workers/store.js';
 import * as alertWorker from './workers/alert.js';
 
-// function createWorker(fileName) {
-//   const url = new URL(`./workers/${fileName}`, import.meta.url);
-//   const worker = new Worker(url, { type: 'module' });
+const storeWorkerPath = './workers/store.js';
+const alertWorkerPath = './workers/alert.js';
 
-//   worker.onmessage = (event) => {
-//     console.log(`Message from Worker: ${event.data}`);
-//   };
+const storeProc = Bun.spawn(['bun', storeWorkerPath], {
+  onExit(proc, exitCode, signalCode, error) {
+    console.log(proc, exitCode);
+  },
+  stdio: ['inherit', 'inherit', 'inherit'],
+});
 
-//   worker.onerror = (error) => {
-//     console.error('Worker error', error);
-//     worker.terminate();
-//     createWorker();
-//   };
-
-//   return worker;
-// }
-
-// const store = createWorker('store.js');
-// const alert = createWorker('alert.js');
-
-// store.postMessage('Start store worker tasks');
-// alert.postMessage('Start alert worker tasks');
+await storeProc.exit;

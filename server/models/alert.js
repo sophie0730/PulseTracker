@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
 import axios from 'axios';
@@ -57,24 +59,6 @@ async function storeAlert(alerts) {
     .catch((error) => console.error({ path: error.path, message: error.message }));
 }
 
-// async function storeAlert(groupName, alert) {
-//   let influxQuery;
-//   const timestamp = Date.now() * 1e6;
-//   if (alert == null) {
-//     influxQuery = `${influxUtils.ALERT_MEASUREMENT},item=${groupName} startTime="NA",isFiring="false" ${timestamp}`;
-//   } else {
-//     influxQuery = `${influxUtils.ALERT_MEASUREMENT},item=${groupName} startTime="${alert.startTime}",isFiring="${alert.isFiring}" ${timestamp}`;
-//   }
-
-//   await axios.post(influxUtils.WRITE_API_URL, influxQuery, {
-//     headers: { Authorization: `Token ${influxUtils.TOKEN}` },
-//   })
-//     .then(() => {
-//       console.log('writing alerting db successfully!');
-//     })
-//     .catch((error) => console.error(error));
-// }
-
 export async function checkAlerts(alertStates, timeRange, alertFile) {
   try {
     if (!alertFile) return;
@@ -113,37 +97,6 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
       await storeAlert(alertsArr);
       await publishUpdateMessage();
     }
-
-    // const alertPromises = groups.map(async (group) => {
-    //   const duration = parseTime(group.rules[0].for);
-    //   const fluxQuery = `from(bucket: "${influxUtils.BUCKET}")
-    //   |> range(start: -${timeRange})
-    //   |> filter(${group.rules[0].expr})`;
-
-    //   const data = await fetchData(fluxQuery);
-
-    //   if (data.length === 0) {
-    //     alertStates[group.name] = null;
-    //     await storeAlert(group.name, alertStates[group.name]);
-    //     await publishUpdateMessage();
-    //     return;
-    //   }
-
-    //   if (!alertStates[group.name]) {
-    //     alertStates[group.name] = { startTime: data[0]._time, isFiring: 'pending' };
-    //     await storeAlert(group.name, alertStates[group.name]);
-    //     await publishUpdateMessage();
-    //   } else if (alertStates[group.name].isFiring !== 'true' && dateInterval(alertStates[group.name].startTime, data[data.length - 1]._time) >= duration) {
-    //     alertStates[group.name].isFiring = 'true';
-    //     await storeAlert(group.name, alertStates[group.name]);
-    //     await publishUpdateMessage();
-    //     // sendEmail(group.name, group.rules[0].expr);
-    //     // sendLineMessage(group.name, group.rules[0].expr);
-    //   }
-    // });
-
-    // await Promise.allSettled(alertPromises);
-    // await publishUpdateMessage();
   } catch (error) {
     console.error({ path: error.path, message: error.message });
   }
