@@ -147,7 +147,7 @@ function AlertContainer() {
   const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${pageSize}`;
   const searchAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert/search?page=${currentPage}&term=${searchTerm}&limit=${pageSize}`;
 
-  const SERVER_URL = 'http://localhost:4000';
+  const SERVER_URL = undefined;
 
   const fetchData = () => {
     const api = searchTerm ? searchAPI : alertAPI;
