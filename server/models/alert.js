@@ -63,7 +63,7 @@ export async function checkAlerts(alertStates, timeRange, alertFile) {
     if (!alertFile) return;
     const { groups } = alertFile;
 
-    if (groups.length === 0) return;
+    if (groups.length === 0 || groups[0].name === null) return;
 
     const alertsArr = [];
 

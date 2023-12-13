@@ -11,7 +11,6 @@ const alertStates = {};
 function sendAlerts() {
   checkAlerts(alertStates, CHECK_TIME_RANGE, alertFile)
     .then(() => {
-      console.log('writting alert success');
       setTimeout(sendAlerts, TIMEOUT);
     })
     .catch((error) => {
