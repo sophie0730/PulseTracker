@@ -29,7 +29,7 @@ export async function showAlerts(req, res) {
     }
 
     const { groups } = alertFile;
-    if (!groups || groups.length === 0) {
+    if (!groups || groups.length === 0 || groups[0].name === null) {
       return res.status(200).json({ message: 'There is no alerting rule currently' });
     }
 
