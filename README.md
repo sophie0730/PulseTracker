@@ -20,14 +20,13 @@ sudo ntpdate -u pool.ntp.org
 
 ## How to Use
 - Download the compressed file from Github releases.
+You can refer to Github releases and download your preffered version
 ```
-wget https://github.com/sophie0730/PulseTracker/releases/tag/v0.1.0-beta
+wget https://github.com/sophie0730/PulseTracker/releases/tag/v0.1.1
 ```
 
 - Create a new directory and decompress the file
 ```
-mkdir pulsetracker
-mv pulsetracker_0.1.0-beta_linux.tar ./pulsetracker
 tar xvf pulsetracker_0.1.0-beta_linux.tar
 ```
 
@@ -40,7 +39,9 @@ docker compose up
 
 - Edit .env.template according to your InfluxDB settings. Please remember to rename it to .env after editing all the required information.
 
-- (optional) Edit pulse.yml and alert.yml based on your needs.
+- Edit pulse.yml and alert.yml based on your needs.
+
+- (optional) If you would like to send email or Line message, please register a SMTP server(Mailgun or other services) and Line notify(https://notify-bot.line.me/zh_TW/) token.
 
 - Execute exporters (system and nginx application)
 ```
