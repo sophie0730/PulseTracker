@@ -1,5 +1,5 @@
 # Config your alerting ruls
-# No need to fill data for rules and annotations columns 
+# No need to fill data for rules and annotations  
 groups: # groups should be entered once
 - name: # alert title
   rules:
