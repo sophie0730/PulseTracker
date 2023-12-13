@@ -24,19 +24,19 @@ collectDefaultMetrics({
 });
 
 const httpTotalRequest = new client.Gauge({
-  name: 'http_total_requests',
+  name: 'Http_Total_Requests',
   help: 'http total request',
 });
 
 const guageRequestPerSecond = new client.Gauge({
-  name: 'request_per_second',
+  name: 'Request_Per_Second',
   help: 'Request per second',
   labelNames: ['time'],
 });
 
 const guageResponseTime = new client.Gauge({
-  name: 'max_response_time',
-  help: 'max response time',
+  name: 'Max_Response_Time',
+  help: 'ms',
   labelNames: ['api'],
 });
 

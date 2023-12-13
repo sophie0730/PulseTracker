@@ -21,38 +21,38 @@ collectDefaultMetrics({
 });
 
 const guageCPULoad1m = new client.Gauge({
-  name: 'load_duration_1m',
+  name: 'CPU_Load_1m',
   help: 'Average Load duration 1m',
 });
 
 const guageCPULoad5m = new client.Gauge({
-  name: 'load_duration_5m',
-  help: 'Average Load duration 5m',
+  name: 'CPU_Load_5m',
+  help: 'Average Load 5m',
 });
 
 const guageCPULoad15m = new client.Gauge({
-  name: 'load_duration_15m',
-  help: 'Average Load duration 15m',
+  name: 'CPU_Load_15m',
+  help: 'Average Load 15m',
 });
 
 const guageCPUsage = new client.Gauge({
-  name: 'cpu_average_usage',
-  help: 'CPU usage percentage',
+  name: 'CPU_Average_Usage',
+  help: '(%)',
 });
 
 const guageMemoryUsage = new client.Gauge({
-  name: 'memory_usage',
-  help: 'Memory usage percentage',
+  name: 'Memory_Usage',
+  help: '(%)',
 });
 
 const guageDiskRead = new client.Gauge({
-  name: 'disk_read_average_time',
-  help: 'Disk read average time per I/O (ms)',
+  name: 'Disk_Read_Average_Time',
+  help: '(ms)',
   labelNames: ['device'],
 });
 const guageDiskWrite = new client.Gauge({
-  name: 'disk_write_average_time',
-  help: 'Disk write average time per I/O (ms)',
+  name: 'Disk_Write_Average_Time',
+  help: '(ms)',
   labelNames: ['device'],
 });
 

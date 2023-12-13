@@ -147,8 +147,6 @@ function AlertContainer() {
   const alertAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert?page=${currentPage}&limit=${pageSize}`;
   const searchAPI = `${import.meta.env.VITE_HOST}/api/1.0/alert/search?page=${currentPage}&term=${searchTerm}&limit=${pageSize}`;
 
-  const SERVER_URL = undefined;
-
   const fetchData = () => {
     const api = searchTerm ? searchAPI : alertAPI;
     axios.get(api)
@@ -170,7 +168,7 @@ function AlertContainer() {
   useEffect(() => {
     fetchData();
 
-    const socket = io(SERVER_URL);
+    const socket = io();
     socket.on('connect', () => console.log('connected to socket.io server'));
     socket.on('dataUpdate', fetchData);
 

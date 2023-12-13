@@ -13,7 +13,6 @@ function TargetTitle() {
 
 export function Target() {
   const targetAPI = `${import.meta.env.VITE_HOST}/api/1.0/targets`;
-  const SERVER_URL = 'http://localhost:4000';
   const [targetStatus, setTargetStatus] = useState([]);
   const [responseError, setError] = useState(null);
 
@@ -28,7 +27,7 @@ export function Target() {
         setError(error);
       });
 
-    const socket = io(SERVER_URL);
+    const socket = io();
     socket.on('connect', () => console.log('connected to socket.io server'));
     socket.on('dataUpdate', () => {
       axios.get(targetAPI)
