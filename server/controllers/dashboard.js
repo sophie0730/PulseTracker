@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import moment from 'moment';
 
 const filePath = '/home/sophie/personal/server/dashboard-table.json';
+const graphFilePath = '/home/sophie/personal/server/dashboard-graph.json';
 
 function appendToFile(path, dashboardName) {
   let jsonArr = [];
@@ -102,5 +103,55 @@ export function deleteDashboardTable(req, res) {
     return res.status(200).json(newData);
   } catch (error) {
     return res.status(500).json({ message: error });
+  }
+}
+
+export function getDashboardDetail(req, res) {
+  const { id } = req.params;
+  if (!fs.existsSync(filePath)) {
+    return res.json([]);
+  }
+
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  if (fileContent.length === 0 || fileContent === '') return res.json([]);
+
+  const fileContentJson = JSON.parse(fileContent);
+  const detailObject = fileContentJson.objects.filter((item) => item.id === Number(id));
+  return res.json(detailObject);
+}
+
+export function addDashboardGraph(req, res) {
+  try {
+    const { id } = req.params;
+    const { body } = req.body;
+    const { item } = JSON.parse(body);
+    const { type } = JSON.parse(body);
+    let newArr = [];
+
+    const newGraph = {
+      id,
+      item,
+      type,
+    };
+
+    if (!fs.existsSync(graphFilePath)) {
+      return res.status(500).json({ message: 'Graph file not exist' });
+    }
+
+    const fileContent = fs.readFileSync(graphFilePath, 'utf-8');
+    const fileContentJson = (fileContent === '') ? '' : JSON.parse(fileContent);
+    newArr = (fileContentJson === '') ? [] : fileContentJson;
+
+    newArr.push(newGraph);
+
+    fs.writeFile(graphFilePath, JSON.stringify(newArr, null, 1), (error) => {
+      if (error) {
+        console.error('Error writing graph', error);
+      }
+    });
+
+    return res.json('');
+  } catch (error) {
+    return res.status(500).json({ message: 'Graph is not able to be saved' });
   }
 }

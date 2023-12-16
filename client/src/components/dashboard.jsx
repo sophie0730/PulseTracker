@@ -170,6 +170,11 @@ function DashboardTable() {
     fetchRows();
   }, [rows]);
 
+  const handleLaunchClick = (id) => {
+    const targetUrl = `/dashboard/detail/${id}`;
+    window.location.href = targetUrl;
+  };
+
   const handleDeleteClick = async(id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}`);
@@ -220,7 +225,7 @@ function DashboardTable() {
             icon={<LaunchIcon />}
             label="launch"
             className="textPrimary"
-            // onClick={() => handleLaunchClick(params.id)}
+            onClick={() => handleLaunchClick(params.id)}
             color="inherit"
           />
           <GridActionsCellItem

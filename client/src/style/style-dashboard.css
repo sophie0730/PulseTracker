@@ -16,3 +16,20 @@
 #create-dashboard-btn {
   margin: 0.5rem 2rem;
 }
+
+.detail-btn {
+  margin: 1rem 2rem 1rem 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-top {
+  display: flex;
+    margin: 0 10rem 0 2rem;
+}
+
+.detail-title {
+  margin-top: -1rem;
+  margin-right: 4rem;
+  font-size: 1.5rem;
+}

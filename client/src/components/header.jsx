@@ -5,7 +5,7 @@ export function Header() {
         <div className="header-left">
           <div className="logo">
             <a href="/graph">
-              <img src="./images/logo.png"></img>
+              <img src="/images/logo.png"></img>
             </a>
           </div>
           <div className="nav-bar">
