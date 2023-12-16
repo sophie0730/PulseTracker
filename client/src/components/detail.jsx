@@ -1,25 +1,21 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
-import GridLayout from "react-grid-layout";
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
-import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-
-// import {
-//   DataGrid,
-//   GridActionsCellItem,
-// } from '@mui/x-data-grid';
 import {
   Select, MenuItem, FormControl, InputLabel,
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-// import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
 
-function DetailTop() {
+import { getChart } from '../script/chart.js';
+
+function DetailTop({ setGraphCount }) {
   const style = {
     position: 'absolute',
     top: '50%',
@@ -32,15 +28,20 @@ function DetailTop() {
     p: 4,
   };
   const [open, setOpen] = React.useState(false);
-  const [items, setItems] = React.useState([]);
   const [selectedItem, setSelectedItem] = React.useState('');
   const [selectedType, setSelectedType] = React.useState('');
-  const { id } = useParams();
+  const [items, setItems] = React.useState([]);
 
   const fetchItemsAPI = `${import.meta.env.VITE_HOST}/api/1.0/fetchItems`;
+  const { id } = useParams();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const backToPrevPage = () => {
+    const targetUrl = '/dashboard';
+    window.location.href = targetUrl;
+  };
 
   React.useEffect(() => {
     const fetchItems = async() => {
@@ -61,11 +62,6 @@ function DetailTop() {
     fetchItems();
   }, []);
 
-  const backToPrevPage = () => {
-    const targetUrl = '/dashboard';
-    window.location.href = targetUrl;
-  };
-
   const handleItemChange = (event) => {
     setSelectedItem(event.target.value);
   };
@@ -76,7 +72,7 @@ function DetailTop() {
 
   const saveGraphFile = async() => {
     try {
-      const saveAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}`;
+      const saveAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph`;
       const response = await axios.post(saveAPI, {
         body: JSON.stringify({ item: selectedItem, type: selectedType }),
       });
@@ -95,6 +91,7 @@ function DetailTop() {
 
         setSelectedItem('');
         setSelectedType('');
+        setGraphCount((prevCount) => prevCount + 1);
       }
     } catch (error) {
       console.error(error);
@@ -221,10 +218,9 @@ function DetailTop() {
   );
 }
 
-function DetailTitle() {
-  const { id } = useParams();
+function DetailTitle({ selectedTime, setSelectedTime }) {
   const [title, setTitle] = React.useState('');
-  const [selectedTime, setSeletedTime] = React.useState('30m');
+  const { id } = useParams();
 
   const fetchDashboardTitle = async() => {
     try {
@@ -232,7 +228,7 @@ function DetailTitle() {
       const response = await axios.get(fetchAPI);
       const { data } = response;
       if (data) {
-        setTitle(data[0].name);
+        setTitle(data.name);
       }
     } catch (error) {
       console.error(`Error from fetch detail: ${error}`);
@@ -240,7 +236,7 @@ function DetailTitle() {
   };
 
   const handleSelectTime = (event) => {
-    setSeletedTime(event.target.value);
+    setSelectedTime(event.target.value);
   };
 
   React.useEffect(() => {
@@ -277,16 +273,54 @@ function DetailTitle() {
   );
 }
 
-function DetailGraph() {
+function DetailGraph({ graphCount, selectedTime }) {
+  const { id } = useParams();
+  const [allGraph, setAllGraph] = React.useState([]);
 
+  const fetchAllGraph = async() => {
+    try {
+      const fetchGraphAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph`;
+      const response = await axios.get(fetchGraphAPI);
+
+      setAllGraph(response.data);
+      response.data.forEach((item) => {
+        getChart(item.item, selectedTime, item.type);
+      });
+    } catch (error) {
+      console.error(`Error from fetch graph" ${error}`);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchAllGraph();
+    allGraph.forEach((item) => {
+      getChart(item.item, selectedTime, item.type);
+    });
+  }, [graphCount, selectedTime]);
+
+  return (
+  <div className="charts">
+    <div className="chartWrap">
+      {allGraph && allGraph.map((item) => (
+        <div className="chart" key={`${item.item}-${item.type}`}>
+          <h3>{item.item.replace(/_/g, ' ')}</h3>
+          <canvas id={`${item.item}-${item.type}`}></canvas>
+        </div>
+      ))}
+    </div>
+  </div>
+  );
 }
 
 export default function DashboardDetail() {
+  const [selectedTime, setSeletedTime] = React.useState('30m');
+  const [graphCount, setGraphCount] = React.useState(0);
+
   return (
     <div>
-      <DetailTop />
-      <DetailTitle />
-      <DetailGraph />
+      <DetailTop setGraphCount={setGraphCount}/>
+      <DetailTitle selectedTime={selectedTime} setSelectedTime={setSeletedTime} />
+      <DetailGraph graphCount={graphCount} selectedTime={selectedTime} />
     </div>
   );
 }

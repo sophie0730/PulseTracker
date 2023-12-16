@@ -1,8 +1,8 @@
 import * as fs from 'node:fs';
 import moment from 'moment';
 
-const filePath = '/home/sophie/personal/server/dashboard-table.json';
-const graphFilePath = '/home/sophie/personal/server/dashboard-graph.json';
+const filePath = './dashboard-table.json';
+const graphFilePath = './dashboard-graph.json';
 
 function appendToFile(path, dashboardName) {
   let jsonArr = [];
@@ -116,7 +116,7 @@ export function getDashboardDetail(req, res) {
   if (fileContent.length === 0 || fileContent === '') return res.json([]);
 
   const fileContentJson = JSON.parse(fileContent);
-  const detailObject = fileContentJson.objects.filter((item) => item.id === Number(id));
+  const detailObject = fileContentJson.objects.find((item) => item.id === Number(id)); // 只會有一筆
   return res.json(detailObject);
 }
 
@@ -129,7 +129,7 @@ export function addDashboardGraph(req, res) {
     let newArr = [];
 
     const newGraph = {
-      id,
+      id: Number(id),
       item,
       type,
     };
@@ -154,4 +154,18 @@ export function addDashboardGraph(req, res) {
   } catch (error) {
     return res.status(500).json({ message: 'Graph is not able to be saved' });
   }
+}
+
+export function getDashboardGraph(req, res) {
+  const { id } = req.params;
+  if (!fs.existsSync(graphFilePath)) {
+    return res.json([]);
+  }
+
+  const fileContent = fs.readFileSync(graphFilePath, 'utf-8');
+  if (fileContent.length === 0 || fileContent === '') return res.json([]);
+  console.log(fileContent);
+  const fileContentJson = JSON.parse(fileContent);
+  const graphObject = fileContentJson.filter((item) => item.id === Number(id));
+  return res.json(graphObject);
 }
