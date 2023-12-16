@@ -11,7 +11,7 @@ function appendToFile(path, dashboardName) {
     jsonArr = (fileContent === '') ? [] : JSON.parse(fileContent);
   }
   const newObj = {
-    id: jsonArr.length + 1,
+    id: jsonArr[jsonArr.length - 1].id + 1,
     name: dashboardName,
     createDate: moment().format('YYYY-MM-DD HH:mm:ss(Z)'),
   };
@@ -48,28 +48,35 @@ export function readDashboardTable(req, res) {
 }
 
 export function deleteDashboardTable(req, res) {
-  const { id } = req.params;
-  if (id === undefined || Number.isNaN(Number(id)) !== 'number') return res.status(400).json({ message: 'Your delete action is invalid' });
-
-  const jsonArr = fs.readFileSync(filePath, 'utf-8', (error) => {
-    if (error) {
-      console.error('Error reading file:', error);
-    }
-  });
-
-  let arr;
   try {
-    arr = JSON.parse(jsonArr);
-  } catch (error) {
-    console.error('Error parsing JSON:', error);
-  }
-
-  const newJsonArr = arr.filter((item) => item.id !== id);
-  fs.writeFile(filePath, JSON.stringify(newJsonArr, null, 1), (error) => {
-    if (error) {
-      console.error('Error writing to file', error);
+    const { id } = req.params;
+    if (id === undefined || Number.isNaN(Number(id))) {
+      return res.status(400).json({ message: 'Your delete action is invalid' });
     }
-  });
 
-  return res.status(200).json({ message: 'Delete dashboard successfully!' });
+    const jsonArr = fs.readFileSync(filePath, 'utf-8', (error) => {
+      if (error) {
+        console.error('Error reading file:', error);
+      }
+    });
+    console.log(Number(id));
+    let arr;
+    try {
+      arr = JSON.parse(jsonArr);
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+    }
+
+    const newJsonArr = arr.filter((item) => item.id !== Number(id));
+    fs.writeFile(filePath, JSON.stringify(newJsonArr, null, 1), (error) => {
+      if (error) {
+        console.error('Error writing to file', error);
+      }
+    });
+    console.log(newJsonArr);
+
+    return res.status(200).json(newJsonArr);
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
 }

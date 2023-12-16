@@ -3,8 +3,16 @@
   height: 2.5rem;
   background-color: red;
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   border-radius: 7px;
   border: 1px solid red;
   cursor: pointer
+}
+
+.dashboard-table {
+  margin: 0 2rem;
+}
+
+#create-dashboard-btn {
+  margin: 0.5rem 2rem;
 }

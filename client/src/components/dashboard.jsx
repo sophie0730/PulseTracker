@@ -2,26 +2,18 @@ import * as React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import AddIcon from '@mui/icons-material/Add';
+import LaunchIcon from '@mui/icons-material/Launch';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+
+import {
+  DataGrid,
+  GridActionsCellItem,
+} from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-
-const columns = [
-  { field: 'id', headerName: 'ID', width: 100 },
-  { field: 'name', headerName: 'Dashboard Name', width: 300 },
-  { field: 'createDate', headerName: 'Create Date', width: 400 },
-];
-
-// const rows = [
-//   {
-//     id: 1, name: 'CPU', createDate: '2023/12/14',
-//   },
-//   {
-//     id: 2, name: 'Stylish Nginx', createDate: '2023/12/15',
-//   },
-// ];
 
 function CreateTable() {
   const style = {
@@ -85,7 +77,7 @@ function CreateTable() {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Create a New Table</Button>
+      <Button onClick={handleOpen} startIcon={<AddIcon />} id='create-dashboard-btn'>Create a New Table</Button>
       <ToastContainer
         position="top-center"
         autoClose={5000}
@@ -158,8 +150,8 @@ function CreateTable() {
 }
 
 function DashboardTable() {
-  const fetchDashboardAPI = `${import.meta.env.VITE_HOST}/api/1.0/read-json`;
   const [rows, setRows] = React.useState([]);
+  const fetchDashboardAPI = `${import.meta.env.VITE_HOST}/api/1.0/read-json`;
 
   const fetchRows = async() => {
     await axios.get(fetchDashboardAPI)
@@ -174,25 +166,98 @@ function DashboardTable() {
     fetchRows();
   }, [rows]);
 
+  const handleDeleteClick = async(id) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}`);
+      const { data } = response;
+      if (response.status === 200) {
+        toast.success('Dashboard saved successfully!', {
+          position: 'top-center',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        });
+
+        setRows(data);
+      }
+    } catch (error) {
+      toast.error(`Delete error: ${error}`, {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+    }
+  };
+
+  const columns = [
+    {
+      field: 'id', headerName: 'ID', width: 100, align: 'center', headerAlign: 'center',
+    },
+    { field: 'name', headerName: 'Dashboard Name', width: 400 },
+    { field: 'createDate', headerName: 'Create Date', width: 400 },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      cellClassName: 'actions',
+      renderCell: (params) => (
+        <>
+          <GridActionsCellItem
+            icon={<LaunchIcon />}
+            label="launch"
+            className="textPrimary"
+            // onClick={() => handleLaunchClick(params.id)}
+            color="inherit"
+          />
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteClick(params.id)}
+            color="inherit"
+          />
+        </>
+      ),
+    },
+  ];
+
   return (
     <div>
-      <Box sx={{ height: 400, width: '100%' }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
+      <DataGrid
+        className='dashboard-table'
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
             },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-        <button id='deleteBtn'>Delete Dashboard</button>
-      </Box>
+          },
+        }}
+        pageSizeOptions={[5]}
+        disableRowSelectionOnClick
+    />
+    <ToastContainer
+      position="top-center"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="colored"
+    />
     </div>
 
   );

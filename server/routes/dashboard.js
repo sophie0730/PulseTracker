@@ -5,5 +5,6 @@ const router = Router();
 
 router.route('/save-json').post(dashboard.saveDashboardTable);
 router.route('/read-json').get(dashboard.readDashboardTable);
+router.route('/dashboard/:id').delete(dashboard.deleteDashboardTable);
 
 export default router;
