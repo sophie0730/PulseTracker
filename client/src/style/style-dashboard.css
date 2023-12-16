@@ -1,0 +1,10 @@
+#deleteBtn {
+  margin-top: 1rem;
+  height: 2.5rem;
+  background-color: red;
+  color: white;
+  font-size: 15px;
+  border-radius: 7px;
+  border: 1px solid red;
+  cursor: pointer
+}

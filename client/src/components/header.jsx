@@ -18,6 +18,9 @@ export function Header() {
             <a href="/target" className="bar-link">
               Targets
             </a>
+            <a href="/dashboard" className="bar-link">
+              Dashboard
+            </a>
           </div>
         </div>
       </div>

@@ -1,12 +1,9 @@
 import { Router } from 'express';
-
-import { showDashboard } from '../controllers/dashboard.js';
+import * as dashboard from '../controllers/dashboard.js';
 
 const router = Router();
 
-router.route('/index.html').get(showDashboard);
-router.route('/graph').get(showDashboard);
-router.route('/alert').get(showDashboard);
-router.route('/target').get(showDashboard);
+router.route('/save-json').post(dashboard.saveDashboardTable);
+router.route('/read-json').get(dashboard.readDashboardTable);
 
 export default router;
