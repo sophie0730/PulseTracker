@@ -60,6 +60,7 @@ function CreateTable() {
         });
       }
     } catch (error) {
+      console.error(error);
       toast.error('Save failed. Please try again.', {
         position: 'top-center',
         autoClose: 5000,
@@ -156,8 +157,11 @@ function DashboardTable() {
   const fetchRows = async() => {
     await axios.get(fetchDashboardAPI)
       .then((response) => {
-        const { data } = response;
-        setRows(data);
+        const { objects } = response.data;
+        if (objects) {
+          setRows(objects);
+        }
+
       })
       .catch((error) => console.error('Error from fetch dashboard', error.message));
   };
