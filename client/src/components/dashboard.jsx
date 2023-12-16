@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
@@ -15,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 
-function CreateTable() {
+function CreateTable({ setRows }) {
   const style = {
     position: 'absolute',
     top: '50%',
@@ -48,6 +49,7 @@ function CreateTable() {
       });
 
       if (response.status === 200) {
+        setRows(response.data);
         toast.success('Dashboard saved successfully!', {
           position: 'top-center',
           autoClose: 5000,
@@ -150,8 +152,7 @@ function CreateTable() {
   );
 }
 
-function DashboardTable() {
-  const [rows, setRows] = React.useState([]);
+function DashboardTable({ setRows, rows }) {
   const fetchDashboardAPI = `${import.meta.env.VITE_HOST}/api/1.0/read-json`;
 
   const fetchRows = async() => {
@@ -273,10 +274,11 @@ function DashboardTable() {
 }
 
 export default function Dashboard() {
+  const [rows, setRows] = React.useState([]);
   return (
     <div>
-      <CreateTable />
-      <DashboardTable />
+      <CreateTable setRows={setRows} />
+      <DashboardTable setRows={setRows} rows={rows} />
     </div>
   );
 }

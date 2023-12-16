@@ -34,6 +34,33 @@ function appendToFile(path, dashboardName) {
       console.error('Error writing to file', error);
     }
   });
+  return data;
+}
+
+function deleteGraph(id, graph) {
+  let dataJson;
+
+  const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
+    if (error) {
+      console.error('Error reading file:', error);
+    }
+  });
+
+  try {
+    dataJson = JSON.parse(data);
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+  }
+  console.log(dataJson);
+  const newData = dataJson.filter((object) => (object.id === Number(id) && (graph === 'all') ? '' : object.item === graph));
+
+  fs.writeFile(graphFilePath, JSON.stringify(newData, null, 1), (error) => {
+    if (error) {
+      console.error('Error writing to file', error);
+    }
+  });
+
+  return newData;
 }
 
 export function saveDashboardTable (req, res) {
@@ -45,8 +72,8 @@ export function saveDashboardTable (req, res) {
     if (!dashboardName || !dashboardName.trim()) return res.status(400).json({ message: 'Dashboard name cannot be empty' });
     if (dashboardName.length > 30) return res.status(400).json({ message: 'Dashboard name should not exceed 30 characters' });
 
-    appendToFile(filePath, dashboardName);
-    return res.status(200).json({ message: 'Saving dashboard successfully!' });
+    const newObj = appendToFile(filePath, dashboardName);
+    return res.status(200).json(newObj);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Save dashboard failed' });
@@ -76,10 +103,10 @@ export function deleteDashboardTable(req, res) {
         console.error('Error reading file:', error);
       }
     });
-    console.log(Number(id));
     let dataJson;
     let objects;
     let total;
+
     try {
       dataJson = JSON.parse(data);
       objects = dataJson.objects;
@@ -98,7 +125,8 @@ export function deleteDashboardTable(req, res) {
         console.error('Error writing to file', error);
       }
     });
-    console.log(newData);
+
+    deleteGraph(id, 'all');
 
     return res.status(200).json(newData);
   } catch (error) {
@@ -168,4 +196,22 @@ export function getDashboardGraph(req, res) {
   const fileContentJson = JSON.parse(fileContent);
   const graphObject = fileContentJson.filter((item) => item.id === Number(id));
   return res.json(graphObject);
+}
+
+export function deleteDashboardGraph(req, res) {
+  const { id } = req.params;
+  const { graph } = req.query;
+
+  if (!fs.existsSync(graphFilePath)) {
+    return res.json([]);
+  }
+
+  if (id === undefined || Number.isNaN(Number(id))) {
+    return res.status(400).json({ message: 'Your delete action is invalid' });
+  }
+
+  const newData = deleteGraph(id, graph);
+
+  return res.status(200).json(newData);
+
 }
