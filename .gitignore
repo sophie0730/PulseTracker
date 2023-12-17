@@ -26,3 +26,5 @@ alert.yml
 alert1.yml
 pulse.yml
 scriptAlert.js
+dashboard-table.json
+dashboard-graph.json

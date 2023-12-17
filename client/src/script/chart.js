@@ -133,7 +133,7 @@ export async function getChart(item, time, type) {
   const values = responseData.map((element) => element._value);
   const tags = responseData.map((element) => element.tag);
 
-  const ctx = document.getElementById(`${item}`).getContext('2d');
+  const ctx = document.getElementById(`${item}-${type}`).getContext('2d');
 
   let datasets = [];
   let groupData = {};
@@ -160,18 +160,28 @@ export async function getChart(item, time, type) {
     datasets = getMaxValueDatasets(groupData, tags[0]);
   }
 
-  if (charts[chartId]) {
-    charts[chartId].destroy();
+  if (charts[chartId] && charts[chartId].type === type) {
+    charts[chartId].chart.destroy();
   }
 
-  const data = { labels: (type === 'bar-group' && item.includes('max')) ? Object.keys(groupData) : times, datasets };
+  const data = {
+    labels: type === 'bar-group' && item.includes('max') ? Object.keys(groupData) : times,
+    datasets,
+  };
+  const chartType = type === 'line' ? 'line' : 'bar';
+  // eslint-disable-next-line no-nested-ternary
+  const chartOptions = type === 'line' ? options : type === 'bar-time' ? optionsBarWithTime : optionsBar;
 
-  charts[chartId] = new Chart(ctx, {
-    type: type === 'line' ? 'line' : 'bar',
+  const chart = new Chart(ctx, {
+    type: chartType,
     data,
-    // eslint-disable-next-line no-nested-ternary
-    options: type === 'line' ? options : type === 'bar-time' ? optionsBarWithTime : optionsBar,
+    options: chartOptions,
   });
+
+  charts[chartId] = {
+    chart,
+    type,
+  };
 
 }
 

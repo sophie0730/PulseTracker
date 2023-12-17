@@ -5,15 +5,18 @@ import Header from './components/header';
 import Graph from './components/graph';
 import Target from './components/target';
 import AlertContainer from './components/alert';
+import Dashboard from './components/dashboard';
+import Detail from './components/detail';
 
 function App() {
-  // const [count, setCount] = useState(0);
 
   return (
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Graph />}></Route>
+        <Route path="/" element={<Dashboard />}></Route>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
+        <Route path="/dashboard/detail/:id" element={<Detail />}></Route>
         <Route path="/target" element={<Target />}></Route>
         <Route path="/graph" element={<Graph />}></Route>
         <Route path="/alert" element={<AlertContainer />}></Route>
