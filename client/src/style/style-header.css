@@ -33,6 +33,20 @@
   font-size: 1.25rem;
 }
 
+.bar-link.active {
+  color: rgba(255, 99, 132, 1);
+  font-weight: bold;
+}
+
+.bar-link.active:after {
+  content: '';
+  position: absolute;
+  bottom: -1px; 
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
 
 .nav-bar a:hover {
   color: #8b572a;

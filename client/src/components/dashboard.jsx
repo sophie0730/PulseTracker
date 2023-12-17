@@ -79,7 +79,7 @@ function CreateTable({ setRows }) {
   };
 
   return (
-    <div>
+    <div style={{ margin: '1rem 0' }}>
       <Button onClick={handleOpen} startIcon={<AddIcon />} id='create-dashboard-btn'>Create a New Table</Button>
       <ToastContainer
         position="top-center"
