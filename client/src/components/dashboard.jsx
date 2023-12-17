@@ -30,6 +30,7 @@ function CreateTable({ setRows }) {
   };
   const [open, setOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
+  const [isAdding, setIsAdding] = React.useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -44,6 +45,7 @@ function CreateTable({ setRows }) {
 
   const saveJsonFile = async() => {
     try {
+      setIsAdding(true);
       const response = await axios.post(`${import.meta.env.VITE_HOST}/api/1.0/save-json`, {
         body: JSON.stringify({ inputValue }),
       });
@@ -74,6 +76,7 @@ function CreateTable({ setRows }) {
         theme: 'colored',
       });
     } finally {
+      setIsAdding(false);
       handleClose();
     }
   };
@@ -126,6 +129,7 @@ function CreateTable({ setRows }) {
                 fontSize: 12,
                 fontWeight: 600,
               }}
+              disabled={isAdding}
             >
               ADD
             </Button>
@@ -202,7 +206,7 @@ function DashboardTable({ setRows, rows }) {
       const { data } = response;
 
       if (response.status === 200 && graphResponse.status === 200) {
-        toast.success('Dashboard saved successfully!', {
+        toast.success('Dashboard delete successfully!', {
           position: 'top-center',
           autoClose: 5000,
           hideProgressBar: false,

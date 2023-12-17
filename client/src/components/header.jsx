@@ -23,13 +23,13 @@ export function Header() {
             <a href="/alert" className={`bar-link ${activeTab === 'alert' ? 'active' : ''}`}>
               Alerts
             </a>
-            <a href="/graph" className={`bar-link ${activeTab === 'graph' ? 'active' : ''}`}>
+            {/* <a href="/graph" className={`bar-link ${activeTab === 'graph' ? 'active' : ''}`}>
               Graph
-            </a>
+            </a> */}
             <a href="/target" className={`bar-link ${activeTab === 'target' ? 'active' : ''}`}>
               Targets
             </a>
-            <a href="/dashboard" className={`bar-link ${activeTab === 'dashboard' ? 'active' : ''}`}>
+            <a href="/dashboard" className={`bar-link ${activeTab.includes('dashboard') ? 'active' : ''}`}>
               Dashboard
             </a>
           </div>
