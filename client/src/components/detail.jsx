@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
+// import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {
@@ -125,7 +125,6 @@ function DetailTop({ setGraphCount }) {
           <Button onClick={handleOpen} startIcon={<AddIcon />}>ADD GRAPH</Button>
         </div>
       </div>
-
       <ToastContainer
         position="top-center"
         autoClose={5000}
@@ -332,9 +331,14 @@ function DetailGraph({ graphCount, selectedTime }) {
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
           <div style={{ display: 'flex', margin: '0 0.5rem 0.5rem 0.5rem' }}>
-            <Tooltip title="Edit">
+            {/* <Tooltip title="Edit">
               <IconButton>
                 <EditIcon />
+              </IconButton>
+            </Tooltip> */}
+            <Tooltip title="Delete" style={{ height: 'auto' }}>
+              <IconButton onClick={() => handleDeleteGraph(item.item)}>
+                <DeleteIcon />
               </IconButton>
             </Tooltip>
             <Typography
@@ -350,11 +354,6 @@ function DetailGraph({ graphCount, selectedTime }) {
             >
               {item.item.replace(/_/g, ' ')}
             </Typography>
-            <Tooltip title="Delete" style={{ height: 'auto' }}>
-              <IconButton onClick={() => handleDeleteGraph(item.item)}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
           </div>
           <canvas id={`${item.item}-${item.type}`}></canvas>
         </CardContent>

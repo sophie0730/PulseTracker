@@ -153,7 +153,26 @@ function CreateTable({ setRows }) {
 }
 
 function DashboardTable({ setRows, rows }) {
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
   const fetchDashboardAPI = `${import.meta.env.VITE_HOST}/api/1.0/read-json`;
+  const [deleteWindowOpen, setDeleteWindowOpen] = React.useState(false);
+  const [deleteId, setDeleteId] = React.useState(null);
+
+  const handleDeleteOpen = (id) => {
+    setDeleteWindowOpen(true);
+    setDeleteId(id);
+  };
+  const handleDeleteClose = () => setDeleteWindowOpen(false);
 
   const fetchRows = async() => {
     await axios.get(fetchDashboardAPI)
@@ -195,6 +214,7 @@ function DashboardTable({ setRows, rows }) {
         });
 
         setRows(data);
+        handleDeleteClose();
       }
     } catch (error) {
       toast.error(`Delete error: ${error}`, {
@@ -234,7 +254,7 @@ function DashboardTable({ setRows, rows }) {
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDeleteClick(params.id)}
+            onClick={() => handleDeleteOpen(params.id)}
             color="inherit"
           />
         </>
@@ -270,6 +290,51 @@ function DashboardTable({ setRows, rows }) {
       pauseOnHover
       theme="colored"
     />
+    <Modal
+      open={deleteWindowOpen}
+      onClose={handleDeleteClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Typography id="modal-modal-title" variant="h5" component="h2">
+          Do you want to delete this dashboard?
+        </Typography>
+        <Typography>
+            <Button
+            variant='contained'
+            onClick={() => handleDeleteClick(deleteId)}
+            sx={{
+              marginTop: 2,
+              borderRadius: 0,
+              boxShadow: 'none',
+              width: 120,
+              fontSize: 12,
+              fontWeight: 600,
+              backgroundColor: 'rgba(255, 99, 132, 1)',
+            }}
+          >
+            YES, DELETE
+          </Button>
+          <Button
+            variant='contained'
+            onClick={handleDeleteClose}
+            sx={{
+              marginTop: 2,
+              marginLeft: 2,
+              borderRadius: 0,
+              boxShadow: 'none',
+              width: 50,
+              fontSize: 12,
+              fontWeight: 600,
+              backgroundcolor: 'red',
+            }}
+          >
+            NO
+          </Button>
+        </Typography>
+      </Box>
+    </Modal>
     </div>
 
   );
