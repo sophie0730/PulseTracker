@@ -4,15 +4,19 @@ import { useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {
-  Select, MenuItem, FormControl, InputLabel,
+  Select, MenuItem, FormControl, InputLabel, Tooltip,
 } from '@mui/material';
+import Modal from '@mui/material/Modal';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
-
 import { getChart } from '../script/chart.js';
 
 function DetailTop({ setGraphCount }) {
@@ -291,6 +295,28 @@ function DetailGraph({ graphCount, selectedTime }) {
     }
   };
 
+  const handleDeleteGraph = async(graphName) => {
+    try {
+      const deleteAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph/${graphName}`;
+      console.log(deleteAPI);
+      const response = await axios.delete(deleteAPI);
+
+      setAllGraph(response.data);
+    } catch (error) {
+      console.error(`Error from delete graph: ${error}`);
+      toast.error(`Delete failed, error: ${error}`, {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+    }
+  };
+
   React.useEffect(() => {
     fetchAllGraph();
     allGraph.forEach((item) => {
@@ -299,14 +325,42 @@ function DetailGraph({ graphCount, selectedTime }) {
   }, [graphCount, selectedTime]);
 
   return (
-  <div className="charts">
-    <div className="chartWrap">
-      {allGraph && allGraph.map((item) => (
-        <div className="chart" key={`${item.item}-${item.type}`}>
-          <h3>{item.item.replace(/_/g, ' ')}</h3>
+  <div>
+    <div className="detail-chartWrap">
+    {allGraph && allGraph.map((item) => (
+      <div className="detail-chart" key={`${item.item}-${item.type}`}>
+      <Card sx={{ minWidth: 275 }}>
+        <CardContent>
+          <div style={{ display: 'flex', margin: '0 0.5rem 0.5rem 0.5rem' }}>
+            <Tooltip title="Edit">
+              <IconButton>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Typography
+              variant="h5"
+              component="div"
+              style={{
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: 0,
+              }}
+            >
+              {item.item.replace(/_/g, ' ')}
+            </Typography>
+            <Tooltip title="Delete" style={{ height: 'auto' }}>
+              <IconButton onClick={() => handleDeleteGraph(item.item)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
           <canvas id={`${item.item}-${item.type}`}></canvas>
-        </div>
-      ))}
+        </CardContent>
+      </Card>
+      </div>
+    ))}
     </div>
   </div>
   );

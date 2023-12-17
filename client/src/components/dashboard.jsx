@@ -179,8 +179,10 @@ function DashboardTable({ setRows, rows }) {
   const handleDeleteClick = async(id) => {
     try {
       const response = await axios.delete(`${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}`);
+      const graphResponse = await axios.delete(`${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph/all`);
       const { data } = response;
-      if (response.status === 200) {
+
+      if (response.status === 200 && graphResponse.status === 200) {
         toast.success('Dashboard saved successfully!', {
           position: 'top-center',
           autoClose: 5000,

@@ -39,6 +39,7 @@ function appendToFile(path, dashboardName) {
 
 function deleteGraph(id, graph) {
   let dataJson;
+  let newData;
 
   const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
     if (error) {
@@ -51,8 +52,12 @@ function deleteGraph(id, graph) {
   } catch (error) {
     console.error('Error parsing JSON:', error);
   }
-  console.log(dataJson);
-  const newData = dataJson.filter((object) => (object.id === Number(id) && (graph === 'all') ? '' : object.item === graph));
+
+  if (graph === 'all') {
+    newData = dataJson.filter((object) => (object.id !== Number(id)));
+  } else {
+    newData = dataJson.filter((object) => (object.id === Number(id) && object.item !== graph));
+  }
 
   fs.writeFile(graphFilePath, JSON.stringify(newData, null, 1), (error) => {
     if (error) {
@@ -199,8 +204,7 @@ export function getDashboardGraph(req, res) {
 }
 
 export function deleteDashboardGraph(req, res) {
-  const { id } = req.params;
-  const { graph } = req.query;
+  const { id, graphName } = req.params;
 
   if (!fs.existsSync(graphFilePath)) {
     return res.json([]);
@@ -210,7 +214,7 @@ export function deleteDashboardGraph(req, res) {
     return res.status(400).json({ message: 'Your delete action is invalid' });
   }
 
-  const newData = deleteGraph(id, graph);
+  const newData = deleteGraph(id, graphName);
 
   return res.status(200).json(newData);
 
