@@ -4,6 +4,14 @@ import moment from 'moment';
 const filePath = './dashboard-table.json';
 const graphFilePath = './dashboard-graph.json';
 
+class DuplicateError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'DuplicateDashboardNameError';
+    this.duplicateItem = message;
+  }
+}
+
 function appendToFile(path, dashboardName) {
   let jsonArr = [];
   let total;
@@ -14,13 +22,14 @@ function appendToFile(path, dashboardName) {
     jsonArr = (fileContent === '') ? [] : fileContentJson.objects;
     total = (fileContent === '') ? 1 : fileContentJson.total + 1;
   }
-  console.log(total);
+
+  if (jsonArr.find((item) => item.name === dashboardName)) throw new DuplicateError(dashboardName);
+
   const newObj = {
     id: total,
     name: dashboardName,
     createDate: moment().format('YYYY-MM-DD HH:mm:ss(Z)'),
   };
-  console.log(newObj);
 
   jsonArr.push(newObj);
 
@@ -80,7 +89,9 @@ export function saveDashboardTable (req, res) {
     const newObj = appendToFile(filePath, dashboardName);
     return res.status(200).json(newObj);
   } catch (error) {
-    console.error(error);
+    if (error instanceof DuplicateError) {
+      return res.status(400).json({ message: `Duplicate Dashboard name: ${error.duplicateItem}` });
+    }
     return res.status(500).json({ message: 'Save dashboard failed' });
   }
 
@@ -175,6 +186,9 @@ export function addDashboardGraph(req, res) {
     const fileContentJson = (fileContent === '') ? '' : JSON.parse(fileContent);
     newArr = (fileContentJson === '') ? [] : fileContentJson;
 
+    if (newArr.find((element) => element.id === newGraph.id && element.item === newGraph.item)) {
+      throw new DuplicateError(newGraph.item);
+    }
     newArr.push(newGraph);
 
     fs.writeFile(graphFilePath, JSON.stringify(newArr, null, 1), (error) => {
@@ -185,6 +199,9 @@ export function addDashboardGraph(req, res) {
 
     return res.json('');
   } catch (error) {
+    if (error instanceof DuplicateError) {
+      return res.status(400).json({ message: `Duplicate graph name: ${error.duplicateItem}` });
+    }
     return res.status(500).json({ message: 'Graph is not able to be saved' });
   }
 }
@@ -197,7 +214,6 @@ export function getDashboardGraph(req, res) {
 
   const fileContent = fs.readFileSync(graphFilePath, 'utf-8');
   if (fileContent.length === 0 || fileContent === '') return res.json([]);
-  console.log(fileContent);
   const fileContentJson = JSON.parse(fileContent);
   const graphObject = fileContentJson.filter((item) => item.id === Number(id));
   return res.json(graphObject);

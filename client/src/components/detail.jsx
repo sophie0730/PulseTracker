@@ -99,7 +99,7 @@ function DetailTop({ setGraphCount }) {
       }
     } catch (error) {
       console.error(error);
-      toast.error(`Save failed, error: ${error}`, {
+      toast.error(`Save failed, error: ${error.response.data.message}`, {
         position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,
@@ -373,7 +373,7 @@ export default function DashboardDetail() {
     <div>
       <DetailTop setGraphCount={setGraphCount}/>
       <DetailTitle selectedTime={selectedTime} setSelectedTime={setSeletedTime} />
-      <DetailGraph graphCount={graphCount} selectedTime={selectedTime} />
+      <DetailGraph graphCount={graphCount} selectedTime={selectedTime}/>
     </div>
   );
 }

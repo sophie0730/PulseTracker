@@ -63,7 +63,7 @@ function CreateTable({ setRows }) {
       }
     } catch (error) {
       console.error(error);
-      toast.error('Save failed. Please try again.', {
+      toast.error(error.response.data.message, {
         position: 'top-center',
         autoClose: 5000,
         hideProgressBar: false,

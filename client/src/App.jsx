@@ -14,7 +14,7 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Graph />}></Route>
+        <Route path="/" element={<Dashboard />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/dashboard/detail/:id" element={<Detail />}></Route>
         <Route path="/target" element={<Target />}></Route>
