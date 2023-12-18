@@ -28,3 +28,7 @@ pulse.yml
 scriptAlert.js
 dashboard-table.json
 dashboard-graph.json
+dashboard-graph_example.json
+dashboard-table_example.json
+server_exporter.js
+nginx_exporter.js

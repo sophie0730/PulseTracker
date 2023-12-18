@@ -1,10 +1,8 @@
-# Config your alerting ruls
-# No need to fill data for rules and annotations  
-groups: # groups should be entered once
-- name: # alert title
+groups: 
+- name: 
   rules:
-  - alert: # alert name
-    expr: #the alerting rule
-    for:  # the duration for the alert
+  - alert: 
+    expr: 
+    for:  
     annotations:
       summary:
