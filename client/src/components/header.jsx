@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 export function Header() {
   const [activeTab, setActiveTab] = React.useState('dashboard');
@@ -20,18 +20,18 @@ export function Header() {
             </a>
           </div>
           <div className="nav-bar">
-            <a href="/alert" className={`bar-link ${activeTab === 'alert' ? 'active' : ''}`}>
+            <Link to="/alert" className={`bar-link ${activeTab === 'alert' ? 'active' : ''}`}>
               Alerts
-            </a>
+            </Link>
             {/* <a href="/graph" className={`bar-link ${activeTab === 'graph' ? 'active' : ''}`}>
               Graph
             </a> */}
-            <a href="/target" className={`bar-link ${activeTab === 'target' ? 'active' : ''}`}>
+            <Link to="/target" className={`bar-link ${activeTab === 'target' ? 'active' : ''}`}>
               Targets
-            </a>
-            <a href="/dashboard" className={`bar-link ${activeTab.includes('dashboard') ? 'active' : ''}`}>
+            </Link>
+            <Link to="/dashboard" className={`bar-link ${activeTab.includes('dashboard') ? 'active' : ''}`}>
               Dashboard
-            </a>
+            </Link>
           </div>
         </div>
       </div>
