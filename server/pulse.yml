@@ -7,7 +7,7 @@ global:
 alerting:
   static_configs:
     receivers: 
-      - target: "r09426003@ntu.edu.tw"
+      - target: ""
           # - alertmanager:9093
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.

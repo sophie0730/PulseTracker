@@ -1,0 +1,49 @@
+#deleteBtn {
+  margin-top: 1rem;
+  height: 2.5rem;
+  background-color: red;
+  color: white;
+  font-size: 14px;
+  border-radius: 7px;
+  border: 1px solid red;
+  cursor: pointer
+}
+
+.dashboard-table {
+  margin: 0 2rem;
+}
+
+#create-dashboard-btn {
+  margin: 0.5rem 2rem;
+}
+
+.detail-btn {
+  margin: 1rem 2rem 1rem 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-top {
+  display: flex;
+  margin: 0 10rem 0 1rem;
+}
+
+.detail-title {
+  margin-top: -1rem;
+  margin-right: 4rem;
+  font-size: 1.5rem;
+}
+
+.detail-chartWrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* 或者使用 space-around 來分布空間 */
+  gap: 16px; /* 或者您想要的間距 */
+}
+
+.detail-chart {
+  flex: 1 1 calc(50% - 8px); 
+  min-width: 0; 
+  max-width: calc(50% - 8px); 
+}
+

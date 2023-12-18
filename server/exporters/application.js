@@ -45,37 +45,41 @@ register.registerMetric(guageResponseTime);
 register.registerMetric(guageRequestPerSecond);
 
 async function setMetrics() {
-  const totalRequest = await calculate.getTotalRequest();
-  httpTotalRequest.set(totalRequest);
+  try {
+    const totalRequest = await calculate.getTotalRequest();
+    httpTotalRequest.set(totalRequest);
 
-  const apiResponseTimes = await calculate.getResponseTime();
+    const apiResponseTimes = await calculate.getResponseTime();
 
-  for (const api in apiResponseTimes) {
-    const data = apiResponseTimes[api];
-    if (data.name !== undefined) {
-      guageResponseTime.set({ api: data.name }, data.max);
+    for (const api in apiResponseTimes) {
+      const data = apiResponseTimes[api];
+      if (data.name !== undefined) {
+        guageResponseTime.set({ api: data.name }, data.max);
+      }
     }
-  }
 
-  const fluxQuery = `from(bucket: "${BUCKET}")
-  |> range(start: -1d)
-  |> filter(fn: (r) => r.item == "request_per_second")
-  |> last()
-  `;
-  const requestsPerSecond = await calculate.getRequestPerSecond();
-  const lastData = await fetchData(fluxQuery);
-  let lastTime;
-  let unixLastTime;
-  if (lastData.length !== 0) {
-    lastTime = lastData[0]._time;
-    unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
-  }
+    const fluxQuery = `from(bucket: "${BUCKET}")
+    |> range(start: -1d)
+    |> filter(fn: (r) => r.item == "request_per_second")
+    |> last()
+    `;
+    const requestsPerSecond = await calculate.getRequestPerSecond();
+    const lastData = await fetchData(fluxQuery);
+    let lastTime;
+    let unixLastTime;
+    if (lastData.length !== 0) {
+      lastTime = lastData[0]._time;
+      unixLastTime = moment(lastTime, 'YYYY-MM-DDTHH:mm:ssZ').unix();
+    }
 
-  for (const second in requestsPerSecond) {
-    const count = requestsPerSecond[second];
-    // 和db最後一筆比對
-    if (unixLastTime !== undefined && second <= unixLastTime) continue;
-    guageRequestPerSecond.set({ time: second }, count);
+    for (const second in requestsPerSecond) {
+      const count = requestsPerSecond[second];
+      // 和db最後一筆比對
+      if (unixLastTime !== undefined && second <= unixLastTime) continue;
+      guageRequestPerSecond.set({ time: second }, count);
+    }
+  } catch (error) {
+    console.error('Error from nginx exporter', error.message);
   }
 
 }

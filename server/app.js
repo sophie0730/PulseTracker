@@ -7,6 +7,7 @@ import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import fetchRouter from './routes/fetch.js';
+import graphRouter from './routes/graph.js';
 import dashboardRouter from './routes/dashboard.js';
 import alertRouter from './routes/alert.js';
 import { subscriber, PUBSUB_CHANNEL } from './utils/redis-util.js';
@@ -23,8 +24,8 @@ app.use(express.static(viewPath));
 app.use(express.static(modelPath));
 app.use(express.static(distPath));
 
-app.use(dashboardRouter);
-app.use('/api/1.0', [fetchRouter, alertRouter]);
+app.use(graphRouter);
+app.use('/api/1.0', [fetchRouter, alertRouter, dashboardRouter]);
 
 app.use((req, res) => {
   res.status(404).send('PAGE NOT FOUND');
