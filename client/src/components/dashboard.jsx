@@ -83,7 +83,7 @@ function CreateTable({ setRows }) {
 
   return (
     <div style={{ margin: '1rem 0' }}>
-      <Button onClick={handleOpen} startIcon={<AddIcon />} id='create-dashboard-btn'>Create a New Table</Button>
+      <Button onClick={handleOpen} startIcon={<AddIcon />} id='create-dashboard-btn'>Create a New Dashboard</Button>
       <ToastContainer
         position="top-center"
         autoClose={5000}
@@ -241,11 +241,11 @@ function DashboardTable({ setRows, rows }) {
     { field: 'name', headerName: 'Dashboard Name', width: 400 },
     { field: 'createDate', headerName: 'Create Date', width: 400 },
     {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Actions',
+      field: 'edit',
+      type: 'edit',
+      headerName: 'Edit',
       width: 100,
-      cellClassName: 'actions',
+      cellClassName: 'edit',
       renderCell: (params) => (
         <>
           <GridActionsCellItem
@@ -255,6 +255,17 @@ function DashboardTable({ setRows, rows }) {
             onClick={() => handleLaunchClick(params.id)}
             color="inherit"
           />
+        </>
+      ),
+    },
+    {
+      field: 'delete',
+      type: 'delete',
+      headerName: 'Delete',
+      width: 100,
+      cellClassName: 'delete',
+      renderCell: (params) => (
+        <>
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
@@ -279,6 +290,7 @@ function DashboardTable({ setRows, rows }) {
             },
           },
         }}
+        sx={{ fontSize: '1rem' }}
         pageSizeOptions={[5]}
         disableRowSelectionOnClick
     />
