@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
@@ -36,6 +36,7 @@ function DetailTop({ setGraphCount }) {
   const [selectedItem, setSelectedItem] = React.useState('');
   const [items, setItems] = React.useState([]);
   const [selectedType, setSelectedType] = React.useState('');
+  const navigate = useNavigate();
 
   const fetchItemsAPI = `${import.meta.env.VITE_HOST}/api/1.0/fetchItems`;
   const { id } = useParams();
@@ -44,8 +45,7 @@ function DetailTop({ setGraphCount }) {
   const handleClose = () => setOpen(false);
 
   const backToPrevPage = () => {
-    const targetUrl = '/dashboard';
-    window.location.href = targetUrl;
+    navigate('/dashboard');
   };
 
   React.useEffect(() => {

@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
@@ -171,6 +173,7 @@ function DashboardTable({ setRows, rows }) {
   const fetchDashboardAPI = `${import.meta.env.VITE_HOST}/api/1.0/read-json`;
   const [deleteWindowOpen, setDeleteWindowOpen] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleDeleteOpen = (id) => {
     setDeleteWindowOpen(true);
@@ -196,7 +199,7 @@ function DashboardTable({ setRows, rows }) {
 
   const handleLaunchClick = (id) => {
     const targetUrl = `/dashboard/detail/${id}`;
-    window.location.href = targetUrl;
+    navigate(targetUrl);
   };
 
   const handleDeleteClick = async(id) => {

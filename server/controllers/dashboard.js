@@ -60,7 +60,7 @@ function deleteGraph(id, graph) {
   if (graph === 'all') {
     newData = dataJson.filter((object) => (object.id !== Number(id)));
   } else {
-    newData = dataJson.filter((object) => (object.id === Number(id) && object.item !== graph));
+    newData = dataJson.filter((object) => !(object.id === Number(id) && object.item === graph));
   }
 
   fs.writeFile(graphFilePath, JSON.stringify(newData, null, 1), (error) => {
@@ -241,8 +241,11 @@ export function deleteDashboardGraph(req, res) {
     }
 
     const newData = deleteGraph(id, graphName);
+    const newDataPerId = newData.filter((element) => element.id === Number(id));
+    console.log(newData);
+    console.log(newDataPerId);
 
-    return res.status(200).json(newData);
+    return res.status(200).json(newDataPerId);
   } catch (error) {
     return res.status(500).json(`Error from graph deletion: ${error}`);
   }
