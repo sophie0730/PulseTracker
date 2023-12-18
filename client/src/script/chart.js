@@ -156,16 +156,16 @@ export async function getChart(item, time, type) {
     }];
   }
 
-  if (item.includes('max')) {
+  if (item.includes('Max')) {
     datasets = getMaxValueDatasets(groupData, tags[0]);
   }
 
-  if (charts[chartId] && charts[chartId].type === type) {
+  if (charts[chartId]) {
     charts[chartId].chart.destroy();
   }
 
   const data = {
-    labels: type === 'bar-group' && item.includes('max') ? Object.keys(groupData) : times,
+    labels: type === 'bar-group' && item.includes('Max') ? Object.keys(groupData) : times,
     datasets,
   };
   const chartType = type === 'line' ? 'line' : 'bar';
