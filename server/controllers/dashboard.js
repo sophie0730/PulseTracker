@@ -47,7 +47,6 @@ function appendToFile(path, dashboardName) {
 }
 
 function deleteGraph(id, graph) {
-  let dataJson;
   let newData;
 
   const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
@@ -56,11 +55,7 @@ function deleteGraph(id, graph) {
     }
   });
 
-  try {
-    dataJson = JSON.parse(data);
-  } catch (error) {
-    console.error('Error parsing JSON:', error);
-  }
+  const dataJson = JSON.parse(data);
 
   if (graph === 'all') {
     newData = dataJson.filter((object) => (object.id !== Number(id)));
@@ -98,13 +93,17 @@ export function saveDashboardTable (req, res) {
 }
 
 export function readDashboardTable(req, res) {
-  if (!fs.existsSync(filePath)) {
-    return res.json([]);
-  }
+  try {
+    if (!fs.existsSync(filePath)) {
+      return res.json([]);
+    }
 
-  const jsonArr = fs.readFileSync(filePath, 'utf-8');
-  if (jsonArr.length === 0 || jsonArr === '') return res.json([]);
-  return res.json(JSON.parse(jsonArr));
+    const jsonArr = fs.readFileSync(filePath, 'utf-8');
+    if (jsonArr.length === 0 || jsonArr === '') return res.json([]);
+    return res.status(200).json(JSON.parse(jsonArr));
+  } catch (error) {
+    return res.status(500).json(`Error from read table" ${error}`);
+  }
 }
 
 export function deleteDashboardTable(req, res) {
@@ -151,17 +150,22 @@ export function deleteDashboardTable(req, res) {
 }
 
 export function getDashboardDetail(req, res) {
-  const { id } = req.params;
-  if (!fs.existsSync(filePath)) {
-    return res.json([]);
+  try {
+    const { id } = req.params;
+    if (!fs.existsSync(filePath)) {
+      return res.json([]);
+    }
+
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    if (fileContent.length === 0 || fileContent === '') return res.json([]);
+
+    const fileContentJson = JSON.parse(fileContent);
+    const detailObject = fileContentJson.objects.find((item) => item.id === Number(id)); // 只會有一筆
+    return res.status(200).json(detailObject);
+  } catch (error) {
+    return res.status(500).json({ message: `Error from get dashboard title: ${error}` });
   }
 
-  const fileContent = fs.readFileSync(filePath, 'utf-8');
-  if (fileContent.length === 0 || fileContent === '') return res.json([]);
-
-  const fileContentJson = JSON.parse(fileContent);
-  const detailObject = fileContentJson.objects.find((item) => item.id === Number(id)); // 只會有一筆
-  return res.json(detailObject);
 }
 
 export function addDashboardGraph(req, res) {
@@ -207,31 +211,82 @@ export function addDashboardGraph(req, res) {
 }
 
 export function getDashboardGraph(req, res) {
-  const { id } = req.params;
-  if (!fs.existsSync(graphFilePath)) {
-    return res.json([]);
+  try {
+    const { id } = req.params;
+    if (!fs.existsSync(graphFilePath)) {
+      return res.json([]);
+    }
+
+    const fileContent = fs.readFileSync(graphFilePath, 'utf-8');
+    if (fileContent.length === 0 || fileContent === '') return res.json([]);
+    const fileContentJson = JSON.parse(fileContent);
+    const graphObject = fileContentJson.filter((item) => item.id === Number(id));
+    return res.status(200).json(graphObject);
+  } catch (error) {
+    return res.status(500).json(`Error from loading graph: ${error}`);
   }
 
-  const fileContent = fs.readFileSync(graphFilePath, 'utf-8');
-  if (fileContent.length === 0 || fileContent === '') return res.json([]);
-  const fileContentJson = JSON.parse(fileContent);
-  const graphObject = fileContentJson.filter((item) => item.id === Number(id));
-  return res.json(graphObject);
 }
 
 export function deleteDashboardGraph(req, res) {
-  const { id, graphName } = req.params;
+  try {
+    const { id, graphName } = req.params;
 
-  if (!fs.existsSync(graphFilePath)) {
-    return res.json([]);
+    if (!fs.existsSync(graphFilePath)) {
+      return res.json([]);
+    }
+
+    if (id === undefined || Number.isNaN(Number(id))) {
+      return res.status(400).json({ message: 'Your delete action is invalid' });
+    }
+
+    const newData = deleteGraph(id, graphName);
+
+    return res.status(200).json(newData);
+  } catch (error) {
+    return res.status(500).json(`Error from graph deletion: ${error}`);
   }
+}
 
-  if (id === undefined || Number.isNaN(Number(id))) {
-    return res.status(400).json({ message: 'Your delete action is invalid' });
+export function updateDashboardGraphType(req, res) {
+  try {
+    const { id, graphName } = req.params;
+    const { type } = req.body;
+
+    if (!fs.existsSync(graphFilePath)) {
+      return res.json([]);
+    }
+
+    if (id === undefined || Number.isNaN(Number(id))) {
+      return res.status(400).json({ message: 'Your delete action is invalid' });
+    }
+
+    const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
+      if (error) {
+        console.error('Error reading file:', error);
+      }
+    });
+
+    const dataJson = JSON.parse(data);
+    if (!dataJson.find((element) => element.id === Number(id) && element.item === graphName)) {
+      return res.status(400).json({ message: `Cannot find ${graphName}` });
+    }
+
+    const newData = dataJson.map((element) => {
+      if (element.id === Number(id) && element.item === graphName) {
+        return { ...element, type };
+      }
+      return element;
+    });
+
+    fs.writeFile(graphFilePath, JSON.stringify(newData, null, 1), (error) => {
+      if (error) {
+        console.error('Error writing to file', error);
+      }
+    });
+
+    return res.status(200).json(newData);
+  } catch (error) {
+    return res.status(500).json(`Error from update graph type: ${error}`);
   }
-
-  const newData = deleteGraph(id, graphName);
-
-  return res.status(200).json(newData);
-
 }

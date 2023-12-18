@@ -10,5 +10,6 @@ router.route('/dashboard/:id').get(dashboard.getDashboardDetail);
 router.route('/dashboard/:id/graph').get(dashboard.getDashboardGraph);
 router.route('/dashboard/:id/graph').post(dashboard.addDashboardGraph);
 router.route('/dashboard/:id/graph/:graphName').delete(dashboard.deleteDashboardGraph);
+router.route('/dashboard/:id/graph/:graphName').patch(dashboard.updateDashboardGraphType);
 
 export default router;

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
-// import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {
@@ -19,22 +19,23 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getChart } from '../script/chart.js';
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
 function DetailTop({ setGraphCount }) {
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
   const [open, setOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState('');
-  const [selectedType, setSelectedType] = React.useState('');
   const [items, setItems] = React.useState([]);
+  const [selectedType, setSelectedType] = React.useState('');
 
   const fetchItemsAPI = `${import.meta.env.VITE_HOST}/api/1.0/fetchItems`;
   const { id } = useParams();
@@ -279,6 +280,15 @@ function DetailTitle({ selectedTime, setSelectedTime }) {
 function DetailGraph({ graphCount, selectedTime }) {
   const { id } = useParams();
   const [allGraph, setAllGraph] = React.useState([]);
+  const [openEditWindow, setOpenEditWindow] = React.useState(false);
+  const [selectedGraphType, setSelectedGraphType] = React.useState(null);
+  const [selectedGraphName, setSelectedGraphName] = React.useState(null);
+
+  const handleOpenEditWindow = (graphName) => {
+    setOpenEditWindow(true);
+    setSelectedGraphName(graphName);
+  };
+  const handleCloseEditWindow = () => setOpenEditWindow(false);
 
   const fetchAllGraph = async() => {
     try {
@@ -294,13 +304,66 @@ function DetailGraph({ graphCount, selectedTime }) {
     }
   };
 
+  const handleTypeChange = (event) => {
+    setSelectedGraphType(event.target.value);
+  };
+
+  const handleUpdateGraphType = async(graphName) => {
+    try {
+      const updateGraphAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph/${graphName}`;
+      const response = await axios.patch(updateGraphAPI, {
+        type: selectedGraphType,
+      });
+
+      if (response.status === 200) {
+        toast.success('Graph update successfully!', {
+          position: 'top-center',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        });
+        fetchAllGraph();
+        handleCloseEditWindow();
+      }
+
+    } catch (error) {
+      console.error(`Error from delete graph: ${error}`);
+      toast.error(`Edit failed, error: ${error}`, {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+    }
+  };
+
   const handleDeleteGraph = async(graphName) => {
     try {
       const deleteAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph/${graphName}`;
-      console.log(deleteAPI);
       const response = await axios.delete(deleteAPI);
 
-      setAllGraph(response.data);
+      if (response.status === 200) {
+        toast.success('Graph update successfully!', {
+          position: 'top-center',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'colored',
+        });
+
+        setAllGraph(response.data);
+      }
     } catch (error) {
       console.error(`Error from delete graph: ${error}`);
       toast.error(`Delete failed, error: ${error}`, {
@@ -331,14 +394,9 @@ function DetailGraph({ graphCount, selectedTime }) {
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
           <div style={{ display: 'flex', margin: '0 0.5rem 0.5rem 0.5rem' }}>
-            {/* <Tooltip title="Edit">
-              <IconButton>
+            <Tooltip title="Edit">
+              <IconButton onClick={() => handleOpenEditWindow(item.item)}>
                 <EditIcon />
-              </IconButton>
-            </Tooltip> */}
-            <Tooltip title="Delete" style={{ height: 'auto' }}>
-              <IconButton onClick={() => handleDeleteGraph(item.item)}>
-                <DeleteIcon />
               </IconButton>
             </Tooltip>
             <Typography
@@ -354,6 +412,11 @@ function DetailGraph({ graphCount, selectedTime }) {
             >
               {item.item.replace(/_/g, ' ')}
             </Typography>
+            <Tooltip title="Delete" style={{ height: 'auto' }}>
+              <IconButton onClick={() => handleDeleteGraph(item.item)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
           </div>
           <canvas id={`${item.item}-${item.type}`}></canvas>
         </CardContent>
@@ -361,6 +424,82 @@ function DetailGraph({ graphCount, selectedTime }) {
       </div>
     ))}
     </div>
+    <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      <Modal
+        open={openEditWindow}
+        onClose={handleCloseEditWindow}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h5" component="h2">
+            Edit Graph Type You Preffered
+          </Typography>
+          <FormControl fullWidth>
+            <h3>Graph Type</h3>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedGraphType}
+              label="Item"
+              onChange={handleTypeChange}
+            >
+              <MenuItem key='1' value='line'>
+              Line Chart
+              </MenuItem>
+              <MenuItem key='2' value='bar-group'>
+              Bar Chart, x-axis=group
+              </MenuItem>
+              <MenuItem key='3' value='bar-time'>
+              Bar Chart, x-axis=time
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <Typography>
+              <Button
+              variant='contained'
+              onClick={() => handleUpdateGraphType(selectedGraphName)}
+              sx={{
+                marginTop: 2,
+                borderRadius: 0,
+                boxShadow: 'none',
+                width: 50,
+                fontSize: 12,
+                fontWeight: 600,
+              }}
+            >
+              ADD
+            </Button>
+            <Button
+              variant='contained'
+              onClick={handleCloseEditWindow}
+              sx={{
+                marginTop: 2,
+                marginLeft: 2,
+                borderRadius: 0,
+                boxShadow: 'none',
+                width: 50,
+                fontSize: 12,
+                fontWeight: 600,
+                backgroundcolor: 'red',
+              }}
+            >
+              CANCEL
+            </Button>
+          </Typography>
+        </Box>
+      </Modal>
   </div>
   );
 }
@@ -368,12 +507,13 @@ function DetailGraph({ graphCount, selectedTime }) {
 export default function DashboardDetail() {
   const [selectedTime, setSeletedTime] = React.useState('30m');
   const [graphCount, setGraphCount] = React.useState(0);
+  const [selectedType, setSelectedType] = React.useState('');
 
   return (
     <div>
       <DetailTop setGraphCount={setGraphCount}/>
       <DetailTitle selectedTime={selectedTime} setSelectedTime={setSeletedTime} />
-      <DetailGraph graphCount={graphCount} selectedTime={selectedTime}/>
+      <DetailGraph graphCount={graphCount} selectedTime={selectedTime} setSelectedType={setSelectedType} selectedType={selectedType}/>
     </div>
   );
 }
