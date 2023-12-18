@@ -2,8 +2,6 @@ nohup.out
 
 .env
 
-.eslintrc.json
-
 server/node_modules
 
 server/src/node_modules
@@ -22,9 +20,9 @@ sea-config.json
 sea-prep.blob
 exporter.js
 exporter
-alert.yml
+server_exporter
+nginx_exporter
 alert1.yml
-pulse.yml
 scriptAlert.js
 dashboard-table.json
 dashboard-graph.json
