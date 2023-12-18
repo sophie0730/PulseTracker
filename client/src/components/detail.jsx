@@ -479,7 +479,7 @@ function DetailGraph({ graphCount, selectedTime }) {
                 fontWeight: 600,
               }}
             >
-              ADD
+              UPDATE
             </Button>
             <Button
               variant='contained'
