@@ -89,7 +89,6 @@ export function saveDashboardTable (req, res) {
     }
     return res.status(500).json({ message: 'Save dashboard failed' });
   }
-
 }
 
 export function readDashboardTable(req, res) {
@@ -259,7 +258,7 @@ export function updateDashboardGraphType(req, res) {
     }
 
     if (id === undefined || Number.isNaN(Number(id))) {
-      return res.status(400).json({ message: 'Your delete action is invalid' });
+      return res.status(400).json({ message: 'Your update action is invalid' });
     }
 
     const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
