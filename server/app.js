@@ -30,8 +30,8 @@ app.use('/api/1.0', [fetchRouter, alertRouter, dashboardRouter]);
 app.use((req, res) => {
   res.status(404).send('PAGE NOT FOUND');
 });
-// socket io
 
+// socket io
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -40,9 +40,6 @@ const io = new Server(server, {
   },
   allowEIO3: true,
 });
-// io.on('connection', () => {
-//   console.log('connected');
-// });
 
 export { io };
 export default io;

@@ -1,12 +1,12 @@
 {
   "name": "pulsetracker",
   "version": "1.0.0",
-  "main": "PulseTracker.js",
+  "main": "pulseTracker.js",
   "type": "module",
-  "bin": "PulseTracker.js",
+  "bin": "pulseTracker.js",
   "scripts": {
     "test": "mocha",
-    "build": "esbuild ./PulseTracker.js --allow-overwrite --bundle --platform=node --format=esm --outfile=./pulsetracker.js",
+    "build": "esbuild ./pulseTracker.js --allow-overwrite --bundle --platform=node --format=esm --outfile=./pulsetracker.js",
     "package": "bun build ./pulsetracker.js --compile --target node --outfile=./pulsetracker",
     "exporter-server-build": "npx esbuild ./Exporter-server.js --allow-overwrite --bundle --platform=node --outfile=./server_exporter.js",
     "exporter-nginx-build": "npx esbuild ./Exporter-nginx.js --allow-overwrite --bundle --platform=node --outfile=./nginx_exporter.js"
