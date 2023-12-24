@@ -8,8 +8,8 @@
     "test": "mocha",
     "build": "esbuild ./pulseTracker.js --allow-overwrite --bundle --platform=node --format=esm --outfile=./pulsetracker.js",
     "package": "bun build ./pulsetracker.js --compile --target node --outfile=./pulsetracker",
-    "exporter-server-build": "npx esbuild ./Exporter-server.js --allow-overwrite --bundle --platform=node --outfile=./server_exporter.js",
-    "exporter-nginx-build": "npx esbuild ./Exporter-nginx.js --allow-overwrite --bundle --platform=node --outfile=./nginx_exporter.js"
+    "exporter-server-build": "npx esbuild ./exporter-server.js --allow-overwrite --bundle --platform=node --outfile=./server_exporter.js",
+    "exporter-nginx-build": "npx esbuild ./exporter-nginx.js --allow-overwrite --bundle --platform=node --outfile=./nginx_exporter.js"
   },
   "pre-commit": [
     "lint"
