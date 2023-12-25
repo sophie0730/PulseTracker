@@ -3,8 +3,8 @@
 import * as server from './app.js';
 import { storeTimeout } from './utils/yml-util.js';
 
-const storeWorkerPath = './workers/store.js';
-const alertWorkerPath = './workers/alert.js';
+const storeWorkerPath = './workers/store-docker.js';
+const alertWorkerPath = './workers/alert-docker.js';
 
 function createWorker(scriptPath) {
   const worker = Bun.spawn(['bun', scriptPath], {
