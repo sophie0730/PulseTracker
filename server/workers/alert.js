@@ -20,3 +20,9 @@ function scheduleCheckAlerts() {
 }
 
 scheduleCheckAlerts();
+
+function sendHeartbeat() {
+  process.send({ type: 'heartbeat' });
+}
+
+setInterval(sendHeartbeat, TIMEOUT);

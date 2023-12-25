@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "build": "esbuild pulseTracker.js --bundle --outfile=out.mjs --platform=node --target=node18.18 --format=esm  --banner:js='import { createRequire as topLevelCreateRequire } from \"module\"; const require = topLevelCreateRequire(import.meta.url);'",
-    "package": "bun build ./pulsetracker.js --compile --target node --outfile=./pulsetracker"
+    "package": "bun build ./pulseTracker.js --compile --target node --outfile=./pulsetracker"
   },
   "pre-commit": [
     "lint"
