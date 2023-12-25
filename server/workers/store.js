@@ -17,3 +17,9 @@ function scheduleOperation(operation) {
 
 scheduleOperation(storeExporterMetrices);
 scheduleOperation(storeExporterStatus);
+
+function sendHeartbeat() {
+  process.send({ type: 'heartbeat' });
+}
+
+setInterval(sendHeartbeat, TIMEOUT);
