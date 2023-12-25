@@ -1,27 +1,20 @@
 import * as fs from 'node:fs';
 import moment from 'moment';
+import { DuplicateError, FileNotExistError, WritingFileError } from '../utils/error-util.js';
 
 const filePath = './dashboard-table.json';
 const graphFilePath = './dashboard-graph.json';
 
-class DuplicateError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'DuplicateDashboardNameError';
-    this.duplicateItem = message;
-  }
-}
-
 function appendToFile(path, dashboardName) {
-  let jsonArr = [];
-  let total;
 
-  if (fs.existsSync(path)) {
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const fileContentJson = (fileContent === '') ? '' : JSON.parse(fileContent);
-    jsonArr = (fileContent === '') ? [] : fileContentJson.objects;
-    total = (fileContent === '') ? 1 : fileContentJson.total + 1;
+  if (!fs.existsSync(path)) {
+    throw new FileNotExistError('Json file does not exist');
   }
+
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const fileContentJson = (fileContent === '') ? '' : JSON.parse(fileContent);
+  const jsonArr = (fileContent === '') ? [] : fileContentJson.objects;
+  const total = (fileContent === '') ? 1 : fileContentJson.total + 1;
 
   if (jsonArr.find((item) => item.name === dashboardName)) throw new DuplicateError(dashboardName);
 
@@ -40,7 +33,7 @@ function appendToFile(path, dashboardName) {
 
   fs.writeFile(path, JSON.stringify(data, null, 1), (error) => {
     if (error) {
-      console.error('Error writing to file', error);
+      throw new WritingFileError('Writing File Error');
     }
   });
   return data;
@@ -49,12 +42,11 @@ function appendToFile(path, dashboardName) {
 function deleteGraph(id, graph) {
   let newData;
 
-  const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
-    if (error) {
-      console.error('Error reading file:', error);
-    }
-  });
+  if (!fs.existsSync(graphFilePath)) {
+    return null;
+  }
 
+  const data = fs.readFileSync(graphFilePath, 'utf-8');
   const dataJson = JSON.parse(data);
 
   if (graph === 'all') {
@@ -65,7 +57,7 @@ function deleteGraph(id, graph) {
 
   fs.writeFile(graphFilePath, JSON.stringify(newData, null, 1), (error) => {
     if (error) {
-      console.error('Error writing to file', error);
+      throw new WritingFileError('Writing File Error');
     }
   });
 
@@ -87,9 +79,17 @@ export function saveDashboardTable (req, res) {
     if (error instanceof DuplicateError) {
       return res.status(400).json({ message: `Duplicate Dashboard name: ${error.duplicateItem}` });
     }
+
+    if (error instanceof FileNotExistError) {
+      return res.status(500).json({ message: error.message });
+    }
+
+    if (error instanceof WritingFileError) {
+      return res.status(500).json({ message: error.message });
+    }
+
     return res.status(500).json({ message: 'Save dashboard failed' });
   }
-
 }
 
 export function readDashboardTable(req, res) {
@@ -113,22 +113,12 @@ export function deleteDashboardTable(req, res) {
       return res.status(400).json({ message: 'Your delete action is invalid' });
     }
 
-    const data = fs.readFileSync(filePath, 'utf-8', (error) => {
-      if (error) {
-        console.error('Error reading file:', error);
-      }
-    });
-    let dataJson;
-    let objects;
-    let total;
+    const data = fs.readFileSync(filePath, 'utf-8');
 
-    try {
-      dataJson = JSON.parse(data);
-      objects = dataJson.objects;
-      total = dataJson.total;
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-    }
+    const dataJson = JSON.parse(data);
+    const { objects } = dataJson;
+    const { total } = dataJson;
+
     const newobjects = objects.filter((item) => item.id !== Number(id));
     const newData = {
       objects: newobjects,
@@ -137,7 +127,7 @@ export function deleteDashboardTable(req, res) {
 
     fs.writeFile(filePath, JSON.stringify(newData, null, 1), (error) => {
       if (error) {
-        console.error('Error writing to file', error);
+        throw new WritingFileError('Writing File Error');
       }
     });
 
@@ -145,6 +135,9 @@ export function deleteDashboardTable(req, res) {
 
     return res.status(200).json(newData);
   } catch (error) {
+    if (error instanceof WritingFileError) {
+      return res.status(500).json({ message: error.message });
+    }
     return res.status(500).json({ message: error });
   }
 }
@@ -197,7 +190,7 @@ export function addDashboardGraph(req, res) {
 
     fs.writeFile(graphFilePath, JSON.stringify(newArr, null, 1), (error) => {
       if (error) {
-        console.error('Error writing graph', error);
+        throw new WritingFileError('Writing File Error');
       }
     });
 
@@ -206,6 +199,11 @@ export function addDashboardGraph(req, res) {
     if (error instanceof DuplicateError) {
       return res.status(400).json({ message: `Duplicate graph name: ${error.duplicateItem}` });
     }
+
+    if (error instanceof WritingFileError) {
+      return res.status(500).json({ message: error.message });
+    }
+
     return res.status(500).json({ message: 'Graph is not able to be saved' });
   }
 }
@@ -259,14 +257,10 @@ export function updateDashboardGraphType(req, res) {
     }
 
     if (id === undefined || Number.isNaN(Number(id))) {
-      return res.status(400).json({ message: 'Your delete action is invalid' });
+      return res.status(400).json({ message: 'Your update action is invalid' });
     }
 
-    const data = fs.readFileSync(graphFilePath, 'utf-8', (error) => {
-      if (error) {
-        console.error('Error reading file:', error);
-      }
-    });
+    const data = fs.readFileSync(graphFilePath, 'utf-8');
 
     const dataJson = JSON.parse(data);
     if (!dataJson.find((element) => element.id === Number(id) && element.item === graphName)) {
@@ -282,12 +276,16 @@ export function updateDashboardGraphType(req, res) {
 
     fs.writeFile(graphFilePath, JSON.stringify(newData, null, 1), (error) => {
       if (error) {
-        console.error('Error writing to file', error);
+        throw new WritingFileError('Writing File Error');
       }
     });
 
     return res.status(200).json(newData);
   } catch (error) {
+    if (error instanceof WritingFileError) {
+      return res.status(500).json({ message: error.message });
+    }
+
     return res.status(500).json(`Error from update graph type: ${error}`);
   }
 }
