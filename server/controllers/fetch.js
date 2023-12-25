@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { BUCKET, MEASUREMENT } from '../utils/influxdb-util.js';
 import { serverUrlArr } from '../utils/yml-util.js';
 import { fetchData } from '../models/fetch.js';
@@ -26,11 +27,13 @@ export async function fetchDataByItems(req, res) {
     |> range(start: -${time})
     |> filter(fn: (r) => r.item == "${item}")`;
 
+    const keyArr = ['_start', '_stop', '_time', '_value', '_field', '_measurement', 'result', 'item'];
+
     const responseDataArr = [];
     const data = await fetchData(fluxQuery);
     data.forEach((record) => {
       const tag = Object.keys(record).filter((key) => (
-        !['_start', '_stop', '_time', '_value', '_field', '_measurement', 'result', 'item'].includes(key) && typeof record[key] === 'string'
+        !keyArr.includes(key) && typeof record[key] === 'string'
       ));
       // eslint-disable-next-line prefer-destructuring, no-param-reassign
       record.tag = tag[0];
@@ -62,7 +65,7 @@ export async function fetchTargets(req, res) {
   try {
     const dataArr = [];
     // eslint-disable-next-line no-restricted-syntax
-    for await (const item of serverUrlArr) {
+    for (const item of serverUrlArr) {
       const targetHost = item.static_configs.targets;
       const targetProtocol = item.scheme;
       const targetPath = (item.metrics_path === undefined) ? '' : item.metrics_path;
@@ -72,6 +75,7 @@ export async function fetchTargets(req, res) {
       const errorQuery = createTargetQuery(BUCKET, MEASUREMENT, targetUrl, 'error');
 
       const data = await fetchData(fluxQuery);
+
       if (data[0]._value === 1) {
         const lastScrape = getTimeInterval(data[0]._time, Date.now());
         data[0].lastScrape = `${lastScrape}s ago`;
@@ -83,10 +87,9 @@ export async function fetchTargets(req, res) {
         dataArr.push(error[0]);
       }
     }
+
     res.json(dataArr);
   } catch (error) {
     res.status(500).json({ message: error.message, stack: error.stack });
   }
 }
-
-export default fetchTargets;
