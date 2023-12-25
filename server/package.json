@@ -1,20 +1,17 @@
 {
-  "name": "personal",
+  "name": "pulsetracker",
   "version": "1.0.0",
-  "main": "PulseTracker.js",
+  "main": "pulseTracker.js",
   "type": "module",
-  "bin": "PulseTracker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "esbuild ./PulseTracker.js --allow-overwrite --bundle --platform=node --format=esm --outfile=./pulsetracker.js",
-    "package": "bun build ./pulsetracker.js --compile --target node --outfile=./pulsetracker",
-    "exporter-server-build": "npx esbuild ./Exporter-server.js --allow-overwrite --bundle --platform=node --outfile=./server_exporter.js",
-    "exporter-nginx-build": "npx esbuild ./Exporter-nginx.js --allow-overwrite --bundle --platform=node --outfile=./nginx_exporter.js"
+    "test": "mocha",
+    "build": "esbuild pulseTracker.js --bundle --outfile=out.mjs --platform=node --target=node18.18 --format=esm  --banner:js='import { createRequire as topLevelCreateRequire } from \"module\"; const require = topLevelCreateRequire(import.meta.url);'",
+    "package": "bun build ./pulsetracker.js --compile --target node --outfile=./pulsetracker"
   },
   "pre-commit": [
     "lint"
   ],
-  "author": "",
+  "author": "Sophie Hsu",
   "license": "ISC",
   "dependencies": {
     "@influxdata/influxdb-client": "^1.33.2",
@@ -30,20 +27,20 @@
     "moment": "^2.29.4",
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
-    "pkg": "^5.8.1",
     "prom-client": "^15.0.0",
     "redis": "^4.6.10",
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
+    "chai": "^4.3.10",
     "esbuild": "0.19.8",
     "eslint": "^8.53.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "mocha": "^10.2.0",
     "pre-commit": "^1.2.2",
     "prettier": "^3.1.0",
     "prettier-eslint": "^16.1.2",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "sinon": "^17.0.1"
   },
   "description": ""
 }

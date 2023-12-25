@@ -30,3 +30,5 @@ dashboard-graph_example.json
 dashboard-table_example.json
 server_exporter.js
 nginx_exporter.js
+
+out.mjs
