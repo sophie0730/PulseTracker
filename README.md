@@ -97,7 +97,7 @@ If you need to send alerts via emails or Line messages, register with a SMTP ser
 
 **7. Start the Exporters**
 
-To fetch system-level data and application-level data, please launch the system and nginx exporters. By default, these exporters run on port 9100(server) and 9101(nginx).
+To fetch system-level data and application-level data, please launch the [system](https://github.com/sophie0730/pulsetracker-server-exporter/releases) and [nginx](https://github.com/sophie0730/pulsetracker-nginx-exporter/releases) exporters. By default, these exporters run on port 9100(server) and 9101(nginx).
 
 ```
 ./server_exporter
