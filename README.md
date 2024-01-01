@@ -265,6 +265,7 @@ groups:
 ![dashboard](https://github.com/sophie0730/PulseTracker/assets/112261858/ba203a91-f691-4be2-abe4-f10f7e69f8d6)
 
 - Change graph type as per your requirement.
+![change_graph](./server/documentation/images/change_graph_type%20(1).gif)
 
 
 - Target status
@@ -275,7 +276,7 @@ groups:
 
 
 - Config alerting rules as per your requirement.
-
+![config_alert](./server/documentation/images/config_alertt.gif)
 
 - Triggering alerts
 ![send_alert](https://github.com/sophie0730/PulseTracker/assets/112261858/af2bc51b-a13a-46bb-a9ec-13527e66efd7)
