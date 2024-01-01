@@ -294,42 +294,31 @@ groups:
   <tbody>
     <tr>
       <th text-align="center">Back-End</th>
-      <th>Cloud-Service</th>
       <th>Front-End</th>
       <th>Tools</th>
     </tr>
     <tr>
       <td style="vertical-align:top">
         <li><a href="https://nodejs.org/en/">Node.js</a></li>
-        <li><a href="https://expressjs.com/">Express.js</a></li>
-        <li><a href="https://www.mongodb.com/">MongoDB</a></li>
+        <li><a href="https://bun.sh/">Bun</a></li>
+        <li><a href="https://expressjs.com/">Express</a></li>
         <li><a href="https://redis.io/">Redis</a></li>
-        <li><a href="https://www.docker.com/">Docker</a></li>
-        <li><a href="https://www.nginx.com/">Nginx</a></li>
+        <li><a href="https://www.influxdata.com/">InfluxDB</a></li>
       </td>
       <td style="vertical-align:top">
-        <li><a href="https://aws.amazon.com/ec2/">Amazon EC2</a></li>
-        <li><a href="https://aws.amazon.com/s3/">Amazon S3</a></li>
-        <li><a href="https://aws.amazon.com/cloudfront/">Amazon CloudFront</a></li>
-        <li><a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a></li>
-        <li><a href="https://aws.amazon.com/elasticache/">Amazon ElastiCache</a></li>
-        <li><a href="https://aws.amazon.com/elasticloadbalancing/">Elastic Load Balancing</a></li>
-        <li><a href="https://aws.amazon.com/autoscaling/">AWS Auto Scaling</a></li>
-      </td>
-      <td style="vertical-align:top">
-        <li><a href="https://reactjs.org/">React.js</a></li>
-        <li><a href="https://mui.com/">MUI</a></li>
         <li>HTML5</li>
         <li>CSS3</li>
-        <li>JavaScript</li>
+        <li><a href="https://reactjs.org/">React</a></li>
+        <li><a href="https://mui.com/">MUI</a></li>
+        <li><a href="https://www.chartjs.org/">Chart.js</a></li>
       </td>
       <td style="vertical-align:top">
         <li>Git, GitHub</li>
-        <li><a href="https://swagger.io/tools/swaggerhub/">Swagger</a></li>
-        <li><a href="https://k6.io/">K6</a></li>
-        <li><a href="https://www.postman.com/">Postman</a></li>
+        <li><a href="https://www.docker.com/">Docker</a></li>
+        <li><a href="https://www.nginx.com/">Nginx</a></li>
         <li><a href="https://mochajs.org/">Mocha</a></li>
         <li><a href="https://www.chaijs.com/">Chai</a></li>
+        <li><a href="https://www.postman.com/">Postman</a></li>
       </td>
     </tr>
   </tbody>
