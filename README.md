@@ -1,3 +1,4 @@
+
 # PulseTracker
 
 ![release](https://badgen.net/github/release/sophie0730/PulseTracker/stable)
@@ -6,10 +7,11 @@ PulseTracker is an application for developers to monitor server and application 
 
 It allows users to configure their alerting rules and metrics target URLs using YAML files.
 
-## Architecture Overview
+![pulsetracker](https://github.com/sophie0730/PulseTracker/assets/112261858/a02247b7-791f-422d-ade9-fb4f5cedb316)
 
-![final_structure_pulsetracker drawio](https://github.com/sophie0730/PulseTracker/assets/112261858/f1b48021-ab14-4f66-b2dd-7044b601fc84)
+## Menu
 
+[Prerequisites](#prerequisites) | [Install](#install) | [Environment Variables](#environment-variables) | [YAML File Configuration](#yaml-file-configuration) | [Getting Started](#getting-started) | [Features](#Features) | [Architecture Overview](#architecture-overview) | [Built With](#built-with) | [Contact](#contact)
 
 ## Prerequisites
 
@@ -46,6 +48,7 @@ If you plan to use `nginx_exporter`, please install Nginx on your machine first.
 
 For AWS EC2 users, add ports 4000, 9100, 9101, 8086, 6379 to the inbound rules of your security group.
 
+<p align="right"><a href="#top">Back to Top</a></p>
 
 ## Install
 
@@ -112,6 +115,8 @@ Finally, start PulseTracker server.
 
 You are now ready to use PulseTracker on your machine.
 
+<p align="right"><a href="#top">Back to Top</a></p>
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
@@ -153,6 +158,8 @@ EMAIL_TOKEN=''
 LINE_URL='https://notify-api.line.me/api/notify'
 LINE_TOKEN=''
 ```
+
+<p align="right"><a href="#top">Back to Top</a></p>
 
 ## YAML File Configuration
 
@@ -239,26 +246,99 @@ groups:
       summary: Server(s) are down.
 ```
 
+<p align="right"><a href="#top">Back to Top</a></p>
 
 ## Getting Started
 
 - Create a dashboard
 
-- Add graph in your dashboard
+![create_dashboard (1)](https://github.com/sophie0730/PulseTracker/assets/112261858/d7cf00f4-2308-4822-b15b-9a57d3db32c2)
 
+- Add graph in your dashboard
+![add_graph (1) (1)](https://github.com/sophie0730/PulseTracker/assets/112261858/7f080110-ccd1-462b-a796-a9b8f8b0fe2b)
+
+
+<p align="right"><a href="#top">Back to Top</a></p>
 
 ## Features
 - Dashboard
+![dashboard](https://github.com/sophie0730/PulseTracker/assets/112261858/ba203a91-f691-4be2-abe4-f10f7e69f8d6)
+
 - Change graph type as per your requirement.
 
-- Target status
-- Alerts
-- Config alerting rules as per your requirement.
-- Triggering alerts
 
+- Target status
+![target_status](https://github.com/sophie0730/PulseTracker/assets/112261858/6a16a00d-767b-4763-8da3-886de84eb10a)
+
+- Alerts
+![alert](https://github.com/sophie0730/PulseTracker/assets/112261858/21b8f9ef-2567-4330-99ba-cbe86e45334c)
+
+
+- Config alerting rules as per your requirement.
+
+
+- Triggering alerts
+![send_alert](https://github.com/sophie0730/PulseTracker/assets/112261858/af2bc51b-a13a-46bb-a9ec-13527e66efd7)
+
+<p align="right"><a href="#top">Back to Top</a></p>
+
+## Architecture Overview
+
+![final_structure_pulsetracker20231229](https://github.com/sophie0730/PulseTracker/assets/112261858/a54749ec-8693-43a7-a2ce-8698169bfad2)
 ## Built With
+
+<table>
+  <tbody>
+    <tr>
+      <th text-align="center">Back-End</th>
+      <th>Cloud-Service</th>
+      <th>Front-End</th>
+      <th>Tools</th>
+    </tr>
+    <tr>
+      <td style="vertical-align:top">
+        <li><a href="https://nodejs.org/en/">Node.js</a></li>
+        <li><a href="https://expressjs.com/">Express.js</a></li>
+        <li><a href="https://www.mongodb.com/">MongoDB</a></li>
+        <li><a href="https://redis.io/">Redis</a></li>
+        <li><a href="https://www.docker.com/">Docker</a></li>
+        <li><a href="https://www.nginx.com/">Nginx</a></li>
+      </td>
+      <td style="vertical-align:top">
+        <li><a href="https://aws.amazon.com/ec2/">Amazon EC2</a></li>
+        <li><a href="https://aws.amazon.com/s3/">Amazon S3</a></li>
+        <li><a href="https://aws.amazon.com/cloudfront/">Amazon CloudFront</a></li>
+        <li><a href="https://aws.amazon.com/cloudwatch/">Amazon CloudWatch</a></li>
+        <li><a href="https://aws.amazon.com/elasticache/">Amazon ElastiCache</a></li>
+        <li><a href="https://aws.amazon.com/elasticloadbalancing/">Elastic Load Balancing</a></li>
+        <li><a href="https://aws.amazon.com/autoscaling/">AWS Auto Scaling</a></li>
+      </td>
+      <td style="vertical-align:top">
+        <li><a href="https://reactjs.org/">React.js</a></li>
+        <li><a href="https://mui.com/">MUI</a></li>
+        <li>HTML5</li>
+        <li>CSS3</li>
+        <li>JavaScript</li>
+      </td>
+      <td style="vertical-align:top">
+        <li>Git, GitHub</li>
+        <li><a href="https://swagger.io/tools/swaggerhub/">Swagger</a></li>
+        <li><a href="https://k6.io/">K6</a></li>
+        <li><a href="https://www.postman.com/">Postman</a></li>
+        <li><a href="https://mochajs.org/">Mocha</a></li>
+        <li><a href="https://www.chaijs.com/">Chai</a></li>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p align="right"><a href="#top">Back to Top</a></p>
 
 ## Contact
 
 - [Sophie (Hsuan-Ni) Hsu (許玄妮)](https://www.github.com/sophie0730)
 - Email: sophy010017@gmail.com
+
+<p align="right"><a href="#top">Back to Top</a></p>
+
+
