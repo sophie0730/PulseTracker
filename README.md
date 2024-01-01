@@ -251,27 +251,27 @@ groups:
 ## Getting Started
 
 - Create a dashboard
-![create_dashboard (1)](./documentation/images/create_dashboard%20(1).gif)
+![create_dashboard (1)](https://github.com/sophie0730/PulseTracker/assets/112261858/d7cf00f4-2308-4822-b15b-9a57d3db32c2)
 
 - Add graph in your dashboard
-![add_graph (1) (1)](./documentation/images/add_graph%20(1)%20(1).gif)
+![add_graph (1) (1)](https://github.com/sophie0730/PulseTracker/assets/112261858/7f080110-ccd1-462b-a796-a9b8f8b0fe2b)
 
 
 <p align="right"><a href="#top">Back to Top</a></p>
 
 ## Features
 - Dashboard
-![dashboard](./documentation/images/dashboard.gif)
+![dashboard](https://github.com/sophie0730/PulseTracker/assets/112261858/ba203a91-f691-4be2-abe4-f10f7e69f8d6)
 
 - Change graph type as per your requirement.
 ![change_graph](./documentation/images/change_graph_type%20(1).gif)
 
 
 - Target status
-![target_status](./documentation/images/target_status.gif)
+![target_status](https://github.com/sophie0730/PulseTracker/assets/112261858/6a16a00d-767b-4763-8da3-886de84eb10a)
 
 - Alerts
-![alert](./documentation/images/alert.gif)
+![alert](https://github.com/sophie0730/PulseTracker/assets/112261858/21b8f9ef-2567-4330-99ba-cbe86e45334c)
 
 
 - Config alerting rules as per your requirement.
