@@ -8,7 +8,7 @@ import {
   WRITE_API_URL, TOKEN, MEASUREMENT,
 } from '../utils/influxdb-util.js';
 import { serverUrlArr } from '../utils/yml-util.js';
-import { publishUpdateMessage } from '../utils/redis-util.js';
+import { publishGraphUpdate, publishTargetUpdate } from '../utils/redis-util.js';
 
 async function storeMetrices(targetUrl) {
   const metrices = await getMetrics(targetUrl);
@@ -29,6 +29,8 @@ async function storeMetrices(targetUrl) {
   await axios.post(WRITE_API_URL, storeQuery, {
     headers: { Authorization: `Token ${TOKEN}` },
   });
+
+  await publishGraphUpdate();
 }
 
 async function storeStatus(targetUrl, targetName) {
@@ -68,7 +70,7 @@ export async function storeExporterStatus() {
       const targetName = item.job_name;
 
       storeStatus(targetUrl, targetName);
-      await publishUpdateMessage();
+      await publishTargetUpdate();
     }
   } catch (error) {
     handleError(error);

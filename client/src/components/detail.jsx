@@ -17,7 +17,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { getChart } from '../script/chart.js';
+import io from 'socket.io-client';
+import { getChart, updateChart } from '../script/chart.js';
 
 const style = {
   position: 'absolute',
@@ -304,6 +305,20 @@ function DetailGraph({ graphCount, selectedTime }) {
     }
   };
 
+  const updateAllGraph = async() => {
+    try {
+      const fetchGraphAPI = `${import.meta.env.VITE_HOST}/api/1.0/dashboard/${id}/graph`;
+      const response = await axios.get(fetchGraphAPI);
+
+      setAllGraph(response.data);
+      response.data.forEach((item) => {
+        updateChart(item.item, selectedTime);
+      });
+    } catch (error) {
+      console.error(`Error from update graph" ${error}`);
+    }
+  };
+
   const handleTypeChange = (event) => {
     setSelectedGraphType(event.target.value);
   };
@@ -326,7 +341,7 @@ function DetailGraph({ graphCount, selectedTime }) {
           progress: undefined,
           theme: 'colored',
         });
-        fetchAllGraph();
+        await fetchAllGraph();
         handleCloseEditWindow();
       }
 
@@ -380,11 +395,32 @@ function DetailGraph({ graphCount, selectedTime }) {
   };
 
   React.useEffect(() => {
-    fetchAllGraph();
-    allGraph.forEach((item) => {
-      getChart(item.item, selectedTime, item.type);
-    });
+    const fetchData = async() => {
+      await fetchAllGraph();
+    };
+
+    fetchData();
   }, [graphCount, selectedTime]);
+
+  React.useEffect(() => {
+    allGraph.forEach(async (item) => {
+      await getChart(item.item, selectedTime, item.type);
+    });
+  }, [selectedTime, selectedGraphType]);
+
+  React.useEffect(() => {
+    const socket = io();
+    const handleGraphUpdate = async() => {
+      await updateAllGraph();
+    };
+
+    socket.on('connect', () => console.log('connected to socket.io server(graph)'));
+    socket.on('graphUpdate', handleGraphUpdate);
+
+    return () => {
+      socket.off('graphUpdate');
+    };
+  }, [selectedTime]);
 
   return (
   <div>
