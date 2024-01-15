@@ -122,14 +122,28 @@ export async function updateChart(item, time) {
 
     const times = responseData.map((element) => element._time);
     const values = responseData.map((element) => element._value);
+    const tags = responseData.map((element) => element.tag);
 
     const { chart } = charts[chartId];
 
     chart.data.labels = times;
-    chart.data.datasets.forEach((dataset) => {
-      // eslint-disable-next-line no-param-reassign
-      dataset.data = values;
-    });
+
+    if (tags && tags[0] !== undefined) {
+      const tag = tags[0];
+      const groupData = groupByTag(responseData, tag);
+
+      chart.data.datasets.forEach((dataset) => {
+        if (groupData[dataset.label]) {
+          // eslint-disable-next-line no-param-reassign
+          dataset.data = groupData[dataset.label].map((entry) => entry._value);
+        }
+      });
+    } else {
+      chart.data.datasets.forEach((dataset) => {
+        // eslint-disable-next-line no-param-reassign
+        dataset.data = values;
+      });
+    }
 
     chart.update();
   } catch (error) {
