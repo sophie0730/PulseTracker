@@ -51,7 +51,20 @@ async function messageQueue() {
   }
 
   subscriber.subscribe(PUBSUB_CHANNEL, (message) => {
-    io.emit('dataUpdate', message);
+    switch (message) {
+      case 'alertUpdate':
+        io.emit('dataUpdate', message);
+        break;
+      case 'graphUpdate':
+        io.emit('graphUpdate', message);
+        break;
+      case 'targetUpdate':
+        io.emit('targetUpdate', message);
+        break;
+      default:
+        console.log(`Received unknown message type ${message}`);
+
+    }
   });
 
 }

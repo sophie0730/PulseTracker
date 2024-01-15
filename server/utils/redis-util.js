@@ -46,6 +46,18 @@ connectSubscriber();
 
 export async function publishUpdateMessage() {
   if (publisher.isReady) {
-    publisher.publish(PUBSUB_CHANNEL, 'update');
+    publisher.publish(PUBSUB_CHANNEL, 'alertUpdate');
+  }
+}
+
+export async function publishGraphUpdate() {
+  if (publisher.isReady) {
+    publisher.publish(PUBSUB_CHANNEL, 'graphUpdate');
+  }
+}
+
+export async function publishTargetUpdate() {
+  if (publisher.isReady) {
+    publisher.publish(PUBSUB_CHANNEL, 'targetUpdate');
   }
 }
