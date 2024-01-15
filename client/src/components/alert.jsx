@@ -169,7 +169,7 @@ function AlertContainer() {
     fetchData();
 
     const socket = io();
-    socket.on('connect', () => console.log('connected to socket.io server'));
+    socket.on('connect', () => console.log('connected to socket.io server(alert)'));
     socket.on('dataUpdate', fetchData);
 
     return () => {

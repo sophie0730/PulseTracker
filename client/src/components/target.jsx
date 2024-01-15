@@ -29,7 +29,7 @@ export function Target() {
 
     const socket = io();
     socket.on('connect', () => console.log('connected to socket.io server'));
-    socket.on('dataUpdate', () => {
+    socket.on('targetUpdate', () => {
       axios.get(targetAPI)
         .then((response) => {
           const targetArr = response.data;
