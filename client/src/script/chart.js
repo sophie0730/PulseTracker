@@ -126,6 +126,8 @@ export async function updateChart(item, time) {
 
     const { chart } = charts[chartId];
 
+    if (chartId.includes('max')) return;
+
     chart.data.labels = times;
 
     if (tags && tags[0] !== undefined) {
@@ -133,9 +135,10 @@ export async function updateChart(item, time) {
       const groupData = groupByTag(responseData, tag);
 
       chart.data.datasets.forEach((dataset) => {
-        if (groupData[dataset.label]) {
+        const key = (dataset.label).split(' ')[1];
+        if (groupData[key]) {
           // eslint-disable-next-line no-param-reassign
-          dataset.data = groupData[dataset.label].map((entry) => entry._value);
+          dataset.data = groupData[key].map((entry) => entry._value);
         }
       });
     } else {
