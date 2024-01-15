@@ -126,7 +126,7 @@ export async function updateChart(item, time) {
 
     const { chart } = charts[chartId];
 
-    if (chartId.includes('max')) return;
+    if (chartId.includes('Max')) return;
 
     chart.data.labels = times;
 
