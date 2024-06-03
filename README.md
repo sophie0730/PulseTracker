@@ -13,9 +13,6 @@ It allows users to configure their alerting rules and metrics target URLs using 
 
 [Demo Video](#demo-video) | [Prerequisites](#prerequisites) | [Install](#install) | [Environment Variables](#environment-variables) | [YAML File Configuration](#yaml-file-configuration) | [Getting Started](#getting-started) | [Features](#Features) | [Architecture Overview](#architecture-overview) | [Built With](#built-with) | [Contact](#contact)
 
-## Demo Video
-[![PulseTracker Demo](https://img.youtube.com/vi/LUZDCWmqmbs/mqdefault.jpg)](https://youtu.be/LUZDCWmqmbs?si=f_mQrlOy27Ezaz8K)
-
 ## Prerequisites
 
 Please make sure your Linux environment is prepared before you start the installation process.
